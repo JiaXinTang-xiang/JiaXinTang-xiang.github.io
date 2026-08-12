@@ -10,7 +10,8 @@ interface Props {
 
 const { view, comment, class: className, ...props } = Astro.props
 
-const path = Astro.url.pathname
+// Keep every Waline feature on the same canonical article path.
+const path = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/$/, '')
 ---
 
 <div class={cn('text-base text-sm text-muted-foreground', className)} {...props}>

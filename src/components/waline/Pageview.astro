@@ -16,7 +16,10 @@ import config from '@/site-config'
       if (el) {
         return pageview.pageviewCount({
           serverURL: walineServer,
-          path: window.location.pathname
+          path:
+            window.location.pathname === '/'
+              ? '/'
+              : window.location.pathname.replace(/\/$/, '')
         })
       }
     } catch (e) {
