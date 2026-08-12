@@ -26,11 +26,16 @@ const { class: className } = Astro.props
   const walineConfig = config.integ.waline
 
   class Comment extends HTMLElement {
+    initialized = false
+
     constructor() {
       super()
     }
 
     connectedCallback() {
+      if (this.initialized) return
+      this.initialized = true
+
       // Prevent Vue log errors
       ;(globalThis as unknown as { __VUE_OPTIONS_API__: boolean }).__VUE_OPTIONS_API__ = true
       ;(globalThis as unknown as { __VUE_PROD_DEVTOOLS__: boolean }).__VUE_PROD_DEVTOOLS__ = false
@@ -45,6 +50,7 @@ const { class: className } = Astro.props
       walineInit({
         el: 'comment-component #waline',
         serverURL: walineConfig.server || '',
+        path: window.location.pathname === '/' ? '/' : window.location.pathname.replace(/\/$/, ''),
         emoji,
         reaction: ['/icons/heart-item.svg'],
         ...walineConfig.additionalConfigs
@@ -52,7 +58,9 @@ const { class: className } = Astro.props
     }
   }
 
-  if (walineConfig.enable) customElements.define('comment-component', Comment)
+  if (walineConfig.enable && !customElements.get('comment-component')) {
+    customElements.define('comment-component', Comment)
+  }
 </script>
 
 {
