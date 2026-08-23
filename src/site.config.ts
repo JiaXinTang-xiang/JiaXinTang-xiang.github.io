@@ -63,7 +63,7 @@ export const theme: ThemeUserConfig = {
           { title: 'Daily', link: '/daily' },
           { title: 'Monthly', link: '/monthly' },
           { title: 'Notes', link: 'https://notes.jiaxin404.top/' },
-          { title: 'Feishu', link: 'https://kcn04fsleza4.feishu.cn/wiki/CZdpwGVZiiv9JQknRa6cSHkjnUf' }
+          { title: 'Wiki', link: 'https://jiaxin404.feishu.cn/wiki/CZdpwGVZiiv9JQknRa6cSHkjnUf' }
         ]
       },
       { title: 'Projects', link: '/projects' },
