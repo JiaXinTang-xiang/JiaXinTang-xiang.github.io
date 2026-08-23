@@ -2,6 +2,19 @@
 import config from 'virtual:config'
 
 import { Icon } from '../user'
+
+// 导航标题 → i18n key（配合 LanguageToggle 实现导航中英文切换）
+const navKeyMap: Record<string, string> = {
+  Blog: 'nav.blog',
+  Tech: 'nav.blog.tech',
+  Daily: 'nav.blog.daily',
+  Monthly: 'nav.blog.monthly',
+  Notes: 'nav.blog.notes',
+  Projects: 'nav.projects',
+  Links: 'nav.links',
+  About: 'nav.about',
+  Update: 'nav.update'
+}
 ---
 
 <header-component
@@ -28,6 +41,7 @@ import { Icon } from '../user'
                 <div class="relative group/submenu">
                   <button
                     class="w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3 flex items-center justify-end gap-1"
+                    data-i18n-nav={navKeyMap[item.title]}
                   >
                     {item.title}
                     <svg class="w-3 h-3 transition-transform group-hover/submenu:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,6 +53,7 @@ import { Icon } from '../user'
                       <a
                         href={subitem.link}
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors"
+                        data-i18n-nav={navKeyMap[subitem.title]}
                       >
                         {subitem.title}
                       </a>
@@ -49,6 +64,7 @@ import { Icon } from '../user'
                 <a
                   href={item.link}
                   class="w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3"
+                  data-i18n-nav={navKeyMap[item.title]}
                 >
                   {item.title}
                 </a>

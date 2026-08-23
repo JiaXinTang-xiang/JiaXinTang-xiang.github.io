@@ -5,10 +5,12 @@ export const translations = {
     'nav.blog.tech': '技术',
     'nav.blog.daily': '日常',
     'nav.blog.monthly': '月记',
+    'nav.blog.notes': '笔记',
     'nav.projects': '项目',
     'nav.links': '友链',
-    'nav.about': '关于',
-    'nav.update': '更新',
+    'nav.about': '关于我',
+    'nav.update': '归档',
+    'nav.travellings': '旅行',
 
     // 首页
     'home.about': '关于',
@@ -53,10 +55,12 @@ export const translations = {
     'nav.blog.tech': 'Tech',
     'nav.blog.daily': 'Daily',
     'nav.blog.monthly': 'Monthly',
+    'nav.blog.notes': 'Notes',
     'nav.projects': 'Projects',
     'nav.links': 'Links',
     'nav.about': 'About',
-    'nav.update': 'Update',
+    'nav.update': 'Archive',
+    'nav.travellings': 'Travelling',
 
     // Home
     'home.about': 'About',

@@ -10,11 +10,12 @@
       'nav.blog.tech': '技术',
       'nav.blog.daily': '日常',
       'nav.blog.monthly': '月记',
+      'nav.blog.notes': '笔记',
       'nav.projects': '项目',
       'nav.links': '友链',
-      'nav.about': '关于',
-      'nav.update': '更新',
-      'nav.travellings': '开往',
+      'nav.about': '关于我',
+      'nav.update': '归档',
+      'nav.travellings': '旅行',
       // 首页
       'home.author': '嘉心糖',
       'home.about': '关于',
@@ -80,10 +81,11 @@
       'nav.blog.tech': 'Tech',
       'nav.blog.daily': 'Daily',
       'nav.blog.monthly': 'Monthly',
+      'nav.blog.notes': 'Notes',
       'nav.projects': 'Projects',
       'nav.links': 'Links',
       'nav.about': 'About',
-      'nav.update': 'Update',
+      'nav.update': 'Archive',
       'nav.travellings': 'Travelling',
       // Home
       'home.author': 'Jaxon',
@@ -171,9 +173,25 @@
     document.querySelectorAll('[data-i18n-nav]').forEach((el) => {
       const key = el.getAttribute('data-i18n-nav')
       if (key && t[key]) {
-        el.textContent = t[key]
+        // 保留子元素（如下拉箭头 svg），只替换文本节点
+        if (el.childElementCount > 0) {
+          const textNode = Array.from(el.childNodes).find(
+            (n) => n.nodeType === Node.TEXT_NODE && n.textContent?.trim()
+          )
+          if (textNode) {
+            textNode.textContent = t[key]
+          }
+        } else {
+          el.textContent = t[key]
+        }
       }
     })
+
+    // 2.5 翻译 Travelling 外链
+    const travLink = document.getElementById('travellings-link')
+    if (travLink) {
+      travLink.textContent = `${t['nav.travellings']}↗︎`
+    }
 
     // 3. 翻译包含特定文本的元素
     const textMap: Record<string, string> = {
@@ -268,7 +286,7 @@
     link.rel = 'noopener'
     link.title = '开往-友链接力'
     link.className = 'w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3'
-    link.textContent = 'Travelling↗︎'
+    link.textContent = `${translations[getLang()]['nav.travellings']}↗︎`
     wrapper.appendChild(link)
 
     // 找到 Update 链接后面插入
