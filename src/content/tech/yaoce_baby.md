@@ -7,7 +7,7 @@ tags:
   - Astro
 language: 'Chinese'
 draft: false
-password: '301'
+# password: '301'
 heroImage: { src: './images/yaoce_baby/cover.jpg', color: '#24292e' }
 ---
 
