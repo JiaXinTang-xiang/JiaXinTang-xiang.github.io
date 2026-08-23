@@ -14,66 +14,35 @@ const headings = [
 
   <Timeline
     events={[
-      {
-        date: '2026-06-20',
-        content: '发布<a href="/tech/Codex_install">《Codex + CCX 安装配置指南》</a>：在 Linux 上安装配置 Codex 。'
-      },
-      {
-        date: '2026-06-14',
-        content: '发布<a href="/tech/sogou_install">《Ubuntu 22.04 安装搜狗输入法》</a>：记录搜狗输入法的安装与配置过程。'
-      },
-      {
-        date: '2026-06-07',
-        content: '发布<a href="/monthly/26_05">《月记·26-05》</a>：遥测团建、电赛校赛测评、高校赛经历与展望。'
-      },
-      {
-        date: '2026-06-05',
-        content: '发布<a href="/tech/yaoce_baby">《适合遥测宝宝体质的视觉学习教程》</a>：面向实验室新生的视觉学习知识体系。'
-      },
-      {
-        date: '2026-06-02',
-        content: '发布<a href="/tech/yolo-uv-setup">《使用 uv 配置 YOLO 环境》</a>：用 uv 管理 Python 项目环境并配置 YOLO 训练。'
-      },
-      {
-        date: '2026-06-01',
-        content: '发布<a href="/tech/password">《Astro 文章密码保护》</a>：为文章添加密码访问功能。'
-      },
-      {
-        date: '2026-05-30',
-        content: '发布<a href="/tech/waline_jia">《Astro 搭建 Waline 评论区》</a>：部署 Waline 评论系统并接入 QQ 邮箱提醒。'
-      },
-      {
-        date: '2026-05-15',
-        content: '发布<a href="/tech/about_me_git">《GitHub 个人主页美化指南》</a>：分享 GitHub Profile 个性化配置方法。'
-      },
-      {
-        date: '2026-04-28',
-        content: '发布<a href="/tech/use-git">《Git 的常见使用》</a>：Git 日常操作指南。'
-      },
-      {
-        date: '2026-04-08',
-        content: '发布<a href="/tech/About-Ubuntu-command">《Ubuntu 常用命令大全》</a>：整理日常开发常用命令，持续更新。'
-      },
-      {
-        date: '2026-04-07',
-        content: '发布<a href="/tech/about-my-blog">《关于我的博客》</a>：记录搭建个人博客的过程与技术选型。'
-      },
-      {
-        date: '2026-04-02',
-        content: '发布<a href="/daily/first-daily-post">《我的第一篇日常记录》</a>：分享日常生活与随想。'
-      },
-      {
-        date: '2026-04-01',
-        content: '发布<a href="/monthly/26_04">《月记·26-04》</a>：首篇月记，记录电赛备战与生活琐事。'
-      },
-      {
-        date: '2026-04-01',
-        content: '发布<a href="/tech/first-tech-post">《我的第一篇技术文章》</a>：博客技术板块正式开启。'
-      },
-      {
-        date: '2025-03-31',
-        content: '发布<a href="/blog/first-post">《我的第一篇博客文章》</a>：博客正式上线，开启写作之旅。'
-      },
+      { date: '2026-08-22', content: '发布<a href="/tech/feishu-cli">《飞书 CLI 安装与使用：让 AI Agent 操作我的知识库》</a>。' },
+      { date: '2026-08-21', content: '发布<a href="/tech/deepseek-harness">《DeepSeek Harness 安装》</a>。' },
+      { date: '2026-08-06', content: '发布<a href="/monthly/26_07">《月记·26-07》</a>。' },
+      { date: '2026-07-15', content: '发布<a href="/tech/maix_yolo">《记录 MaixCAM2 将 YOLO11 模型转换》</a>。' },
+      { date: '2026-07-11', content: '发布<a href="/monthly/26_06">《月记·26-06》</a>。' },
+      { date: '2026-07-06', content: '发布<a href="/tech/about-my-notes">《搭建 VitePress 站点教程》</a>。' },
+      { date: '2026-07-03', content: '发布<a href="/tech/wheeltec_nav2">《差分驱动机器人导航 Nav2》</a>。' },
+      { date: '2026-07-03', content: '发布<a href="/tech/lsn10_carto">《LSN10 激光 + 飞控 IMU Cartographer ROS2 记录》</a>。' },
+      { date: '2026-07-01', content: '发布<a href="/tech/t265_ros2">《T265 在 ROS 2 跑通》</a>。' },
+      { date: '2026-07-01', content: '发布<a href="/tech/orb_slam3">《ORB-SLAM3 全链路调试：从编译到 USB 相机实时定位》</a>。' },
+      { date: '2026-07-01', content: '发布<a href="/tech/opencv_scr">《OpenCV 从零开始：图像基础、特征匹配与相机几何》</a>。' },
+      { date: '2026-06-27', content: '发布<a href="/tech/sam_bot">《从零构建 Nav2 仿真机器人：一条命令的背后》</a>。' },
+      { date: '2026-06-27', content: '发布<a href="/tech/camera_calibration">《相机标定教程》</a>。' },
+      { date: '2026-06-24', content: '发布<a href="/tech/ubuntu_tools">《Ubuntu 常用工具的下载和使用》</a>。' },
+      { date: '2026-06-19', content: '发布<a href="/tech/Codex_install">《Codex 安装配置指南》</a>。' },
+      { date: '2026-06-14', content: '发布<a href="/tech/sogou_install">《Ubuntu 22.04 安装搜狗输入法》</a>。' },
+      { date: '2026-06-03', content: '发布<a href="/tech/yaoce_baby">《适合于遥测宝宝体质的视觉学习教程》</a>。' },
+      { date: '2026-06-03', content: '发布<a href="/monthly/26_05">《月记·26-05》</a>。' },
+      { date: '2026-06-02', content: '发布<a href="/tech/yolo-uv-setup">《使用 uv 配置 YOLO 环境》</a>。' },
+      { date: '2026-06-01', content: '发布<a href="/tech/password">《Astro 文章密码保护》</a>。' },
+      { date: '2026-05-30', content: '发布<a href="/tech/waline_jia">《Astro 搭建 Waline 评论区》</a>。' },
+      { date: '2026-05-19', content: '发布<a href="/tech/about_me_git">《GitHub 个人主页美化指南》</a>。' },
+      { date: '2026-04-29', content: '发布<a href="/tech/use-git">《Git 的常见使用》</a>。' },
+      { date: '2026-04-28', content: '发布<a href="/monthly/26_04">《月记·26-04》</a>。' },
+      { date: '2026-04-14', content: '发布<a href="/tech/About-Ubuntu-command">《Ubuntu 常用命令大全》</a>。' },
+      { date: '2026-04-13', content: '发布<a href="/tech/about-my-blog">《关于我的博客》</a>。' },
+      { date: '2026-04-03', content: '发布<a href="/tech/first-tech-post">《我的第一篇技术文章》</a>。' },
+      { date: '2026-04-03', content: '发布<a href="/daily/first-daily-post">《我的第一篇日常记录》</a>。' },
+      { date: '2026-03-31', content: '发布<a href="/blog/first-post">《我的第一篇博客文章》</a>：博客正式上线，开启写作之旅。' }
     ]}
   />
 
@@ -81,6 +50,10 @@ const headings = [
 
   <Timeline
     events={[
+      {
+        date: '2026-08-23',
+        content: 'Blog 导航新增 Wiki 入口：中文界面显示“飞书”，英文界面显示“Wiki”，链接至个人飞书知识库主页。'
+      },
       {
         date: '2026-06-19',
         content: '新增中英文 UI 切换功能：导航栏添加语言切换按钮，首页、关于页、项目页、友链页支持中英文切换。'

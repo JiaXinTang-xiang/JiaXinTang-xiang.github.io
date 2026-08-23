@@ -9,7 +9,7 @@ export const translations = {
     'nav.blog.wiki': '飞书',
     'nav.projects': '项目',
     'nav.links': '友链',
-    'nav.about': '关于我',
+    'nav.about': '关于',
     'nav.update': '归档',
     'nav.travellings': '旅行',
 
