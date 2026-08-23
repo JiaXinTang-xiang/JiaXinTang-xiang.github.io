@@ -1,25 +1,25 @@
 ---
 title: '飞书 CLI 安装与使用：让 AI Agent 操作我的知识库'
-description: '在 Windows 上安装、配置并授权飞书 CLI；从终端使用、权限补充，到飞书知识库和文档的常用操作。'
+description: '安装、配置并授权飞书 CLI；从终端使用、权限补充，到飞书知识库和文档的常用操作。'
 publishDate: '2026-08-21'
 tags:
   - 飞书
-  - CLI
   - AI Agent
   - 知识库
-  - Windows
 language: 'Chinese'
 draft: false
 slug: 'feishu-cli'
+heroImage: { src: './images/feishu_cli/cover.jpg', color: '#1b2229' }
 ---
 
 ## 前言
 
-最近想把自己的视觉学习笔记整理成一个可以持续维护的飞书知识库。普通的飞书网页当然能完成这件事，但当笔记要反复创建目录、补充章节、查询文档、整理任务时，还是希望能让 AI Agent 直接帮我操作。
+最近想把自己的知识笔记迁移到飞书里整理整理成一个可以持续维护的知识库。普通的飞书网页当然能完成这件事，但当笔记要反复创建目录、补充章节、查询文档、整理任务时，接入 AI Agent 直接帮我管理和修改，何乐而不为呢。
 
-[飞书 CLI](https://open.feishu.cn/document/no_class/mcp-archive/feishu-cli-installation-guide.md) 就是为这个场景准备的命令行工具。它不是一个独立的桌面软件，也没有需要双击打开的 GUI；它运行在 PowerShell、Windows Terminal 或 CMD 里。完成一次应用配置和用户授权后，Agent 就可以通过它操作我已经有权限访问的飞书资源。
+[飞书 CLI](https://open.feishu.cn/document/no_class/mcp-archive/feishu-cli-installation-guide.md) 就是为这个场景准备的命令行工具。它不是一个独立的桌面软件，也没有需要双击打开的 GUI；它运行在 PowerShell、Windows Terminal 或 CMD 里。完成一次应用配置和用户授权后，因此通过Agent 就可以通过它操作我已经有权限访问的飞书资源。可见[我的知识库](https://jiaxin404.feishu.cn/wiki/CZdpwGVZiiv9JQknRa6cSHkjnUf)
 
 本文以 **Windows** 为例记录完整流程，并整理一些我实际用到的命令。命令和权限会随版本更新，遇到不一致时以[官方文档](https://open.larkoffice.com/document/mcp_open_tools/feishu-cli-let-ai-actually-do-your-work-in-feishu.md)为准。
+
 
 > 这套工具权限很大：文档、知识库、云盘、日历、消息等都可能被授权。不要把 App Secret、Access Token、设备授权码或带 `user_code` 的授权链接提交到 Git，也不要随意把它们发给别人。
 
@@ -122,35 +122,6 @@ available: true
 lark-cli calendar +agenda --as user
 ```
 
-### 2. 为什么明明登录了仍提示没有权限？
-
-登录成功不等于拥有所有业务权限。比如查询日程时，可能会得到：
-
-```text
-missing required scope(s): calendar:calendar.event:read
-```
-
-这说明已有登录态，但少了读取日历的 scope。对于用户身份，按报错提示补充最小权限即可：
-
-```powershell
-lark-cli auth login --scope "calendar:calendar.event:read"
-```
-
-若命令要求分两步获取设备授权链接，可以这样执行：
-
-```powershell
-lark-cli auth login --scope "calendar:calendar.event:read" --no-wait --json
-```
-
-输出中的 `verification_url` 是一次性的，复制到浏览器打开并完成授权。之后再用输出的 `device_code` 完成登录：
-
-```powershell
-lark-cli auth login --device-code "这里替换为刚刚输出的 device_code"
-```
-
-授权链接和设备码通常十分钟左右会过期；过期不要反复刷新旧链接，重新执行上一条 `--no-wait --json` 命令生成新的即可。
-
-> 如果报错时实际身份是 `bot`，不要用 `auth login` 补权限。应按报错给出的开发者后台链接，为应用机器人开通对应权限。
 
 ## 五、常用命令：从“会用”开始
 
@@ -282,9 +253,6 @@ lark-cli auth login --recommend
 
 如果是按特定 scope 授权，就重新带上相同的 `--scope` 参数。
 
-### 文档更新失败或内容乱掉
-
-先备份关键内容，再把大改动拆成章节。代码示例、表格、引号很多时，先写进 XML 文件并用 `@文件名.xml` 引用。每次写入后立即读回验证，比“整篇一次性生成”可靠得多。
 
 ### 如何更新
 
@@ -296,13 +264,4 @@ lark-cli update
 
 ## 小结
 
-飞书 CLI 的核心流程并不复杂：**Node.js → npm 安装 CLI → 配置应用 → 用户授权 → 用 `--as user` 操作资源**。它本身是命令行工具，而不是 GUI 软件；真正的知识库仍在浏览器中的飞书页面里。
-
-对我来说最有价值的部分不是“用终端替代网页点击”，而是把它接给 AI Agent：让 Agent 读已有内容、按章节整理长文、写完再验证。只要把权限和写入范围管好，飞书知识库就能从一次性的笔记，慢慢长成可持续维护的个人技术资料库。
-
-## 相关链接
-
-- [飞书 CLI 安装指南](https://open.feishu.cn/document/no_class/mcp-archive/feishu-cli-installation-guide.md)
-- [飞书 CLI：给 Agent 一双操作飞书的手](https://open.larkoffice.com/document/mcp_open_tools/feishu-cli-let-ai-actually-do-your-work-in-feishu.md)
-- [飞书开放平台](https://open.feishu.cn/)
-- [Node.js 下载页](https://nodejs.org/zh-cn/download/)
+对我来说最好的是把它接给 AI Agent：让 Agent 读已有内容、按章节整理长文，也方便我把知识库迁移到wiki,因为以后打算把这里作为我的知识主阵地，不用担心一些配置问题导致网页构建失败，当然了博客还是会保持更新的，放一些有意思的文章，不至于全部都是知识教程，看着都不想看了。目前wiki还不是很好，后面再慢慢完善吧，毕竟框架搭好了，后续只要写就行。
