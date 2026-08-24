@@ -16,7 +16,7 @@ heroImage: { src: './images/feishu_cli/cover.jpg', color: '#1b2229' }
 
 最近想把自己的知识笔记迁移到飞书里整理整理成一个可以持续维护的知识库。普通的飞书网页当然能完成这件事，但当笔记要反复创建目录、补充章节、查询文档、整理任务时，接入 AI Agent 直接帮我管理和修改，何乐而不为呢。
 
-[飞书 CLI](https://open.feishu.cn/document/no_class/mcp-archive/feishu-cli-installation-guide.md) 就是为这个场景准备的命令行工具。它不是一个独立的桌面软件，也没有需要双击打开的 GUI；它运行在 PowerShell、Windows Terminal 或 CMD 里。完成一次应用配置和用户授权后，因此通过Agent 就可以通过它操作我已经有权限访问的飞书资源。可见[我的知识库](https://jiaxin404.feishu.cn/wiki/CZdpwGVZiiv9JQknRa6cSHkjnUf)
+[飞书 CLI](https://open.feishu.cn/document/no_class/mcp-archive/feishu-cli-installation-guide.md) 就是为这个场景准备的命令行工具。它不是一个独立的桌面软件，也没有需要双击打开的 GUI；它运行在 PowerShell、Windows Terminal 或 CMD 里。完成一次应用配置和用户授权后，因此通过Agent 就可以通过它操作我已经有权限访问的飞书资源。可见[我的知识库](https://jiaxin404.feishu.cn/wiki/V1e8w3kLyiLSAYkflaIcSUJdnpg)
 
 本文以 **Windows** 为例记录完整流程，并整理一些我实际用到的命令。命令和权限会随版本更新，遇到不一致时以[官方文档](https://open.larkoffice.com/document/mcp_open_tools/feishu-cli-let-ai-actually-do-your-work-in-feishu.md)为准。
 
