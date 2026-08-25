@@ -61,7 +61,7 @@ export const translations = {
     'nav.projects': 'Projects',
     'nav.links': 'Links',
     'nav.about': 'About',
-    'nav.update': 'Archive',
+    'nav.update': 'Archives',
     'nav.travellings': 'Travelling',
 
     // Home
