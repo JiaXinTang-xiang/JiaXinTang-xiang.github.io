@@ -1,52 +1,70 @@
 ---
-import { PostPreview } from 'astro-pure/components/pages'
-import { getBlogCollection, groupCollectionsByYear, sortMDByDate } from 'astro-pure/server'
-import { Button } from 'astro-pure/user'
-import PageLayout from '@/layouts/BaseLayout.astro'
+import { Timeline } from 'astro-pure/user'
+import PageLayout from '@/layouts/CommonPage.astro'
 
-export const prerender = true
-
-const allPosts = await getBlogCollection()
-const allPostsByDate = sortMDByDate(allPosts)
-const allPostsByYear = groupCollectionsByYear(allPostsByDate)
-
-const meta = {
-  description: 'A list of all the years of creating my posts',
-  title: 'Archives'
-}
+const headings = [
+  { depth: 2, slug: 'article-update', text: '文章更新' },
+  { depth: 2, slug: 'update-log', text: '更新日志' }
+]
 ---
 
-<PageLayout {meta}>
-  <Button title='Back' href='/blog' variant='back' />
+<PageLayout title='更新日志' {headings}>
 
-  <main class='mt-6 lg:mt-10'>
-    <div id='content-header' class='animate'>
-      <h1 class='mb-6 text-3xl font-medium'>Archives</h1>
-    </div>
+  <h2 id='article-update'>文章更新</h2>
 
-    {allPosts.length === 0 && <p>No posts yet.</p>}
+  <Timeline
+    events={[
+      { date: '2026-08-22', content: '发布<a href="/tech/feishu-cli">《飞书 CLI 安装与使用：让 AI Agent 操作我的知识库》</a>。' },
+      { date: '2026-08-21', content: '发布<a href="/tech/deepseek-harness">《DeepSeek Harness 安装》</a>。' },
+      { date: '2026-08-06', content: '发布<a href="/monthly/26_07">《月记·26-07》</a>。' },
+      { date: '2026-07-15', content: '发布<a href="/tech/maix_yolo">《记录 MaixCAM2 将 YOLO11 模型转换》</a>。' },
+      { date: '2026-07-11', content: '发布<a href="/monthly/26_06">《月记·26-06》</a>。' },
+      { date: '2026-07-06', content: '发布<a href="/tech/about-my-notes">《搭建 VitePress 站点教程》</a>。' },
+      { date: '2026-07-03', content: '发布<a href="/tech/wheeltec_nav2">《差分驱动机器人导航 Nav2》</a>。' },
+      { date: '2026-07-03', content: '发布<a href="/tech/lsn10_carto">《LSN10 激光 + 飞控 IMU Cartographer ROS2 记录》</a>。' },
+      { date: '2026-07-01', content: '发布<a href="/tech/t265_ros2">《T265 在 ROS 2 跑通》</a>。' },
+      { date: '2026-07-01', content: '发布<a href="/tech/orb_slam3">《ORB-SLAM3 全链路调试：从编译到 USB 相机实时定位》</a>。' },
+      { date: '2026-07-01', content: '发布<a href="/tech/opencv_scr">《OpenCV 从零开始：图像基础、特征匹配与相机几何》</a>。' },
+      { date: '2026-06-27', content: '发布<a href="/tech/sam_bot">《从零构建 Nav2 仿真机器人：一条命令的背后》</a>。' },
+      { date: '2026-06-27', content: '发布<a href="/tech/camera_calibration">《相机标定教程》</a>。' },
+      { date: '2026-06-24', content: '发布<a href="/tech/ubuntu_tools">《Ubuntu 常用工具的下载和使用》</a>。' },
+      { date: '2026-06-19', content: '发布<a href="/tech/Codex_install">《Codex 安装配置指南》</a>。' },
+      { date: '2026-06-14', content: '发布<a href="/tech/sogou_install">《Ubuntu 22.04 安装搜狗输入法》</a>。' },
+      { date: '2026-06-03', content: '发布<a href="/tech/yaoce_baby">《适合于遥测宝宝体质的视觉学习教程》</a>。' },
+      { date: '2026-06-03', content: '发布<a href="/monthly/26_05">《月记·26-05》</a>。' },
+      { date: '2026-06-02', content: '发布<a href="/tech/yolo-uv-setup">《使用 uv 配置 YOLO 环境》</a>。' },
+      { date: '2026-06-01', content: '发布<a href="/tech/password">《Astro 文章密码保护》</a>。' },
+      { date: '2026-05-30', content: '发布<a href="/tech/waline_jia">《Astro 搭建 Waline 评论区》</a>。' },
+      { date: '2026-05-19', content: '发布<a href="/tech/about_me_git">《GitHub 个人主页美化指南》</a>。' },
+      { date: '2026-04-29', content: '发布<a href="/tech/use-git">《Git 的常见使用》</a>。' },
+      { date: '2026-04-28', content: '发布<a href="/monthly/26_04">《月记·26-04》</a>。' },
+      { date: '2026-04-14', content: '发布<a href="/tech/About-Ubuntu-command">《Ubuntu 常用命令大全》</a>。' },
+      { date: '2026-04-13', content: '发布<a href="/tech/about-my-blog">《关于我的博客》</a>。' },
+      { date: '2026-04-03', content: '发布<a href="/tech/first-tech-post">《我的第一篇技术文章》</a>。' },
+      { date: '2026-04-03', content: '发布<a href="/daily/first-daily-post">《我的第一篇日常记录》</a>。' },
+      { date: '2026-03-31', content: '发布<a href="/blog/first-post">《我的第一篇博客文章》</a>：博客正式上线，开启写作之旅。' }
+    ]}
+  />
 
-    <section id='content' class='animate' aria-label='Blog post list'>
-      {
-        allPostsByYear.map(([year, posts]) => (
-          <div class='relative mt-20'>
-            <h2
-              class='absolute -start-6 -top-16 z-0 text-9xl font-bold text-transparent opacity-12 dark:opacity-25'
-              style='-webkit-text-stroke-width:2px;-webkit-text-stroke-color:hsl(var(--foreground)/var(--un-text-opacity))'
-            >
-              <samp>{year}</samp>
-            </h2>
-            <p class='px-5 text-muted-foreground'>
-              {posts.length} post{posts.length > 1 && 's'}
-            </p>
-            <ul class='flex flex-col text-start'>
-              {posts.map((p) => (
-                <PostPreview post={p} class='border-0 bg-transparent py-2' />
-              ))}
-            </ul>
-          </div>
-        ))
-      }
-    </section>
-  </main>
+  <h2 id='update-log'>更新记录</h2>
+
+  <Timeline
+    events={[
+      { date: '2026-08-25', content: '更新导航入口：原“Update”页面迁移至 <a href="/archives">/archives</a>，导航英文名称调整为 “Archives”。' },
+      { date: '2026-08-23', content: 'Blog 导航新增 Wiki 入口：中文界面显示“飞书”，英文界面显示“Wiki”，链接至个人飞书知识库主页。' },
+      { date: '2026-06-19', content: '新增中英文 UI 切换功能：导航栏添加语言切换按钮，首页、关于页、项目页、友链页支持中英文切换。' },
+      { date: '2026-06-17', content: '文章图片自动生成说明标签（figure/figcaption）；修复 rehype 插件构建报错问题。' },
+      { date: '2026-06-14', content: '新增搜狗输入法安装配置教程；友链新增 Arthals\' ink 和 Axi\'s Blog。' },
+      { date: '2026-06-07', content: '发布五月月记：记录遥测团建、电赛校赛测评、高校赛经历与展望。' },
+      { date: '2026-06-01', content: '新增文章密码保护功能，清理无用信息，更新联系方式。' },
+      { date: '2026-05-30', content: '网站部署迁移至 Vercel，配置 Waline 评论系统并接入 QQ 邮箱邮件提醒。' },
+      { date: '2026-05-27', content: '修复全站视觉细节：恢复阅读进度条、暗色模式平滑过渡、链接下划线滑入动画、卡片悬停微放大效果。' },
+      { date: '2026-05-21', content: '页面美化：404 页面重设计加入 glitch 动画，搜索页卡片化，更新日志改用时间轴，代码块与全局表格样式增强。' },
+      { date: '2026-05-19', content: '全站视觉细节优化：阅读进度条、暗色模式平滑过渡、链接下划线滑入动画、卡片图片悬停微放大。' },
+      { date: '2026-05-09', content: '增强光标粒子特效：新增心形、花瓣、圆环、光晕等多种粒子类型，加入标题悬停光晕与鼠标轨迹尾巴效果。' },
+      { date: '2026-05-01', content: '创建鼠标点击动画效果：优化水波纹效果，减小动画范围提升用户体验。' },
+      { date: '2026-04-07', content: '购买域名并部署上线，网站有了正式别名。' },
+      { date: '2026-04-01', content: '搭建个人博客：使用 Astro + astro-theme-pure 主题，记录学习与生活点滴。' }
+    ]}
+  />
 </PageLayout>
