@@ -13,6 +13,7 @@ slug: 'camera-calibration'
 heroImage: { src: './images/camera_calibration/cover.jpg', color: '#1a1a2e' }
 ---
 
+
 ## 前言
 
 相机标定是视觉 SLAM、深度估计、目标检测等任务的前置步骤——未标定的相机会引入桶形/枕形畸变，导致 3D 点云变形、建图歪斜。
