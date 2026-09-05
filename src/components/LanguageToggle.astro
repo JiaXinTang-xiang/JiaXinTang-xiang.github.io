@@ -192,7 +192,7 @@
     // 2.5 翻译 Travelling 外链
     const travLink = document.getElementById('travellings-link')
     if (travLink) {
-      travLink.textContent = `${t['nav.travellings']}↗︎`
+      travLink.textContent = `${t['nav.travellings']}⌄`
     }
 
     // 3. 翻译包含特定文本的元素
@@ -275,21 +275,51 @@
   }
 
   function injectTravellingsLink() {
-    // 在导航菜单 Update 后面加上开往外链
+    // 在导航菜单中添加“旅行”下拉菜单，包含开往和 BlogsClub 空间穿梭
     const nav = document.querySelector('header-component #headerExpandContent .flex.flex-col')
     if (!nav || document.getElementById('travellings-link')) return
 
     const wrapper = document.createElement('div')
-    wrapper.className = 'relative'
-    const link = document.createElement('a')
-    link.id = 'travellings-link'
-    link.href = 'https://www.travellings.cn/go.html'
-    link.target = '_blank'
-    link.rel = 'noopener'
-    link.title = '开往-友链接力'
-    link.className = 'w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3'
-    link.textContent = `${translations[getLang()]['nav.travellings']}↗︎`
-    wrapper.appendChild(link)
+    wrapper.className = 'relative w-full sm:w-fit'
+
+    const button = document.createElement('button')
+    button.id = 'travellings-link'
+    button.type = 'button'
+    button.className = 'w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3'
+    button.setAttribute('aria-expanded', 'false')
+    button.textContent = `${translations[getLang()]['nav.travellings']}⌄`
+
+    const menu = document.createElement('div')
+    menu.className = 'absolute right-0 top-full z-50 mt-1 hidden min-w-44 rounded-md border bg-background p-1 shadow-lg'
+    menu.setAttribute('role', 'menu')
+
+    const createMenuLink = (href, text, title) => {
+      const link = document.createElement('a')
+      link.href = href
+      link.target = '_blank'
+      link.rel = 'noopener'
+      link.title = title
+      link.className = 'block whitespace-nowrap rounded px-3 py-2 text-right text-sm hover:bg-muted hover:text-primary'
+      link.textContent = text
+      link.setAttribute('role', 'menuitem')
+      return link
+    }
+
+    menu.appendChild(createMenuLink('https://www.travellings.cn/go.html', '开往 ↗︎', '开往-友链接力'))
+    menu.appendChild(createMenuLink('https://blogs.quest', 'BlogsClub 空间穿梭 ↗︎', '空间穿梭-随机访问 BlogsClub 成员博客'))
+    wrapper.append(button, menu)
+
+    button.addEventListener('click', (event) => {
+      event.stopPropagation()
+      const expanded = button.getAttribute('aria-expanded') === 'true'
+      button.setAttribute('aria-expanded', String(!expanded))
+      menu.classList.toggle('hidden', expanded)
+    })
+
+    document.addEventListener('click', () => {
+      button.setAttribute('aria-expanded', 'false')
+      menu.classList.add('hidden')
+    })
 
     // 找到 Update 链接后面插入
     const items = nav.querySelectorAll('.relative')
