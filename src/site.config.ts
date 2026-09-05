@@ -77,7 +77,8 @@ export const theme: ThemeUserConfig = {
           { title: '开往', link: 'https://www.travellings.cn/go.html' },
           { title: '空间穿梭', link: 'https://blogs.quest/' },
           { title: '异次元', link: 'https://travel.moe/go.html' },
-          { title: '传送门', link: 'https://webteleporter.top/' }
+          { title: '传送门', link: 'https://webteleporter.top/' },
+          { title: '笔墨迹', link: 'https://blogscn.fun/' }
         ]
       }
     ]
