@@ -17,10 +17,7 @@ const navKeyMap: Record<string, string> = {
   About: 'nav.about',
   Update: 'nav.update',
   Archives: 'nav.update',
-  Travel: 'nav.travellings',
-  开往: 'nav.travellings',
-  空间穿梭: 'nav.travellings',
-  异次元之旅: 'nav.travellings'
+  Travel: 'nav.travellings'
 }
 
 const navIconMap: Record<string, keyof typeof Icons> = {
@@ -85,10 +82,10 @@ const submenuIconMap: Record<string, { src?: string; emoji?: string }> = {
                           <img
                             src={submenuIconMap[subitem.title].src}
                             alt=''
-                            width='18'
-                            height='18'
+                            width='24'
+                            height='24'
                             loading='lazy'
-                            class='size-[18px] object-contain'
+                            class='size-6 object-contain'
                           />
                         )}
                         {subitem.title}
