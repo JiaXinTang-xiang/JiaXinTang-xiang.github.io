@@ -20,6 +20,19 @@ const imagesGlob = import.meta.glob<{ default: ImageMetadata }>(
 type FeedCollection = 'blog' | 'tech' | 'daily'
 type FeedEntry = CollectionEntry<FeedCollection>
 
+// Only publish these selected technical articles to the public blog feed.
+// Add another slug here when you want BlogsClub and other readers to receive it.
+const rssWhitelist = new Set([
+  'About-Ubuntu-command',
+  'about-my-blog',
+  'use-git',
+  'about_me_git',
+  'waline_jia',
+  'camera-calibration',
+  'about-my-notes',
+  'maix_yolo'
+])
+
 const renderContent = async (post: FeedEntry, site: URL) => {
   // Replace image links with the correct path
   function remarkReplaceImageLink() {
@@ -66,6 +79,9 @@ const GET = async (context: AstroGlobal) => {
       )
     ).flat()
   ) as FeedEntry[]
+  const feedPosts = allPostsByDate.filter(
+    (post) => post.collection === 'tech' && rssWhitelist.has(post.id)
+  )
   const siteUrl = context.site ?? new URL(import.meta.env.SITE)
 
   return rss({
@@ -96,7 +112,7 @@ const GET = async (context: AstroGlobal) => {
       <itunes:author>${config.author}</itunes:author>
       <itunes:summary>${config.description}</itunes:summary>`,
     items: await Promise.all(
-      allPostsByDate.map(async (post) => ({
+      feedPosts.map(async (post) => ({
         pubDate: post.data.publishDate,
         content: await renderContent(post, siteUrl),
         ...post.data,
