@@ -8,6 +8,7 @@ import FriendList from '@/components/links/FriendList.astro'
 
 const headings = [
   { depth: 2, slug: 'common-links', text: 'Common Links' },
+  { depth: 2, slug: 'blog-links', text: 'Blog Links' },
   { depth: 2, slug: 'apply-links', text: 'Apply Links' }
 ]
 
@@ -20,6 +21,9 @@ const linkEditPage = 'https://github.com/jiaxintang-xiang/JIABlog/blob/main/publ
   <p>They're sorted randomly.</p>
   <h2 id='common-links' data-i18n='links.common'>Common Links</h2>
   <FriendList list={friends[0]} />
+  <h2 id='blog-links'>博客链接</h2>
+  <p>独立博客传送门、博客社区等链接</p>
+  <FriendList list={friends[2]} />
   <!-- <Collapse title='Links with Bad Status'>
     <FriendList list={friends[1]} />
   </Collapse>

@@ -41,18 +41,6 @@
           "link": "https://docs.asoe.cn",
           "avatar": "https://pic1.imgdb.cn/i/0348YILT8zwI1hiLW4etko.png"
         },
-        {
-          "name": "笔墨迹",
-          "intro": "记录生活与思考的独立博客",
-          "link": "https://blogscn.fun/",
-          "avatar": "https://blogscn.fun/favicon.ico"
-        },
-        {
-          "name": "独立博客传送门",
-          "intro": "随机访问独立博客的传送站点",
-          "link": "https://webteleporter.top",
-          "avatar": "https://webteleporter.top/favicon.ico"
-        }
       ]
     },
     {
@@ -64,6 +52,18 @@
       "id_name": "special-links",
       "desc": "Other special links",
       "link_list": [
+        {
+          "name": "笔墨迹",
+          "intro": "记录生活与思考的独立博客",
+          "link": "https://blogscn.fun/",
+          "avatar": "https://blogscn.fun/favicon.ico"
+        },
+        {
+          "name": "独立博客传送门",
+          "intro": "随机访问独立博客的传送站点",
+          "link": "https://webteleporter.top",
+          "avatar": "https://webteleporter.top/favicon.ico"
+        },
         {
           "name": "Astro",
           "intro": "The web framework for content-driven websites",
