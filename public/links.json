@@ -46,6 +46,12 @@
           "intro": "记录生活与思考的独立博客",
           "link": "https://blogscn.fun/",
           "avatar": "https://blogscn.fun/favicon.ico"
+        },
+        {
+          "name": "独立博客传送门",
+          "intro": "随机访问独立博客的传送站点",
+          "link": "https://webteleporter.top",
+          "avatar": "https://webteleporter.top/favicon.ico"
         }
       ]
     },
