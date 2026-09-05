@@ -793,3 +793,5 @@ ros2 launch nav2_bringup tb3_simulation_launch.py headless:=False slam:=True
 ---
 
 *参考：Nav2 官方文档 [Setup Guide for Gazebo Classic](https://docs.nav2.org/setup_guides/gazebo_classic.html)*
+
+> 本文部分内容由 AI 辅助整理和润色。

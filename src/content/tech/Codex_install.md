@@ -254,4 +254,3 @@ Codex Desktop + CC-Switch + DeepSeek 这套组合，能覆盖日常 AI 编程需
 
 我记录完过程后发现：**CC-Switch 在 v3.11 版本后，内置了本地路由功能，可以直接对接 DeepSeek 等上游 API，不需要再架设 CCX 中转。**所以如果你是新用户，直接看本文的"Codex Desktop"和"CC-Switch"两部分，下好这两个软件，配好模型映射就能用了。省去了装 CCX 的步骤，流程更简单。本文ccx部分先留着吧，后面再说。
 
-> 本文部分内容由 AI 辅助整理和润色。
