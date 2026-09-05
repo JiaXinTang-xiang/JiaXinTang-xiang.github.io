@@ -1,6 +1,6 @@
 import type { AstroGlobal, ImageMetadata } from 'astro'
 import { getImage } from 'astro:assets'
-import type { CollectionEntry } from 'astro:content'
+import { getCollection, type CollectionEntry } from 'astro:content'
 import rss from '@astrojs/rss'
 import type { Root } from 'mdast'
 import rehypeStringify from 'rehype-stringify'
@@ -14,10 +14,13 @@ import config from 'virtual:config'
 
 // Get dynamic import of images as a map collection
 const imagesGlob = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/content/docs/**/*.{jpeg,jpg,png,gif,avif,webp}' // add more image formats if needed
+  '/src/content/**/*.{jpeg,jpg,png,gif,avif,webp}' // add more image formats if needed
 )
 
-const renderContent = async (post: CollectionEntry<'docs'>, site: URL) => {
+type FeedCollection = 'docs' | 'monthly'
+type FeedEntry = CollectionEntry<FeedCollection>
+
+const renderContent = async (post: FeedEntry, site: URL) => {
   // Replace image links with the correct path
   function remarkReplaceImageLink() {
     /**
@@ -29,7 +32,7 @@ const renderContent = async (post: CollectionEntry<'docs'>, site: URL) => {
         if (node.url.startsWith('/images')) {
           node.url = `${site}${node.url.replace('/', '')}`
         } else {
-          const imagePathPrefix = `/src/content/docs/${post.id}/${node.url.replace('./', '')}`
+          const imagePathPrefix = `/src/content/${post.collection}/${post.id}/${node.url.replace('./', '')}`
           const promise = imagesGlob[imagePathPrefix]?.().then(async (res) => {
             const imagePath = res?.default
             if (imagePath) {
@@ -54,7 +57,9 @@ const renderContent = async (post: CollectionEntry<'docs'>, site: URL) => {
 }
 
 const GET = async (context: AstroGlobal) => {
-  const allPostsByDate = sortMDByDate(await getBlogCollection('docs')) as CollectionEntry<'docs'>[]
+  const docs = await getBlogCollection('docs')
+  const monthly = await getCollection('monthly', ({ data }) => !data.draft)
+  const allPostsByDate = sortMDByDate([...docs, ...monthly]) as FeedEntry[]
   const siteUrl = context.site ?? new URL(import.meta.env.SITE)
 
   return rss({
@@ -69,7 +74,7 @@ const GET = async (context: AstroGlobal) => {
     site: import.meta.env.SITE,
     items: await Promise.all(
       allPostsByDate.map(async (post) => ({
-        link: `/docs/${post.id}`,
+        link: `/${post.collection === 'docs' ? 'docs' : 'monthly'}/${post.id}`,
         content: await renderContent(post, siteUrl),
         ...post.data
       }))
