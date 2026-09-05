@@ -82,8 +82,8 @@ export const theme: ThemeUserConfig = {
     links: [
       // Registration link  真实的 ICP 备案信息
       {
-        title: 'Moe ICP 114514',
-        link: 'https://icp.gov.moe/?keyword=114514',
+        title: '萌ICP备20264005号',
+        link: 'https://icp.gov.moe/?keyword=20264005',
         style: 'text-sm' // Uno/TW CSS class
       },
       // Privacy Policy link  隐私政策和使用条款链接
