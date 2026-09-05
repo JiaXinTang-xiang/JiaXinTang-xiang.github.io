@@ -339,7 +339,6 @@
   // 初始化
   function init() {
     injectLanguageToggle()
-    injectTravellingsLink()
     fixExternalLinks()
     const currentLang = getLang()
     applyTranslations(currentLang)
@@ -355,7 +354,6 @@
   // 监听 Astro 页面切换事件（SPA 导航时重新应用翻译）
   document.addEventListener('astro:page-load', () => {
     injectLanguageToggle()
-    injectTravellingsLink()
     fixExternalLinks()
     const lang = getLang()
     applyTranslations(lang)

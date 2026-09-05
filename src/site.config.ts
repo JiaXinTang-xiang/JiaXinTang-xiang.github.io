@@ -69,7 +69,15 @@ export const theme: ThemeUserConfig = {
       { title: 'Projects', link: '/projects' },
       { title: 'Links', link: '/links' },
       { title: 'About', link: '/about' },
-      { title: 'Archives', link: '/archives' }
+      { title: 'Archives', link: '/archives' },
+      {
+        title: 'Travel',
+        link: '#',
+        submenu: [
+          { title: '开往', link: 'https://www.travellings.cn/go.html' },
+          { title: '空间穿梭', link: 'https://blogs.quest/' }
+        ]
+      }
     ]
   },
 
