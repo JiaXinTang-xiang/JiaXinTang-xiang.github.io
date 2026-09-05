@@ -75,7 +75,8 @@ export const theme: ThemeUserConfig = {
         link: '#',
         submenu: [
           { title: '开往', link: 'https://www.travellings.cn/go.html' },
-          { title: '空间穿梭', link: 'https://blogs.quest/' }
+          { title: '空间穿梭', link: 'https://blogs.quest/' },
+          { title: '异次元之旅', link: 'https://travel.moe/go.html' }
         ]
       }
     ]

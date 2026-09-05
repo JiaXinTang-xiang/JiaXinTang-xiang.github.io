@@ -2,6 +2,7 @@
 import config from 'virtual:config'
 
 import { Icon } from '../user'
+import { Icons } from '../../libs/icons'
 
 // 导航标题 → i18n key（配合 LanguageToggle 实现导航中英文切换）
 const navKeyMap: Record<string, string> = {
@@ -16,7 +17,25 @@ const navKeyMap: Record<string, string> = {
   About: 'nav.about',
   Update: 'nav.update',
   Archives: 'nav.update',
-  Travel: 'nav.travellings'
+  Travel: 'nav.travellings',
+  开往: 'nav.travellings',
+  空间穿梭: 'nav.travellings',
+  异次元之旅: 'nav.travellings'
+}
+
+const navIconMap: Record<string, keyof typeof Icons> = {
+  Blog: 'document',
+  Projects: 'package',
+  Links: 'link',
+  About: 'info',
+  Archives: 'calendar',
+  Travel: 'earth'
+}
+
+const submenuIconMap: Record<string, { src?: string; emoji?: string }> = {
+  开往: { emoji: '🚇' },
+  空间穿梭: { src: 'https://www.blogsclub.org/images/shuttle_6.png' },
+  异次元之旅: { src: 'https://travel.moe/images/icon/icon64.png' }
 }
 ---
 
@@ -46,6 +65,7 @@ const navKeyMap: Record<string, string> = {
                     class="w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3 flex items-center justify-end gap-1"
                     data-i18n-nav={navKeyMap[item.title]}
                   >
+                    {navIconMap[item.title] && <Icon name={navIconMap[item.title]} class='size-4' />}
                     {item.title}
                     <svg class="w-3 h-3 transition-transform group-hover/submenu:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -55,9 +75,22 @@ const navKeyMap: Record<string, string> = {
                     {item.submenu.map((subitem) => (
                       <a
                         href={subitem.link}
-                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors"
+                        class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors"
                         data-i18n-nav={navKeyMap[subitem.title]}
                       >
+                        {submenuIconMap[subitem.title]?.emoji && (
+                          <span class="text-base leading-none" aria-hidden='true'>{submenuIconMap[subitem.title].emoji}</span>
+                        )}
+                        {submenuIconMap[subitem.title]?.src && (
+                          <img
+                            src={submenuIconMap[subitem.title].src}
+                            alt=''
+                            width='18'
+                            height='18'
+                            loading='lazy'
+                            class='size-[18px] object-contain'
+                          />
+                        )}
                         {subitem.title}
                       </a>
                     ))}
@@ -69,6 +102,7 @@ const navKeyMap: Record<string, string> = {
                   class="w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3"
                   data-i18n-nav={navKeyMap[item.title]}
                 >
+                  {navIconMap[item.title] && <Icon name={navIconMap[item.title]} class='mr-1 inline-block size-4 align-[-0.15em]' />}
                   {item.title}
                 </a>
               )}
