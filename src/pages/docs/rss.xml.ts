@@ -9,7 +9,7 @@ import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
 import { visit } from 'unist-util-visit'
 
-import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
+import { getBlogCollection } from 'astro-pure/server'
 import config from 'virtual:config'
 
 // Get dynamic import of images as a map collection
@@ -59,7 +59,10 @@ const renderContent = async (post: FeedEntry, site: URL) => {
 const GET = async (context: AstroGlobal) => {
   const docs = await getBlogCollection('docs')
   const monthly = await getCollection('monthly', ({ data }) => !data.draft)
-  const allPostsByDate = sortMDByDate([...docs, ...monthly]) as FeedEntry[]
+  // RSS 按文章首次发布时间排序，不因后续修改文章而改变顺序。
+  const allPostsByDate = [...docs, ...monthly].sort(
+    (a, b) => (b.data.publishDate?.valueOf() ?? 0) - (a.data.publishDate?.valueOf() ?? 0)
+  ) as FeedEntry[]
   const siteUrl = context.site ?? new URL(import.meta.env.SITE)
 
   return rss({
