@@ -1,0 +1,60 @@
+---
+import { announcement } from '@/site-config'
+
+const storageKey = `announcement-dismissed:${announcement.version}`
+---
+
+{
+  announcement.enable && (
+    <aside
+      id='announcement-bar'
+      class='mx-4 mt-3 hidden items-center gap-3 border border-border bg-muted/45 px-3 py-2 text-sm text-foreground sm:mx-6'
+      data-storage-key={storageKey}
+      aria-label='站点公告'
+    >
+      <span class='i-mingcute-notification-line size-5 shrink-0 text-primary' aria-hidden='true'></span>
+      <p class='min-w-0 flex-1 leading-6'>
+        {announcement.content}
+        {
+          announcement.link && (
+            <a class='ml-2 font-medium text-primary hover:underline' href={announcement.link}>
+              {announcement.linkText}
+            </a>
+          )
+        }
+      </p>
+      <button
+        id='announcement-close'
+        class='grid size-8 shrink-0 place-items-center text-muted-foreground transition-colors hover:text-foreground'
+        type='button'
+        title='关闭公告'
+        aria-label='关闭公告'
+      >
+        <span class='i-mingcute-close-line size-5' aria-hidden='true'></span>
+      </button>
+    </aside>
+  )
+}
+
+<script>
+  function initAnnouncement() {
+    const bar = document.querySelector<HTMLElement>('#announcement-bar')
+    const closeButton = document.querySelector<HTMLButtonElement>('#announcement-close')
+
+    if (!bar || !closeButton || bar.dataset.initialized === 'true') return
+
+    bar.dataset.initialized = 'true'
+    const storageKey = bar.dataset.storageKey
+    const dismissed = storageKey && localStorage.getItem(storageKey) === 'true'
+
+    if (!dismissed) bar.classList.remove('hidden')
+
+    closeButton.addEventListener('click', () => {
+      bar.classList.add('hidden')
+      if (storageKey) localStorage.setItem(storageKey, 'true')
+    })
+  }
+
+  initAnnouncement()
+  document.addEventListener('astro:page-load', initAnnouncement)
+</script>

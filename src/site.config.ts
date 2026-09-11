@@ -1,5 +1,13 @@
 import type { CardListData, Config, IntegrationUserConfig, ThemeUserConfig } from 'astro-pure/types'
 
+export const announcement = {
+  enable: true,
+  version: 'welcome-1',
+  content: '欢迎来到我的博客',
+  link: '',
+  linkText: '查看详情'
+}
+
 export const theme: ThemeUserConfig = {
   // [Basic]
   /** Title for your website. Will be used in metadata and as browser tab title. */

@@ -14,6 +14,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site)
 // Build absolute URL for social preview images.
 // Astro.url is page-level; use Astro.site to avoid double-appending paths (e.g. /).
 const socialImageURL = new URL(ogImage ? ogImage : config.socialCard, Astro.site).href
+
+// Umami analytics is opt-in so local builds remain unchanged until configured.
+const umamiScriptURL = import.meta.env.PUBLIC_UMAMI_SCRIPT_URL
+const umamiWebsiteID = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID
 ---
 
 <meta charset='utf-8' />
@@ -85,6 +89,18 @@ const socialImageURL = new URL(ogImage ? ogImage : config.socialCard, Astro.site
 />
 
 <meta content={Astro.generator} name='generator' />
+
+{/* Umami analytics (configure PUBLIC_UMAMI_SCRIPT_URL and PUBLIC_UMAMI_WEBSITE_ID) */}
+{
+  umamiScriptURL && umamiWebsiteID && (
+    <script
+      async
+      src={umamiScriptURL}
+      data-website-id={umamiWebsiteID}
+      data-do-not-track='true'
+    />
+  )
+}
 
 {
   /* User script*/

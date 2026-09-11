@@ -2,6 +2,7 @@
 import { Footer, Header, ThemeProvider } from 'astro-pure/components/basic'
 import type { SiteMeta } from 'astro-pure/types'
 import BaseHead from '@/components/BaseHead.astro'
+import AnnouncementBar from '@/components/AnnouncementBar.astro'
 import LanguageToggle from '@/components/LanguageToggle.astro'
 import config from '@/site-config'
 
@@ -45,6 +46,7 @@ const {
       class='w-full max-w-[70rem] min-h-[100dvh] flex flex-col justify-between'
     >
       <Header />
+      <AnnouncementBar />
       <LanguageToggle />
       <a href="https://www.travellings.cn/go.html" target="_blank" rel="noopener" title="开往-友链接力" style="position:absolute;left:-9999px;" aria-hidden="true">Travelling</a>
       <div class='flex-1 w-full'>
