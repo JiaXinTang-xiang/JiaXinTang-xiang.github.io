@@ -45,3 +45,6 @@ bunfig.toml
 
 ### Local npm cache (used when the global cache is not writable) ###
 .npm-cache/
+
+### 图片压缩等一次性脚本的本地备份（原图已在 git 历史中） ###
+_img-backup/
