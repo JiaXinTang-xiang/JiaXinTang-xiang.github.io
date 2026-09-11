@@ -12,7 +12,7 @@ tags:
 language: 'Chinese'
 draft: false
 slug: 'ros/sam-bot'
-heroImage: { src: './images/sam_bot/cover.png', color: '#0d1117' }
+heroImage: { src: './images/sam_bot/cover.jpg', color: '#0d1117' }
 ---
 
 ## 前言

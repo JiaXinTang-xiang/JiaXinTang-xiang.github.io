@@ -9,7 +9,7 @@ tags:
   - 插件
 language: 'Chinese'
 draft: false
-heroImage: { src: './images/deepseek-harness/cover.png', color: '#4d6bfe' }
+heroImage: { src: './images/deepseek-harness/cover.jpg', color: '#4d6bfe' }
 ---
 
 <blockquote style="border-left: 4px solid #4d6bfe; background-color: #f0f4ff; padding: 12px 16px; margin: 16px 0;">
@@ -135,7 +135,7 @@ dsh --profile web --dump-config
 
 注册后这是**新增插件包**，需要**重启 dsh** 才会加载；之后皮肤之间切换是热加载，不用重启。刷新页面即可看到皮肤。
 
-![alt text](images/deepseek-harness/dsh.png)
+![alt text](images/deepseek-harness/dsh.jpg)
 
 也可以丢个链接直接让DeepSeek Harness帮你安装，省事很多。
 

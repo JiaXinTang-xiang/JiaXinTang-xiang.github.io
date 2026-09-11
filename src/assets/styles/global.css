@@ -1,6 +1,10 @@
-/* [Fonts] LXGW WenKai — 中文文章正文 */
-@import '@fontsource/lxgw-wenkai/300.css';
-@import '@fontsource/lxgw-wenkai/500.css';
+/* [Fonts] LXGW WenKai — 中文文章正文
+ * 用官方 lxgw-wenkai-webfont：提供 woff2 + unicode-range 分包，
+ * 浏览器只下载页面实际用到的字形子集。
+ * 原先的 @fontsource/lxgw-wenkai 是整字库 woff（11.6MB + 4.9MB）且无 unicode-range，
+ * 会导致每个页面强制下载完整字体，产物里还会留下一个不存在的 .woff2 引用。 */
+@import 'lxgw-wenkai-webfont/lxgwwenkai-regular.css';
+@import 'lxgw-wenkai-webfont/lxgwwenkai-bold.css';
 
 /* [Typography] 中文排版优化 */
 .prose {
@@ -9,7 +13,7 @@
   letter-spacing: 0.02em;
 }
 .prose h1, .prose h2, .prose h3, .prose h4 {
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.01em;
 }
 .prose h2 {

@@ -145,8 +145,14 @@ nvidia-smi
 cha
 ```
  sudo dpkg --get-selections | grep linux
+
 ```
 
+## deepseek harness
+
+```
+npx @deepseek-ai/dsh web
+```
 
 ## 网络代理设置
 
