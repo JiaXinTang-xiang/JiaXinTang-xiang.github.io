@@ -10,7 +10,8 @@ import rehypeAutolinkHeadings from './src/plugins/rehype-auto-link-headings.ts'
 import rehypeFigure from './src/plugins/rehype-figure.ts'
 // Post meta (reading time & excerpt)
 import { remarkExcerpt, remarkReadingTime } from './src/plugins/remark-post-meta.ts'
-// Shiki
+// Mermaid diagrams
+import { remarkMermaid } from './src/plugins/remark-mermaid.ts'// Shiki
 import {
   addCollapse,
   addCopyButton,
@@ -57,7 +58,8 @@ export default defineConfig({
 
   // [Markdown]
   markdown: {
-    remarkPlugins: [remarkMath, remarkReadingTime, remarkExcerpt],
+    // remarkMermaid 把 ```mermaid 代码块换成 .mermaid 容器（必须早于 Shiki）
+    remarkPlugins: [remarkMath, remarkReadingTime, remarkExcerpt, remarkMermaid],
     rehypePlugins: [
       [rehypeKatex, {}],
       rehypeHeadingIds,

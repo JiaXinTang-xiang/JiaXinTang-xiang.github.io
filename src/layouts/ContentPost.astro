@@ -8,6 +8,7 @@ import 'katex/dist/katex.min.css'
 import { MediumZoom } from 'astro-pure/advanced'
 import { Copyright, Hero, TOC } from 'astro-pure/components/pages'
 import ArticleNav from '@/components/ArticleNav.astro'
+import Mermaid from '@/components/Mermaid.astro'
 import config from 'virtual:config'
 import { ogImage } from '@/site-config'
 import PageLayout from '@/layouts/ContentLayout.astro'
@@ -71,3 +72,6 @@ const back = `/${collection}`
 </PageLayout>
 
 {config.integ.mediumZoom.enable && <MediumZoom />}
+
+{/* mermaid 图表：仅在页面含 .mermaid 容器时才真正加载脚本 */}
+<Mermaid />

@@ -1,0 +1,61 @@
+---
+/**
+ * Mermaid 图表支持
+ *
+ * 由 remark-mermaid + rehype-mermaid 在构建期把 ```mermaid 代码块
+ * 转成 .mermaid[data-mermaid-code] 容器，本组件负责在浏览器里
+ * 按需加载 mermaid 并渲染成 SVG。
+ *
+ * 只在页面确实包含图表时输出脚本（Astro 会自动把这段打包成独立 chunk）。
+ */
+---
+
+<style>
+  .mermaid-diagram {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+  }
+  .mermaid-diagram .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+  .mermaid-diagram .mermaid svg {
+    max-width: 100%;
+    height: auto;
+  }
+  /* 渲染前的占位，减少加载时的高度跳动。
+   * 用 data-mermaid-pending 而非 :not([data-mermaid-rendered]) 来控制，
+   * 这样脚本若未执行（例如加载失败），也不会永远卡在占位状态。 */
+  .mermaid-diagram .mermaid[data-mermaid-pending] {
+    min-height: 4rem;
+    align-items: center;
+    font-size: 0.8125rem;
+    color: hsl(var(--muted-foreground));
+  }
+  .mermaid-diagram .mermaid[data-mermaid-pending]::before {
+    content: '正在渲染图表…';
+  }
+  .mermaid-diagram .mermaid[data-mermaid-pending] > * {
+    display: none;
+  }
+  /* 语法错误时直接显示源码（客户端渲染失败会加上该属性） */
+  .mermaid-diagram .mermaid[data-mermaid-error] {
+    display: block;
+    white-space: pre;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    padding: 1rem;
+    border: 1px solid hsl(var(--destructive, 0 84% 60%) / 0.4);
+    border-radius: 0.75rem;
+    color: hsl(var(--destructive, 0 84% 60%));
+    background: hsl(var(--muted) / 0.4);
+  }
+</style>
+
+<script>
+  import { initMermaid } from '../scripts/mermaid-client'
+
+  initMermaid()
+</script>
