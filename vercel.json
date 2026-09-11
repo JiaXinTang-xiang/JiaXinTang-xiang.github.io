@@ -1,1 +1,27 @@
-{}
+{
+  "redirects": [
+    { "source": "/tech/about_me_git", "destination": "/tech/blog-build/about-me-git/", "permanent": true },
+    { "source": "/tech/about-my-blog", "destination": "/tech/blog-build/about-my-blog/", "permanent": true },
+    { "source": "/tech/about-my-notes", "destination": "/tech/blog-build/about-my-notes/", "permanent": true },
+    { "source": "/tech/About-Ubuntu-command", "destination": "/tech/tools/about-ubuntu-command/", "permanent": true },
+    { "source": "/tech/camera-calibration", "destination": "/tech/vision/camera-calibration/", "permanent": true },
+    { "source": "/tech/Codex_install", "destination": "/tech/tools/codex-install/", "permanent": true },
+    { "source": "/tech/deepseek-harness", "destination": "/tech/tools/deepseek-harness/", "permanent": true },
+    { "source": "/tech/feishu-cli", "destination": "/tech/blog-build/feishu-cli/", "permanent": true },
+    { "source": "/tech/first-tech-post", "destination": "/tech/blog-build/first-tech-post/", "permanent": true },
+    { "source": "/tech/lsn10_carto", "destination": "/tech/ros/lsn10-carto/", "permanent": true },
+    { "source": "/tech/maix_yolo", "destination": "/tech/vision/maix-yolo/", "permanent": true },
+    { "source": "/tech/opencv_scr", "destination": "/tech/vision/opencv-scr/", "permanent": true },
+    { "source": "/tech/orb_slam3", "destination": "/tech/ros/orb-slam3/", "permanent": true },
+    { "source": "/tech/password", "destination": "/tech/blog-build/password/", "permanent": true },
+    { "source": "/tech/sam-bot-from-scratch", "destination": "/tech/ros/sam-bot/", "permanent": true },
+    { "source": "/tech/sogou_install", "destination": "/tech/tools/sogou-install/", "permanent": true },
+    { "source": "/tech/t265_ros2", "destination": "/tech/ros/t265-ros2/", "permanent": true },
+    { "source": "/tech/ubuntu_tools", "destination": "/tech/tools/ubuntu-tools/", "permanent": true },
+    { "source": "/tech/use-git", "destination": "/tech/tools/use-git/", "permanent": true },
+    { "source": "/tech/waline_jia", "destination": "/tech/blog-build/waline-jia/", "permanent": true },
+    { "source": "/tech/wheeltec-nav2-navigation", "destination": "/tech/ros/wheeltec-nav2/", "permanent": true },
+    { "source": "/tech/yaoce_baby", "destination": "/tech/vision/yaoce-baby/", "permanent": true },
+    { "source": "/tech/yolo-uv-setup", "destination": "/tech/vision/yolo-uv-setup/", "permanent": true }
+  ]
+}
