@@ -9,6 +9,7 @@ import { MediumZoom } from 'astro-pure/advanced'
 import { Copyright, Hero, TOC } from 'astro-pure/components/pages'
 import ArticleNav from '@/components/ArticleNav.astro'
 import config from 'virtual:config'
+import { ogImage } from '@/site-config'
 import PageLayout from '@/layouts/ContentLayout.astro'
 import { Comment, PageInfo } from '@/components/waline'
 import PasswordGate from '@/components/PasswordGate.astro'
@@ -36,7 +37,9 @@ const {
 const meta = {
   title: `${title} • ${config.author}`,
   description,
-  image: config.socialCard
+  image: config.socialCard,
+  // 每篇文章的 1200×630 社交预览图，由 src/pages/og/[...slug].png.ts 构建时生成
+  ...(ogImage.enable && { ogImage: `/og/${collection}/${id}.png` })
 }
 
 const isDraft = Boolean(draft)

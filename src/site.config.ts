@@ -8,6 +8,15 @@ export const announcement = {
   linkText: '查看详情'
 }
 
+/**
+ * 每篇文章的 1200×630 社交预览图（Open Graph）。
+ * 由 src/pages/og/[...slug].png.ts 在构建时用 satori 生成，字体取自 src/assets/fonts。
+ * 文章数量变多后构建会明显变慢，可临时关闭。
+ */
+export const ogImage = {
+  enable: true
+}
+
 export const theme: ThemeUserConfig = {
   // [Basic]
   /** Title for your website. Will be used in metadata and as browser tab title. */

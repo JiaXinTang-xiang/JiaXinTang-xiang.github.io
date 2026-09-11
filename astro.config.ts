@@ -8,6 +8,8 @@ import remarkMath from 'remark-math'
 // Local integrations
 import rehypeAutolinkHeadings from './src/plugins/rehype-auto-link-headings.ts'
 import rehypeFigure from './src/plugins/rehype-figure.ts'
+// Post meta (reading time & excerpt)
+import { remarkExcerpt, remarkReadingTime } from './src/plugins/remark-post-meta.ts'
 // Shiki
 import {
   addCollapse,
@@ -55,7 +57,7 @@ export default defineConfig({
 
   // [Markdown]
   markdown: {
-    remarkPlugins: [remarkMath],
+    remarkPlugins: [remarkMath, remarkReadingTime, remarkExcerpt],
     rehypePlugins: [
       [rehypeKatex, {}],
       rehypeHeadingIds,

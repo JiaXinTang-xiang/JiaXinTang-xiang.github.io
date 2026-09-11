@@ -10,7 +10,8 @@ export async function getStaticPaths() {
   const { getCollection } = await import('astro:content')
   const posts = sortMDByDate(await getCollection('tech'))
   return posts.map((post) => ({
-    params: { id: post.data.slug || post.id },
+    // 文章按分类分目录后，id 形如 ros/lsn10-carto，故使用 rest 参数 [...id]
+    params: { id: post.id },
     props: { post, posts }
   }))
 }
