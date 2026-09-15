@@ -40,6 +40,12 @@
           "intro": "同一个世界，同一个互联网！",
           "link": "https://docs.asoe.cn",
           "avatar": "https://pic1.imgdb.cn/i/0348YILT8zwI1hiLW4etko.png"
+        },
+        {
+          "name": "lumivers",
+          "intro": "Blog",
+          "link": "https://lumivers.pages.dev",
+          "avatar": "https://lumivers.pages.dev/avatar.jpg"
         }
       ]
     },
