@@ -12,6 +12,9 @@ export const translations = {
     'nav.about': '关于',
     'nav.update': '归档',
     'nav.travellings': '旅行',
+    'nav.other': '其他',
+    'nav.anime': '追番',
+    'nav.moments': '动态',
 
     // 首页
     'home.about': '关于',
@@ -63,6 +66,9 @@ export const translations = {
     'nav.about': 'About',
     'nav.update': 'Archives',
     'nav.travellings': 'Travelling',
+    'nav.other': 'More',
+    'nav.anime': 'Anime',
+    'nav.moments': 'Moments',
 
     // Home
     'home.about': 'About',

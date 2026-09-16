@@ -97,6 +97,14 @@ export const theme: ThemeUserConfig = {
           { title: '传送门', link: 'https://webteleporter.top/' },
           { title: '笔墨迹', link: 'https://blogscn.fun/random.html' }
         ]
+      },
+      {
+        title: '其他',
+        link: '/anime/',
+        submenu: [
+          { title: '追番', link: '/anime/' },
+          { title: '动态', link: '/moments/' }
+        ]
       }
     ]
   },
