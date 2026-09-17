@@ -18,6 +18,7 @@ heroImage: { src: './images/deepseek-harness/cover.jpg', color: '#4d6bfe' }
 
 </blockquote>
 
+
 ## 前言
 
 最近网上刷到很多DeepSeek Harness分享体验和教程的视频，对于我经常vibecoding的用户来说高低尝试一下，DeepSeek 官方的 agent 框架 **DeepSeek Harness** 是用来在浏览器里跑 AI 编程助手，当然了网上也有大佬开源成桌面版的，但底层都是一样。它的设计挺有意思——「万物皆插件」，皮肤、工具、命令全都是插件，可以像搭积木一样往里装。装完后试一下插件功能，我给它上了个鲸鱼娘主题皮肤，界面好看很多，增加体验感。注意安装教程还是官网为准。
