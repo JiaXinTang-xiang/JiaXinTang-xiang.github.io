@@ -12,8 +12,8 @@ const statuses = ['在看', '看完', '想看'] as const
   <div class='anime-grid'>
     {anime.map((item, index) => (
       <article class='anime-card'>
-        <div class:list={['cover', { alternate: index % 2 === 1 }]}>
-          {item.cover ? <img src={item.cover} alt={`${item.title}封面`} loading='lazy' width='480' height='600' /> : (
+        <div class:list={['cover', { alternate: index % 2 === 1, poster: !!item.cover }]}>
+          {item.cover ? <img src={item.cover} alt={`${item.title}封面`} loading='lazy' referrerpolicy='no-referrer' width='660' height='884' /> : (
             <div class='typographic-cover' aria-hidden='true'>
               <span class='cover-label'>我的追番手记</span>
               <span class='cover-title'>{item.title}</span>
@@ -39,7 +39,8 @@ const statuses = ['在看', '看完', '想看'] as const
   .anime-card { overflow: hidden; border: 1px solid hsl(var(--border)); border-radius: 1rem; background: hsl(var(--background)); }
   .cover { position: relative; aspect-ratio: 4 / 3; background: radial-gradient(ellipse at 85% 100%, #93aaa080, transparent 60%), linear-gradient(135deg, #203d3c, #527063); color: #f4f2e9; overflow: hidden; }
   .cover.alternate { background: radial-gradient(ellipse at 85% 10%, #b7a5cc66, transparent 60%), linear-gradient(135deg, #30344c, #6a6079); }
-  .cover img { width: 100%; height: 100%; object-fit: cover; }
+  .cover.poster { aspect-ratio: 3 / 4; }
+  .cover img { width: 100%; height: 100%; object-fit: contain; }
   .typographic-cover { height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 1.7rem; }
   .cover-label, .cover-number { font-size: .65rem; letter-spacing: .16em; opacity: .7; }
   .cover-title { font-family: 'LXGW WenKai', serif; font-size: clamp(1.7rem, 4vw, 2.8rem); letter-spacing: .12em; }
