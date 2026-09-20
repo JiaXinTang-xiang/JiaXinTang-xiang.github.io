@@ -19,12 +19,14 @@ export const anime: Anime[] = [
   {
     title: '凡人修仙传',
     status: '在看',
-    cover: 'https://i0.hdslb.com/bfs/bangumi/image/19a2d01429bcba6b31791277c016e0d1aa465974.png@362w_482h_1c_!web-search-media-cover.avif'
+    cover: 'https://i0.hdslb.com/bfs/bangumi/image/19a2d01429bcba6b31791277c016e0d1aa465974.png@362w_482h_1c_!web-search-media-cover.avif',
+    url: 'https://www.bilibili.com/bangumi/play/ss73957?spm_id_from=333.337.0.0'
   },
   {
     title: '记忆管理局',
     status: '在看',
-    cover: 'https://i1.hdslb.com/bfs/bangumi/image/384ef5cfc3de2dcac5fda6278ba88f7036c282b9.png@660w_884h.webp'
+    cover: 'https://i1.hdslb.com/bfs/bangumi/image/384ef5cfc3de2dcac5fda6278ba88f7036c282b9.png@660w_884h.webp',
+    url: 'https://www.bilibili.com/bangumi/play/ss28747?spm_id_from=333.337.0.0'
   }
 ]
 
