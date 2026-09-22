@@ -110,12 +110,15 @@
 
         if (status) status.remove()
 
-        container.addEventListener('pointermove', (event) => {
+        // 挂在 window 上而不是看板娘容器上：focus() 只取指针相对模型的方向，
+        // 所以鼠标在整页任意位置都能让模型看过去，坐标超出画布也没关系。
+        window.addEventListener('pointermove', (event) => {
           const rect = canvas.getBoundingClientRect()
           model.focus(event.clientX - rect.left, event.clientY - rect.top)
         })
 
-        container.addEventListener('pointerleave', () =>
+        // 指针离开整个页面时视线回到正前方
+        document.addEventListener('mouseleave', () =>
           model.focus(container.clientWidth / 2, container.clientHeight / 2)
         )
 
