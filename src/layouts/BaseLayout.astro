@@ -2,6 +2,7 @@
 import { Footer, Header, ThemeProvider } from 'astro-pure/components/basic'
 import type { SiteMeta } from 'astro-pure/types'
 import BaseHead from '@/components/BaseHead.astro'
+import Live2DWidget from '@/components/Live2DWidget.astro'
 // import AnnouncementBar from '@/components/AnnouncementBar.astro'
 import LanguageToggle from '@/components/LanguageToggle.astro'
 import config from '@/site-config'
@@ -54,6 +55,8 @@ const {
       </div>
       <Footer />
     </div>
+
+    <Live2DWidget />
 
     {/* Set highlight color */}
     <style define:vars={{ highlightColor }}>

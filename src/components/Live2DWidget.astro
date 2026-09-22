@@ -1,0 +1,142 @@
+<div id='live2d-widget' aria-label='Live2D 看板娘'>
+  <canvas id='live2d-canvas'></canvas>
+  <p id='live2d-status' role='status'>模型加载中…</p>
+</div>
+
+<script is:inline src='https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js'></script>
+<script is:inline src='https://cdn.jsdelivr.net/npm/pixi.js@7.x/dist/pixi.min.js'></script>
+<script is:inline src='https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js'></script>
+
+<script is:inline>
+  (() => {
+    const container = document.getElementById('live2d-widget')
+    const canvas = document.getElementById('live2d-canvas')
+    const status = document.getElementById('live2d-status')
+
+    if (!container || !canvas || container.dataset.initialized === 'true') return
+    container.dataset.initialized = 'true'
+
+    const showError = (message, error) => {
+      console.error(`[Live2D] ${message}`, error)
+      if (status) {
+        status.textContent = message
+        status.dataset.error = 'true'
+      }
+    }
+
+    const start = async () => {
+      const PIXI = window.PIXI
+      const Live2DModel = PIXI?.live2d?.Live2DModel
+
+      if (!PIXI || !Live2DModel) {
+        showError('Live2D 运行库加载失败，请检查网络连接。')
+        return
+      }
+
+      const width = container.clientWidth
+      const height = container.clientHeight
+      const app = new PIXI.Application({
+        view: canvas,
+        width,
+        height,
+        backgroundAlpha: 0,
+        antialias: true,
+        autoDensity: true,
+        resolution: Math.min(window.devicePixelRatio || 1, 2)
+      })
+
+      try {
+        const model = await Live2DModel.from(
+          '/live2d/seethrough_output/seethrough_output.model3.json',
+          { autoInteract: false }
+        )
+
+        app.stage.addChild(model)
+
+        const fitScale = height / model.internalModel.originalHeight
+        model.scale.set(fitScale * 1.75)
+        model.anchor.set(0.5, 0.5)
+        model.x = width / 2
+        model.y = height / 2 + 42
+
+        if (status) status.remove()
+
+        container.addEventListener('pointermove', (event) => {
+          const rect = canvas.getBoundingClientRect()
+          model.focus(event.clientX - rect.left, event.clientY - rect.top)
+        })
+
+        container.addEventListener('pointerleave', () => model.focus(width / 2, height / 2))
+
+        container.addEventListener('click', () => {
+          const groups = ['Nod', 'Shake', 'Blink']
+          model.motion(groups[Math.floor(Math.random() * groups.length)])
+        })
+
+        window.addEventListener('resize', () => {
+          const nextWidth = container.clientWidth
+          const nextHeight = container.clientHeight
+          app.renderer.resize(nextWidth, nextHeight)
+          model.x = nextWidth / 2
+          model.y = nextHeight / 2 + 42
+        })
+      } catch (error) {
+        showError('模型加载失败，请打开控制台查看详细信息。', error)
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', start, { once: true })
+    } else {
+      start()
+    }
+  })()
+</script>
+
+<style>
+  #live2d-widget {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 40;
+    width: 280px;
+    height: 380px;
+    overflow: hidden;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  #live2d-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  #live2d-status {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    max-width: 240px;
+    margin: 0;
+    padding: 7px 10px;
+    border: 1px solid rgb(255 255 255 / 45%);
+    border-radius: 10px;
+    background: rgb(20 20 25 / 72%);
+    color: white;
+    font-size: 12px;
+    line-height: 1.4;
+    backdrop-filter: blur(8px);
+  }
+
+  #live2d-status[data-error='true'] {
+    color: #fecaca;
+  }
+
+  @media (max-width: 767px) {
+    #live2d-widget {
+      width: 180px;
+      height: 250px;
+      left: -8px;
+    }
+  }
+</style>
