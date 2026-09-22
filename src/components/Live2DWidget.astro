@@ -3,12 +3,14 @@
   <p id='live2d-status' role='status'>模型加载中…</p>
 </div>
 
-<script is:inline src='https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js'></script>
+<script is:inline src='https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js'
+></script>
 <script is:inline src='https://cdn.jsdelivr.net/npm/pixi.js@7.x/dist/pixi.min.js'></script>
-<script is:inline src='https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js'></script>
+<script is:inline src='https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js'
+></script>
 
 <script is:inline>
-  (() => {
+  ;(() => {
     const container = document.getElementById('live2d-widget')
     const canvas = document.getElementById('live2d-canvas')
     const status = document.getElementById('live2d-status')
@@ -22,6 +24,53 @@
         status.textContent = message
         status.dataset.error = 'true'
       }
+    }
+
+    // 留出一点余量，避免头发/肢体的物理摆动被容器边缘切掉
+    const FIT_RATIO = 0.96
+
+    // 导出的模型画布比角色本身大得多（角色只占中间一条），所以画布中心并不是角色中心。
+    // 这里直接量取实际轮廓：模型空间两轴都是 [-0.5, 0.5]，对应整张画布。
+    const measureContent = (model) => {
+      const { coreModel, originalWidth: w, originalHeight: h } = model.internalModel
+      let minX = Infinity
+      let minY = Infinity
+      let maxX = -Infinity
+      let maxY = -Infinity
+
+      for (let i = 0; i < coreModel.getDrawableCount(); i += 1) {
+        if (coreModel.getDrawableOpacity(i) <= 0) continue
+        const positions = coreModel.getDrawableVertexPositions(i)
+        for (let k = 0; k < positions.length; k += 2) {
+          minX = Math.min(minX, positions[k])
+          maxX = Math.max(maxX, positions[k])
+          minY = Math.min(minY, positions[k + 1])
+          maxY = Math.max(maxY, positions[k + 1])
+        }
+      }
+
+      if (!Number.isFinite(minX + minY + maxX + maxY) || maxX <= minX || maxY <= minY) {
+        return { left: 0, top: 0, width: w, height: h }
+      }
+
+      return {
+        left: (minX + 0.5) * w,
+        top: (0.5 - maxY) * h,
+        width: (maxX - minX) * w,
+        height: (maxY - minY) * h
+      }
+    }
+
+    // 把量到的轮廓等比缩放到容器内并居中，anchor 取 (0,0) 即画布左上角
+    const fitContent = (model, content) => {
+      const width = container.clientWidth
+      const height = container.clientHeight
+      const scale = Math.min(width / content.width, height / content.height) * FIT_RATIO
+
+      model.scale.set(scale)
+      model.anchor.set(0, 0)
+      model.x = (width - content.width * scale) / 2 - content.left * scale
+      model.y = (height - content.height * scale) / 2 - content.top * scale
     }
 
     const start = async () => {
@@ -53,11 +102,11 @@
 
         app.stage.addChild(model)
 
-        const fitScale = height / model.internalModel.originalHeight
-        model.scale.set(fitScale * 1.75)
-        model.anchor.set(0.5, 0.5)
-        model.x = width / 2
-        model.y = height / 2 + 42
+        // 等框架把模型摆到第一帧姿态后再量轮廓，否则顶点还没计算出来
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+
+        const content = measureContent(model)
+        fitContent(model, content)
 
         if (status) status.remove()
 
@@ -66,7 +115,9 @@
           model.focus(event.clientX - rect.left, event.clientY - rect.top)
         })
 
-        container.addEventListener('pointerleave', () => model.focus(width / 2, height / 2))
+        container.addEventListener('pointerleave', () =>
+          model.focus(container.clientWidth / 2, container.clientHeight / 2)
+        )
 
         container.addEventListener('click', () => {
           const groups = ['Nod', 'Shake', 'Blink']
@@ -74,11 +125,8 @@
         })
 
         window.addEventListener('resize', () => {
-          const nextWidth = container.clientWidth
-          const nextHeight = container.clientHeight
-          app.renderer.resize(nextWidth, nextHeight)
-          model.x = nextWidth / 2
-          model.y = nextHeight / 2 + 42
+          app.renderer.resize(container.clientWidth, container.clientHeight)
+          fitContent(model, content)
         })
       } catch (error) {
         showError('模型加载失败，请打开控制台查看详细信息。', error)

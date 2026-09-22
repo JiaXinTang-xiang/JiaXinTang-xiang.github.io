@@ -230,14 +230,6 @@
 			"Name": "mouth"
 		},
 		{
-			"Id": "ArtMeshMouth_lip_0",
-			"Name": "mouth / 上唇描边"
-		},
-		{
-			"Id": "ArtMeshMouth_lip_1",
-			"Name": "mouth / 下唇描边"
-		},
-		{
 			"Id": "ArtMeshFace",
 			"Name": "face"
 		},
@@ -254,16 +246,16 @@
 			"Name": "eyebrow-l"
 		},
 		{
-			"Id": "ArtMeshNeck",
-			"Name": "neck"
-		},
-		{
 			"Id": "ArtMeshBottomwear",
 			"Name": "bottomwear"
 		},
 		{
 			"Id": "ArtMeshTopwear",
 			"Name": "topwear"
+		},
+		{
+			"Id": "ArtMeshNeck",
+			"Name": "neck"
 		},
 		{
 			"Id": "ArtMeshEarsR",

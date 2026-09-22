@@ -3,7 +3,7 @@
 	"FileReferences": {
 		"Moc": "seethrough_output.moc3",
 		"Textures": [
-			"seethrough_output.1024/texture_00.png"
+			"seethrough_output.4096/texture_00.png"
 		],
 		"Physics": "seethrough_output.physics3.json",
 		"DisplayInfo": "seethrough_output.cdi3.json",
