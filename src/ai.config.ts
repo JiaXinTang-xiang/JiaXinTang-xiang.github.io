@@ -17,8 +17,12 @@ export const aiChat = {
   historyLimit: 8,
   /** 单条消息长度上限 */
   maxMessageLength: 600,
-  /** 当前页面正文最多带多少字，防止长文章把 token 顶爆 */
-  pageContextLimit: 3000,
+  /**
+   * 当前页面正文最多带多少字。
+   * 这段每轮对话都会随 system prompt 重新发一次，越大多轮越费 token、首字延迟也越高，
+   * 所以按「够 AI 抓住主题」来给，不用把整篇文章塞进去。
+   */
+  pageContextLimit: 1200,
   /** 上游请求超时（毫秒） */
   timeoutMs: 30000,
 

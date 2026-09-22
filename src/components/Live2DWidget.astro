@@ -1,4 +1,4 @@
-<div id='live2d-widget' aria-label='Live2D 看板娘'>
+<div id='live2d-widget' role='button' tabindex='0' aria-label='嘉心糖看板娘，按回车打开对话框'>
   <canvas id='live2d-canvas'></canvas>
   <p id='live2d-status' role='status'>模型加载中…</p>
 </div>
@@ -18,12 +18,37 @@
     if (!container || !canvas || container.dataset.initialized === 'true') return
     container.dataset.initialized = 'true'
 
+    // 对话入口先注册，而且不依赖模型：CDN 被墙、不支持 WebGL、模型 404 的时候，
+    // 下面 start() 会直接返回，但对话框仍然要能打开，否则就等于没有入口了。
+    const openChat = () => container.dispatchEvent(new CustomEvent('live2d:tap', { bubbles: true }))
+
+    container.addEventListener('click', openChat)
+
+    // 键盘也要能用：容器是个 role=button 的 div，得自己处理 Enter / 空格
+    container.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return
+      event.preventDefault()
+      openChat()
+    })
+
     const showError = (message, error) => {
       console.error(`[Live2D] ${message}`, error)
-      if (status) {
-        status.textContent = message
-        status.dataset.error = 'true'
-      }
+      if (!status) return
+
+      status.textContent = message
+      status.dataset.error = 'true'
+
+      // 模型没加载出来时画面上没有角色可点，给一个看得见的按钮兜底
+      if (status.querySelector('button')) return
+      const fallback = document.createElement('button')
+      fallback.type = 'button'
+      fallback.textContent = '打开对话框'
+      fallback.addEventListener('click', (event) => {
+        // 别让事件冒泡到 container 再触发一次，否则会连说两句
+        event.stopPropagation()
+        openChat()
+      })
+      status.appendChild(fallback)
     }
 
     // 留出一点余量，避免头发/肢体的物理摆动被容器边缘切掉
@@ -184,11 +209,11 @@
           resetGaze()
         })
 
+        // 点击时的动作反应。开对话面板那件事由上面那个不依赖模型的监听负责，
+        // 这里不要再派发一次 live2d:tap，否则一次点击会说两句。
         container.addEventListener('click', () => {
           model.motion(pick(MOTIONS))
           model.expression(pick(EXPRESSIONS))
-          // Live2DChat 监听这个事件来开合对话面板
-          container.dispatchEvent(new CustomEvent('live2d:tap', { bubbles: true }))
         })
 
         // 让动作跟着对话走：Live2DChat 用这个事件点名要哪个表情 / 动作。
@@ -255,6 +280,29 @@
 
   #live2d-status[data-error='true'] {
     color: #fecaca;
+  }
+
+  /* 模型没加载出来时的兜底按钮 */
+  #live2d-status button {
+    display: block;
+    margin-top: 8px;
+    padding: 4px 10px;
+    border: 1px solid rgb(255 255 255 / 55%);
+    border-radius: 8px;
+    background: rgb(255 255 255 / 12%);
+    color: white;
+    cursor: pointer;
+    font: inherit;
+  }
+
+  #live2d-status button:hover {
+    background: rgb(255 255 255 / 22%);
+  }
+
+  #live2d-widget:focus-visible {
+    outline: 2px solid hsl(var(--primary) / 65%);
+    outline-offset: -2px;
+    border-radius: 12px;
   }
 
   @media (max-width: 767px) {

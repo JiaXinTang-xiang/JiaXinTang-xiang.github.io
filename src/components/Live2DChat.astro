@@ -17,6 +17,9 @@
       aria-label='输入消息'></textarea>
     <button type='submit' id='ai-chat-send' aria-label='发送'>发送</button>
   </form>
+  <p id='ai-chat-notice'>
+    对话和当前文章摘要会发送给第三方 AI 服务，<a href='/terms/privacy-policy/'>详见隐私政策</a>
+  </p>
 </div>
 
 <script is:inline>
@@ -45,12 +48,11 @@
     // 和 Live2DWidget.astro 里的列表保持一致（两边都是内联脚本，没法共享模块）
     const REACT_EXPRESSIONS = ['微笑', '惊讶', '半闭眼', '嫌弃眼', '左眼眨', '右眼眨']
     const REACT_MOTIONS = ['Nod', 'Shake', 'Blink']
-    const NEUTRAL = '普通'
 
     // 只保留最近若干条，服务端还会再截一次
     const HISTORY_LIMIT = 20
     // 和 src/ai.config.ts 的 pageContextLimit 保持一致
-    const PAGE_TEXT_LIMIT = 3000
+    const PAGE_TEXT_LIMIT = 1200
 
     const history = []
     let sending = false
@@ -156,13 +158,17 @@
 
     // 抓访客正在看的文章正文，让 AI 知道上下文。
     // 只传原文，框住它的说明由服务端拼，避免前端伪造系统指令。
+    //
+    // innerText 会触发浏览器的布局计算，长文章上不便宜，而一页里正文不会变，
+    // 所以只抓一次缓存起来（本站是整页刷新，没有 SPA 路由，不用担心缓存过期）。
+    let cachedPageText = null
+
     const pageContext = () => {
-      const node = document.getElementById('content')
-      const text = node ? (node.innerText || '').trim() : ''
-      return {
-        pageTitle: document.title,
-        pageText: text.slice(0, PAGE_TEXT_LIMIT)
+      if (cachedPageText === null) {
+        const node = document.getElementById('content')
+        cachedPageText = node ? (node.innerText || '').trim().slice(0, PAGE_TEXT_LIMIT) : ''
       }
+      return { pageTitle: document.title, pageText: cachedPageText }
     }
 
     const send = async (text) => {
@@ -403,6 +409,20 @@
     padding: 9px 10px;
     border-top: 1px solid hsl(var(--border));
     background: hsl(var(--muted) / 40%);
+  }
+
+  #ai-chat-notice {
+    margin: 0;
+    padding: 0 10px 8px;
+    background: hsl(var(--muted) / 40%);
+    color: hsl(var(--muted-foreground));
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  #ai-chat-notice a {
+    color: inherit;
+    text-decoration: underline;
   }
 
   #ai-chat-input {
