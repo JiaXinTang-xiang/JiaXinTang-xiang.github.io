@@ -1,5 +1,5 @@
 ---
-title: 'Live2D 学习与新形象'
+title: 'Live2D 学习与新形象见面'
 description: '从一张 PSD 到会跟着鼠标看、还能聊天的看板娘：模型制作、接入 Astro，以及过程中的一些经验'
 publishDate: '2026-09-22'
 updatedDate: '2026-09-22'
