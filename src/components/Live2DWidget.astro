@@ -518,8 +518,8 @@ const { size } = live2dConfig
 
   #live2d-season-toggle {
     position: fixed;
-    bottom: calc(12px + env(safe-area-inset-bottom));
-    left: calc(var(--live2d-width) + 12px);
+    bottom: calc(14px + min(420px, 72vh) + 12px);
+    left: 288px;
     z-index: 43;
     display: inline-flex;
     align-items: center;
@@ -755,9 +755,9 @@ const { size } = live2dConfig
     }
 
     #live2d-season-toggle {
-      bottom: calc(10px + env(safe-area-inset-bottom));
+      right: 8px;
+      bottom: calc(74px + min(430px, calc(100dvh - 100px)) + 10px);
       left: auto;
-      right: calc(10px + env(safe-area-inset-right));
     }
   }
 

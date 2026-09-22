@@ -8,6 +8,7 @@ export const live2dConfig = {
   name: '嘉心糖',
   modelPath: '/live2d/seethrough_autumn/seethrough_output.model3.json',
   avatar: '/images/jiaxintang-see-through-input-v3.png',
+  chatAvatar: '/jiaxintang-live2d/3.jpg',
   /** 模型初始化时显示的站点品牌 Logo，不与角色头像混用。 */
   loadingLogo: '/jiaxintang-live2d/3.jpg',
 
