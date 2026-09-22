@@ -12,7 +12,14 @@ const { size } = live2dConfig
   style={`--live2d-width:${size.desktop.width}px;--live2d-height:${size.desktop.height}px;--live2d-mobile-width:${size.mobile.width}px;--live2d-mobile-height:${size.mobile.height}px;`}
 >
   <canvas id='live2d-canvas'></canvas>
-  <p id='live2d-status' role='status'>模型加载中…</p>
+  <div id='live2d-status' role='status' aria-live='polite' aria-busy='true'>
+    <div id='live2d-loading-mark' aria-hidden='true'>
+      <img src={live2dConfig.loadingLogo} alt='' width='88' height='88' />
+      <span></span>
+    </div>
+    <strong id='live2d-loading-title'>嘉心糖</strong>
+    <span id='live2d-loading-text'>正在准备看板娘…</span>
+  </div>
 </div>
 
 <div id='live2d-message' role='status' aria-live='polite' aria-atomic='true' hidden>
@@ -107,8 +114,13 @@ const { size } = live2dConfig
       console.error(`[Live2D] ${message}`, error)
       if (!status) return
 
-      status.textContent = message
+      status.replaceChildren()
+      status.setAttribute('aria-busy', 'false')
       status.dataset.error = 'true'
+
+      const errorText = document.createElement('span')
+      errorText.textContent = message
+      status.appendChild(errorText)
 
       // 模型没加载出来时画面上没有角色可点，给一个看得见的按钮兜底
       if (status.querySelector('button')) return
@@ -255,7 +267,11 @@ const { size } = live2dConfig
         const content = measureContent(model)
         fitContent(model, content)
 
-        if (status) status.remove()
+        if (status) {
+          status.dataset.ready = 'true'
+          status.setAttribute('aria-busy', 'false')
+          window.setTimeout(() => status.remove(), 260)
+        }
 
         // 鼠标不在页面上时自己找事做：随机换表情、偶尔配个动作
         let idleActing = false
@@ -469,22 +485,109 @@ const { size } = live2dConfig
 
   #live2d-status {
     position: absolute;
-    bottom: 14px;
-    left: 14px;
-    max-width: 240px;
-    margin: 0;
-    padding: 7px 10px;
-    border: 1px solid rgb(255 255 255 / 45%);
-    border-radius: 10px;
-    background: rgb(20 20 25 / 72%);
+    inset: 50% auto auto 50%;
+    display: flex;
+    width: 148px;
+    min-height: 148px;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 12px;
+    border: 1px solid rgb(255 255 255 / 48%);
+    border-radius: 24px;
+    background: rgb(18 22 32 / 76%);
+    box-shadow: 0 12px 30px rgb(0 0 0 / 22%);
     color: white;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.4;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    transition:
+      opacity 0.24s ease,
+      transform 0.24s ease;
     backdrop-filter: blur(8px);
   }
 
+  #live2d-status[aria-busy='true'] {
+    gap: 3px;
+    flex-direction: column;
+  }
+
+  #live2d-status[data-ready='true'] {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92);
+    pointer-events: none;
+  }
+
+  #live2d-loading-mark {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    margin-bottom: 3px;
+  }
+
+  #live2d-loading-mark img {
+    display: block;
+    width: 88px;
+    height: 88px;
+    border: 1px solid rgb(255 255 255 / 68%);
+    border-radius: 22px;
+    background: rgb(255 255 255 / 94%);
+    object-fit: contain;
+    object-position: center;
+    box-shadow:
+      0 0 0 5px rgb(255 255 255 / 10%),
+      0 8px 18px rgb(0 0 0 / 20%);
+    animation: live2d-loading-breathe 2s ease-in-out infinite;
+  }
+
+  #live2d-loading-mark span {
+    position: absolute;
+    inset: -7px;
+    border: 2px solid transparent;
+    border-top-color: rgb(170 220 255 / 95%);
+    border-right-color: rgb(255 255 255 / 78%);
+    border-bottom-color: rgb(255 255 255 / 22%);
+    border-radius: 50%;
+    animation: live2d-loading-spin 1.15s linear infinite;
+  }
+
+  #live2d-loading-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  #live2d-loading-text {
+    color: rgb(255 255 255 / 72%);
+    font-size: 11px;
+  }
+
+  @keyframes live2d-loading-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes live2d-loading-breathe {
+    0%,
+    100% {
+      transform: scale(0.98);
+    }
+    50% {
+      transform: scale(1.03);
+    }
+  }
+
   #live2d-status[data-error='true'] {
+    min-height: 0;
+    align-items: stretch;
+    border-color: rgb(252 165 165 / 45%);
     color: #fecaca;
+  }
+
+  #live2d-status[data-error='true'] #live2d-loading-mark,
+  #live2d-status[data-error='true'] #live2d-loading-title {
+    display: none;
   }
 
   /* 模型没加载出来时的兜底按钮 */
