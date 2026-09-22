@@ -22,16 +22,6 @@ const { size } = live2dConfig
   </div>
 </div>
 
-<button
-  type='button'
-  id='live2d-season-toggle'
-  aria-label='切换看板娘季节版本'
-  title='切换到夏日版'
->
-  <span id='live2d-season-icon' aria-hidden='true'>🍂</span>
-  <span id='live2d-season-label'>秋季版</span>
-</button>
-
 <div id='live2d-message' role='status' aria-live='polite' aria-atomic='true' hidden>
   <span id='live2d-message-text'></span>
   <span id='live2d-message-arrow' aria-hidden='true'></span>
@@ -63,9 +53,6 @@ const { size } = live2dConfig
     const message = document.getElementById('live2d-message')
     const messageText = document.getElementById('live2d-message-text')
     const mobileToggle = document.getElementById('live2d-mobile-toggle')
-    const seasonToggle = document.getElementById('live2d-season-toggle')
-    const seasonLabel = document.getElementById('live2d-season-label')
-    const seasonIcon = document.getElementById('live2d-season-icon')
 
     if (!container || !canvas || container.dataset.initialized === 'true') return
     container.dataset.initialized = 'true'
@@ -79,40 +66,13 @@ const { size } = live2dConfig
     const seasonOptions = config.seasons?.options || {}
     const seasonStorageKey = config.seasons?.storageKey || 'jiaxintang-live2d-season'
     const seasonNames = Object.keys(seasonOptions)
-    const getSeason = () => {
-      let saved = null
-      try {
-        saved = localStorage.getItem(seasonStorageKey)
-      } catch {}
-      return saved && seasonNames.includes(saved) ? saved : config.seasons.default
-    }
-    let activeSeason = getSeason()
+    let activeSeason = config.seasons.default
+    try {
+      const savedSeason = localStorage.getItem(seasonStorageKey)
+      if (savedSeason && seasonNames.includes(savedSeason)) activeSeason = savedSeason
+    } catch {}
     const activeSeasonConfig = () =>
       seasonOptions[activeSeason] || seasonOptions[config.seasons.default]
-
-    const syncSeasonControl = () => {
-      const current = activeSeasonConfig()
-      const nextSeason = seasonNames.find((season) => season !== activeSeason) || activeSeason
-      const next = seasonOptions[nextSeason]
-      if (seasonLabel) seasonLabel.textContent = current.label
-      if (seasonIcon) seasonIcon.textContent = activeSeason === 'autumn' ? '🍂' : '☀️'
-      if (seasonToggle) {
-        seasonToggle.title = `切换到${next.label}`
-        seasonToggle.setAttribute('aria-label', `当前${current.label}，切换到${next.label}`)
-      }
-      container.dataset.season = activeSeason
-    }
-
-    syncSeasonControl()
-    seasonToggle?.addEventListener('click', (event) => {
-      event.stopPropagation()
-      const nextSeason =
-        seasonNames.find((season) => season !== activeSeason) || config.seasons.default
-      try {
-        localStorage.setItem(seasonStorageKey, nextSeason)
-      } catch {}
-      window.location.reload()
-    })
 
     const isReadingModeEnabled = () =>
       config.reading?.enabled && window.innerWidth > config.responsive.breakpoint
@@ -516,39 +476,6 @@ const { size } = live2dConfig
     backdrop-filter: blur(12px);
   }
 
-  #live2d-season-toggle {
-    position: fixed;
-    bottom: calc(14px + min(420px, 72vh) + 12px);
-    left: 288px;
-    z-index: 43;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    min-height: 30px;
-    padding: 5px 9px;
-    border: 1px solid hsl(var(--border) / 82%);
-    border-radius: 999px;
-    background: hsl(var(--background) / 88%);
-    box-shadow: 0 7px 20px rgb(0 0 0 / 14%);
-    color: hsl(var(--foreground));
-    cursor: pointer;
-    font-size: 11px;
-    backdrop-filter: blur(10px);
-    transition:
-      background 0.2s ease,
-      transform 0.2s ease;
-  }
-
-  #live2d-season-toggle:hover {
-    background: hsl(var(--background) / 98%);
-    transform: translateY(-2px);
-  }
-
-  #live2d-season-icon {
-    font-size: 14px;
-    line-height: 1;
-  }
-
   #live2d-message[data-visible='true'] {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -752,12 +679,6 @@ const { size } = live2dConfig
       width: var(--live2d-mobile-width);
       height: var(--live2d-mobile-height);
       left: -8px;
-    }
-
-    #live2d-season-toggle {
-      right: 8px;
-      bottom: calc(74px + min(430px, calc(100dvh - 100px)) + 10px);
-      left: auto;
     }
   }
 

@@ -12,6 +12,15 @@ import { live2dConfig } from '@/live2d-config'
       </div>
     </div>
     <div id='ai-chat-actions'>
+      <button
+        type='button'
+        id='ai-chat-season'
+        aria-label='切换看板娘季节版本'
+        title='切换到夏日版'
+      >
+        <span id='ai-chat-season-icon' aria-hidden='true'>🍂</span>
+        <span id='ai-chat-season-label'>秋季版</span>
+      </button>
       <button type='button' id='ai-chat-clear' aria-label='清空对话' title='清空对话'>⟲</button>
       <button type='button' id='ai-chat-close' aria-label='收起对话' title='收起'>✕</button>
     </div>
@@ -45,6 +54,9 @@ import { live2dConfig } from '@/live2d-config'
     const sendButton = document.getElementById('ai-chat-send')
     const contextBanner = document.getElementById('ai-chat-context')
     const contextText = document.getElementById('ai-chat-context-text')
+    const seasonToggle = document.getElementById('ai-chat-season')
+    const seasonLabel = document.getElementById('ai-chat-season-label')
+    const seasonIcon = document.getElementById('ai-chat-season-icon')
 
     if (!panel || !log || !form || !input || !sendButton) return
 
@@ -62,6 +74,36 @@ import { live2dConfig } from '@/live2d-config'
     let greeted = false
 
     const pick = (list) => list[Math.floor(Math.random() * list.length)]
+
+    const seasonOptions = config.seasons?.options || {}
+    const seasonStorageKey = config.seasons?.storageKey || 'jiaxintang-live2d-season'
+    const seasonNames = Object.keys(seasonOptions)
+    const getSeason = () => {
+      let saved = null
+      try {
+        saved = localStorage.getItem(seasonStorageKey)
+      } catch {}
+      return saved && seasonNames.includes(saved) ? saved : config.seasons.default
+    }
+    const activeSeason = getSeason()
+    const nextSeason = seasonNames.find((season) => season !== activeSeason) || activeSeason
+    const currentSeason = seasonOptions[activeSeason]
+    const nextSeasonConfig = seasonOptions[nextSeason]
+    if (seasonLabel) seasonLabel.textContent = currentSeason.label
+    if (seasonIcon) seasonIcon.textContent = activeSeason === 'autumn' ? '🍂' : '☀️'
+    if (seasonToggle) {
+      seasonToggle.title = `切换到${nextSeasonConfig.label}`
+      seasonToggle.setAttribute(
+        'aria-label',
+        `当前${currentSeason.label}，切换到${nextSeasonConfig.label}`
+      )
+      seasonToggle.addEventListener('click', () => {
+        try {
+          localStorage.setItem(seasonStorageKey, nextSeason)
+        } catch {}
+        window.location.reload()
+      })
+    }
 
     // 让动作跟着对话走：把表情/动作丢给 Live2DWidget 去执行
     const react = (expression, motion, message) => {
@@ -390,6 +432,17 @@ import { live2dConfig } from '@/live2d-config'
     line-height: 1;
     padding: 4px 7px;
     border-radius: 6px;
+  }
+
+  #ai-chat-season {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+  }
+
+  #ai-chat-season-icon {
+    font-size: 14px;
   }
 
   #ai-chat-actions button:hover {
