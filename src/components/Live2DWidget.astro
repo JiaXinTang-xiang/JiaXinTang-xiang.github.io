@@ -63,8 +63,6 @@
 
     // 模型自带的表情与动作（见 seethrough_output.model3.json）
     const EXPRESSIONS = ['微笑', '惊讶', '半闭眼', '嫌弃眼', '左眼眨', '右眼眨']
-    // 鼠标停在页面上时只挑不动嘴的：微笑 / 嫌弃眼 只改嘴型，不张嘴
-    const QUIET_EXPRESSIONS = ['微笑', '嫌弃眼']
     const NEUTRAL = '普通'
     const MOTIONS = ['Nod', 'Shake', 'Blink']
 
@@ -175,16 +173,20 @@
           model.focus(event.clientX - rect.left, event.clientY - rect.top)
         })
 
+        // 视线归位。别用 model.focus(容器中心)：focus() 是按「画布左上角 -> 目标点」算方向的，
+        // 传容器中心会算出一个歪向一边的角度，脑袋会一直歪着、甚至整个偏出画布。
+        const resetGaze = () => model.internalModel.focusController?.focus(0, 0)
+
         // 指针离开整个页面：视线回到正前方，嘴巴合上，然后自己动起来
         document.addEventListener('mouseleave', () => {
           mouthTarget = 0
           startIdleActing()
-          model.focus(container.clientWidth / 2, container.clientHeight / 2)
+          resetGaze()
         })
 
         container.addEventListener('click', () => {
           model.motion(pick(MOTIONS))
-          model.expression(pick(QUIET_EXPRESSIONS))
+          model.expression(pick(EXPRESSIONS))
         })
 
         window.addEventListener('resize', () => {
