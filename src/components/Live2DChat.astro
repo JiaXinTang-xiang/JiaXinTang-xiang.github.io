@@ -1,19 +1,21 @@
 <div id='ai-chat' hidden>
   <header id='ai-chat-head'>
-    <span id='ai-chat-title'>和小蓝聊聊</span>
-    <button type='button' id='ai-chat-close' aria-label='收起对话'>✕</button>
+    <span id='ai-chat-title'>和嘉心糖聊聊</span>
+    <div id='ai-chat-actions'>
+      <button type='button' id='ai-chat-clear' aria-label='清空对话' title='清空对话'>⟲</button>
+      <button type='button' id='ai-chat-close' aria-label='收起对话' title='收起'>✕</button>
+    </div>
   </header>
   <div id='ai-chat-log' role='log' aria-live='polite' aria-label='对话记录'></div>
   <form id='ai-chat-form'>
-    <input
+    <textarea
       id='ai-chat-input'
-      type='text'
-      autocomplete='off'
+      rows='1'
       maxlength='600'
-      placeholder='说点什么…'
-      aria-label='输入消息'
-    />
-    <button type='submit' id='ai-chat-send'>发送</button>
+      autocomplete='off'
+      placeholder='说点什么…（Enter 发送，Shift+Enter 换行）'
+      aria-label='输入消息'></textarea>
+    <button type='submit' id='ai-chat-send' aria-label='发送'>发送</button>
   </form>
 </div>
 
@@ -28,15 +30,68 @@
     if (!panel || !log || !form || !input || !sendButton) return
 
     const GREETING =
-      '唔……你好呀，我是这个博客的看板娘小蓝。想聊技术、翻文章，或者随便说说话都可以～'
+      '唔……你好呀，我是这个博客的看板娘嘉心糖。想聊技术、翻文章，或者随便说说话都可以～'
+
+    // 点一下看板娘就随机说一句
+    const IDLE_LINES = [
+      '唔……找我吗？',
+      '有什么想问的都可以说哦～',
+      '想翻文章的话，归档页在菜单里。',
+      '诶？是想聊天还是想找东西？',
+      '我一直在的，随时叫我。',
+      '要记得多喝水、早点休息哦。'
+    ]
+
+    // 和 Live2DWidget.astro 里的列表保持一致（两边都是内联脚本，没法共享模块）
+    const REACT_EXPRESSIONS = ['微笑', '惊讶', '半闭眼', '嫌弃眼', '左眼眨', '右眼眨']
+    const REACT_MOTIONS = ['Nod', 'Shake', 'Blink']
+    const NEUTRAL = '普通'
 
     // 只保留最近若干条，服务端还会再截一次
     const HISTORY_LIMIT = 20
+    // 和 src/ai.config.ts 的 pageContextLimit 保持一致
+    const PAGE_TEXT_LIMIT = 3000
+
     const history = []
     let sending = false
     let greeted = false
 
-    // 一律用 textContent：AI 的回复来自外部，不能当 HTML 插进来
+    const pick = (list) => list[Math.floor(Math.random() * list.length)]
+
+    // 让动作跟着对话走：把表情/动作丢给 Live2DWidget 去执行
+    const react = (expression, motion) => {
+      document
+        .getElementById('live2d-widget')
+        ?.dispatchEvent(
+          new CustomEvent('live2d:react', { bubbles: true, detail: { expression, motion } })
+        )
+    }
+
+    // 按回复的语气挑反应：问句 → 惊讶，夸奖/开心 → 微笑，其余随机
+    const replyReaction = (text) => {
+      const tail = text.slice(-24)
+      if (/[?？]/.test(tail)) return ['惊讶', 'Shake']
+      if (/(谢谢|哈哈|喜欢|开心|好呀|～)/.test(tail)) return ['微笑', 'Nod']
+      return [pick(REACT_EXPRESSIONS), pick(REACT_MOTIONS)]
+    }
+
+    // 每个浏览器生成一个固定 ID，服务端用它配合 IP 做额度校验
+    const deviceId = () => {
+      const KEY = 'jiaxintang-device-id'
+      let id = null
+      try {
+        id = localStorage.getItem(KEY)
+        if (!id) {
+          id = `dev_${Math.random().toString(36).slice(2, 12)}${Date.now().toString(36)}`
+          localStorage.setItem(KEY, id)
+        }
+      } catch {
+        id = 'no-storage'
+      }
+      return id
+    }
+
+    // 一律用 textContent / createTextNode：AI 的回复来自外部，不能当 HTML 插进来
     const bubble = (role, text) => {
       const item = document.createElement('div')
       item.className = `ai-chat-bubble ai-chat-${role}`
@@ -46,19 +101,35 @@
       return item
     }
 
-    const setBusy = (busy) => {
-      sending = busy
-      sendButton.disabled = busy
-      input.disabled = busy
-      sendButton.textContent = busy ? '…' : '发送'
+    // 等待回复时的三个跳动小点
+    const typingBubble = () => {
+      const item = document.createElement('div')
+      item.className = 'ai-chat-bubble ai-chat-assistant'
+      const dots = document.createElement('div')
+      dots.className = 'ai-chat-dots'
+      for (let i = 0; i < 3; i += 1) dots.appendChild(document.createElement('span'))
+      item.appendChild(dots)
+      log.appendChild(item)
+      log.scrollTop = log.scrollHeight
+      return item
+    }
+
+    const canSend = () => !sending && input.value.trim().length > 0
+
+    const syncSendButton = () => {
+      sendButton.disabled = !canSend()
+      sendButton.textContent = sending ? '…' : '发送'
+    }
+
+    const autoGrow = () => {
+      input.style.height = 'auto'
+      const next = Math.min(input.scrollHeight, 96)
+      input.style.height = `${next}px`
+      input.style.overflowY = input.scrollHeight > 96 ? 'auto' : 'hidden'
     }
 
     const openPanel = () => {
       panel.hidden = false
-      if (!greeted) {
-        greeted = true
-        bubble('assistant', GREETING)
-      }
       input.focus()
     }
 
@@ -66,59 +137,116 @@
       panel.hidden = true
     }
 
+    // 说一句：第一次是问候语，之后随机挑
+    const saySomething = () => {
+      if (!greeted) {
+        greeted = true
+        bubble('assistant', GREETING)
+      } else {
+        bubble('assistant', pick(IDLE_LINES))
+      }
+    }
+
+    const clearConversation = () => {
+      history.length = 0
+      log.replaceChildren()
+      greeted = false
+      saySomething()
+    }
+
+    // 抓访客正在看的文章正文，让 AI 知道上下文。
+    // 只传原文，框住它的说明由服务端拼，避免前端伪造系统指令。
+    const pageContext = () => {
+      const node = document.getElementById('content')
+      const text = node ? (node.innerText || '').trim() : ''
+      return {
+        pageTitle: document.title,
+        pageText: text.slice(0, PAGE_TEXT_LIMIT)
+      }
+    }
+
     const send = async (text) => {
       history.push({ role: 'user', content: text })
       if (history.length > HISTORY_LIMIT) history.splice(0, history.length - HISTORY_LIMIT)
       bubble('user', text)
-      setBusy(true)
 
-      const pending = bubble('assistant ai-chat-pending', '……')
+      sending = true
+      syncSendButton()
+      const pending = typingBubble()
+      // 思考中的样子
+      react('半闭眼')
 
       try {
         // 站点是 trailingSlash: 'always'，带斜杠能直接命中路由，省一次 308 跳转
         const response = await fetch('/api/chat/', {
           method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ messages: history })
+          headers: { 'content-type': 'application/json', 'x-device-id': deviceId() },
+          body: JSON.stringify({ messages: history, ...pageContext() })
         })
         const data = await response.json().catch(() => null)
 
         if (!response.ok || typeof data?.reply !== 'string') {
           pending.remove()
-          bubble('assistant ai-chat-error', data?.error || '我这边出了点问题，稍后再试试吧。')
+          bubble('error', data?.error || '我这边出了点问题，稍后再试试吧。')
+          react('嫌弃眼')
           return
         }
 
-        pending.textContent = data.reply
-        pending.className = 'ai-chat-bubble ai-chat-assistant'
+        pending.replaceChildren(document.createTextNode(data.reply))
         history.push({ role: 'assistant', content: data.reply })
         if (history.length > HISTORY_LIMIT) history.splice(0, history.length - HISTORY_LIMIT)
         log.scrollTop = log.scrollHeight
+        react(...replyReaction(data.reply))
       } catch (error) {
         console.error('[ai-chat] 请求失败', error)
         pending.remove()
-        bubble('assistant ai-chat-error', '网络好像不太顺，稍后再试试吧。')
+        bubble('error', '网络好像不太顺，稍后再试试吧。')
+        react('嫌弃眼')
       } finally {
-        setBusy(false)
+        sending = false
+        syncSendButton()
         if (!panel.hidden) input.focus()
       }
     }
 
-    // 点看板娘开合对话面板（事件由 Live2DWidget 派发）
+    // 点一下看板娘：开面板，并且让她说一句（事件由 Live2DWidget 派发）。
+    // 收起靠右上角的 ✕ 或 Esc，这样每次点击都有回应。
     document.addEventListener('live2d:tap', () => {
-      if (panel.hidden) openPanel()
-      else closePanel()
+      saySomething()
+      openPanel()
+    })
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !panel.hidden) closePanel()
     })
 
     document.getElementById('ai-chat-close')?.addEventListener('click', closePanel)
+    document.getElementById('ai-chat-clear')?.addEventListener('click', clearConversation)
+
+    input.addEventListener('input', () => {
+      autoGrow()
+      syncSendButton()
+    })
+
+    input.addEventListener('keydown', (event) => {
+      // Enter 发送，Shift+Enter 换行
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault()
+        form.requestSubmit()
+      }
+    })
 
     form.addEventListener('submit', (event) => {
       event.preventDefault()
+      if (!canSend()) return
       const text = input.value.trim()
-      if (!text || sending) return
       input.value = ''
+      autoGrow()
+      syncSendButton()
       send(text)
     })
+
+    syncSendButton()
   })()
 </script>
 
@@ -131,7 +259,8 @@
     display: flex;
     flex-direction: column;
     width: 340px;
-    height: 380px;
+    height: 420px;
+    max-height: 72vh;
     overflow: hidden;
     border: 1px solid hsl(var(--border));
     border-radius: calc(var(--radius) + 4px);
@@ -140,6 +269,10 @@
     color: hsl(var(--foreground));
     font-size: 13px;
     line-height: 1.55;
+    transform-origin: bottom left;
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
     backdrop-filter: blur(10px);
   }
 
@@ -157,18 +290,23 @@
     font-weight: 600;
   }
 
-  #ai-chat-close {
+  #ai-chat-actions {
+    display: flex;
+    gap: 2px;
+  }
+
+  #ai-chat-actions button {
     border: 0;
     background: transparent;
     color: hsl(var(--muted-foreground));
     cursor: pointer;
     font-size: 14px;
     line-height: 1;
-    padding: 4px 6px;
+    padding: 4px 7px;
     border-radius: 6px;
   }
 
-  #ai-chat-close:hover {
+  #ai-chat-actions button:hover {
     background: hsl(var(--muted));
     color: hsl(var(--foreground));
   }
@@ -189,6 +327,18 @@
     border-radius: 12px;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+    animation: ai-chat-in 0.22s ease;
+  }
+
+  @keyframes ai-chat-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .ai-chat-user {
@@ -202,12 +352,6 @@
     background: hsl(var(--muted));
   }
 
-  .ai-chat-pending {
-    align-self: flex-start;
-    background: hsl(var(--muted));
-    color: hsl(var(--muted-foreground));
-  }
-
   .ai-chat-error {
     align-self: flex-start;
     background: hsl(0 80% 60% / 12%);
@@ -216,8 +360,45 @@
     font-size: 12px;
   }
 
+  /* 等待回复的三个小点 */
+  .ai-chat-dots {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 3px;
+  }
+
+  .ai-chat-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: hsl(var(--muted-foreground));
+    animation: ai-chat-typing 1.4s infinite ease-in-out both;
+  }
+
+  .ai-chat-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+  }
+  .ai-chat-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+  }
+
+  @keyframes ai-chat-typing {
+    0%,
+    80%,
+    100% {
+      transform: scale(0.4);
+      opacity: 0.5;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
   #ai-chat-form {
     display: flex;
+    align-items: flex-end;
     gap: 6px;
     padding: 9px 10px;
     border-top: 1px solid hsl(var(--border));
@@ -233,6 +414,9 @@
     background: hsl(var(--background));
     color: hsl(var(--foreground));
     font: inherit;
+    resize: none;
+    overflow-y: hidden;
+    max-height: 96px;
   }
 
   #ai-chat-input:focus {
@@ -242,7 +426,7 @@
 
   #ai-chat-send {
     flex: none;
-    padding: 7px 14px;
+    padding: 8px 14px;
     border: 0;
     border-radius: 8px;
     background: hsl(var(--primary) / 90%);
@@ -254,7 +438,7 @@
 
   #ai-chat-send:disabled {
     cursor: default;
-    opacity: 0.6;
+    opacity: 0.5;
   }
 
   @media (max-width: 767px) {
@@ -263,7 +447,8 @@
       right: 8px;
       bottom: 258px;
       width: auto;
-      height: 300px;
+      height: 320px;
+      max-height: 55vh;
     }
   }
 </style>

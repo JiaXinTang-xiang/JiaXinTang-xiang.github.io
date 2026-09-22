@@ -191,6 +191,16 @@
           container.dispatchEvent(new CustomEvent('live2d:tap', { bubbles: true }))
         })
 
+        // 让动作跟着对话走：Live2DChat 用这个事件点名要哪个表情 / 动作。
+        // 只认白名单里的名字，避免外面塞个乱七八糟的值进来。
+        container.addEventListener('live2d:react', (event) => {
+          const { expression, motion } = event.detail || {}
+          stopIdleActing()
+          if (expression === NEUTRAL || EXPRESSIONS.includes(expression))
+            model.expression(expression)
+          if (MOTIONS.includes(motion)) model.motion(motion)
+        })
+
         window.addEventListener('resize', () => {
           app.renderer.resize(container.clientWidth, container.clientHeight)
           fitContent(model, content)
