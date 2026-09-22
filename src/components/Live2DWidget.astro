@@ -61,6 +61,16 @@
       }
     }
 
+    // 模型自带的表情与动作（见 seethrough_output.model3.json）
+    const EXPRESSIONS = ['微笑', '惊讶', '半闭眼', '嫌弃眼', '左眼眨', '右眼眨']
+    // 鼠标停在页面上时只挑不动嘴的：微笑 / 嫌弃眼 只改嘴型，不张嘴
+    const QUIET_EXPRESSIONS = ['微笑', '嫌弃眼']
+    const NEUTRAL = '普通'
+    const MOTIONS = ['Nod', 'Shake', 'Blink']
+
+    const pick = (list) => list[Math.floor(Math.random() * list.length)]
+    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
     // 把量到的轮廓等比缩放到容器内并居中，anchor 取 (0,0) 即画布左上角
     const fitContent = (model, content) => {
       const width = container.clientWidth
@@ -110,21 +120,71 @@
 
         if (status) status.remove()
 
+        // 鼠标不在页面上时自己找事做：随机换表情、偶尔配个动作
+        let idleActing = false
+
+        const idleRoutine = async () => {
+          while (idleActing) {
+            await wait(5000 + Math.random() * 6000)
+            if (!idleActing) return
+            model.expression(pick(EXPRESSIONS))
+            if (Math.random() < 0.5) model.motion(pick(MOTIONS))
+            await wait(2500 + Math.random() * 2000)
+            if (!idleActing) return
+            model.expression(NEUTRAL)
+          }
+        }
+
+        const startIdleActing = () => {
+          if (idleActing) return
+          idleActing = true
+          idleRoutine()
+        }
+
+        // 鼠标一回到页面上就收手，把嘴巴交还给下面的微张逻辑
+        const stopIdleActing = () => {
+          if (!idleActing) return
+          idleActing = false
+          model.expression(NEUTRAL)
+        }
+
+        // 鼠标在页面上时让嘴保持微张，嘴型一直看得见；离开页面才交回给待机表情。
+        // 模型的嘴只有一条 28x3px 的网格，靠 ParamMouthOpenY 撑开才看得见。
+        // 每帧在 beforeModelUpdate 里写：这是形变计算前的最后一步，写完立刻 model.update()，
+        // 不会像表达式那样在末尾被 loadParameters() 还原掉。
+        const MOUTH_OPEN = 0.5
+        const coreModel = model.internalModel.coreModel
+        let mouthTarget = MOUTH_OPEN
+        let mouthValue = 0
+
+        model.internalModel.on('beforeModelUpdate', () => {
+          mouthValue += (mouthTarget - mouthValue) * 0.12
+          if (mouthValue > 0.001) coreModel.setParameterValueById('ParamMouthOpenY', mouthValue)
+        })
+
+        const startTracking = () => {
+          mouthTarget = MOUTH_OPEN
+          stopIdleActing()
+        }
+
         // 挂在 window 上而不是看板娘容器上：focus() 只取指针相对模型的方向，
         // 所以鼠标在整页任意位置都能让模型看过去，坐标超出画布也没关系。
         window.addEventListener('pointermove', (event) => {
+          startTracking()
           const rect = canvas.getBoundingClientRect()
           model.focus(event.clientX - rect.left, event.clientY - rect.top)
         })
 
-        // 指针离开整个页面时视线回到正前方
-        document.addEventListener('mouseleave', () =>
+        // 指针离开整个页面：视线回到正前方，嘴巴合上，然后自己动起来
+        document.addEventListener('mouseleave', () => {
+          mouthTarget = 0
+          startIdleActing()
           model.focus(container.clientWidth / 2, container.clientHeight / 2)
-        )
+        })
 
         container.addEventListener('click', () => {
-          const groups = ['Nod', 'Shake', 'Blink']
-          model.motion(groups[Math.floor(Math.random() * groups.length)])
+          model.motion(pick(MOTIONS))
+          model.expression(pick(QUIET_EXPRESSIONS))
         })
 
         window.addEventListener('resize', () => {
