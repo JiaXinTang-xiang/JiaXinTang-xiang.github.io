@@ -2,9 +2,10 @@
 import { Footer, Header, ThemeProvider } from 'astro-pure/components/basic'
 import type { SiteMeta } from 'astro-pure/types'
 import BaseHead from '@/components/BaseHead.astro'
-import Live2DWidget from '@/components/Live2DWidget.astro'
 // import AnnouncementBar from '@/components/AnnouncementBar.astro'
 import LanguageToggle from '@/components/LanguageToggle.astro'
+import Live2DChat from '@/components/Live2DChat.astro'
+import Live2DWidget from '@/components/Live2DWidget.astro'
 import config from '@/site-config'
 
 // Import the global.css file here so that it is included on
@@ -31,7 +32,12 @@ const {
   </head>
 
   <body class='flex justify-center bg-background text-foreground' {...props}>
-    <div id='reading-progress' class='fixed top-0 left-0 h-[2px] bg-primary/70 z-50 transition-[width] duration-150' style='width:0'></div>
+    <div
+      id='reading-progress'
+      class='fixed top-0 left-0 h-[2px] bg-primary/70 z-50 transition-[width] duration-150'
+      style='width:0'
+    >
+    </div>
     <div id='spotlight' class='pointer-events-none fixed inset-0 z-1'></div>
     {
       highlightColor && (
@@ -49,7 +55,14 @@ const {
       <Header />
       {/* <AnnouncementBar /> */}
       <LanguageToggle />
-      <a href="https://www.travellings.cn/go.html" target="_blank" rel="noopener" title="开往-友链接力" style="position:absolute;left:-9999px;" aria-hidden="true">Travelling</a>
+      <a
+        href='https://www.travellings.cn/go.html'
+        target='_blank'
+        rel='noopener'
+        title='开往-友链接力'
+        style='position:absolute;left:-9999px;'
+        aria-hidden='true'>Travelling</a
+      >
       <div class='flex-1 w-full'>
         <slot />
       </div>
@@ -57,6 +70,7 @@ const {
     </div>
 
     <Live2DWidget />
+    <Live2DChat />
 
     {/* Set highlight color */}
     <style define:vars={{ highlightColor }}>
@@ -125,7 +139,18 @@ const {
         z-index: 9999;
         width: 12px;
         height: 12px;
-        clip-path: polygon(50% 0%, 58% 38%, 95% 38%, 65% 55%, 75% 95%, 50% 68%, 25% 95%, 35% 55%, 5% 38%, 42% 38%);
+        clip-path: polygon(
+          50% 0%,
+          58% 38%,
+          95% 38%,
+          65% 55%,
+          75% 95%,
+          50% 68%,
+          25% 95%,
+          35% 55%,
+          5% 38%,
+          42% 38%
+        );
         animation: sparkle-burst 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         box-shadow: 0 0 6px 2px rgba(255, 215, 0, 0.5);
       }
@@ -218,68 +243,173 @@ const {
       }
 
       /* 星光颜色 */
-      :global(.sparkle-star.color-1) { background: #ffd700; box-shadow: 0 0 6px 2px rgba(255,215,0,0.5); }
-      :global(.sparkle-star.color-2) { background: #ffb347; box-shadow: 0 0 6px 2px rgba(255,179,71,0.5); }
-      :global(.sparkle-star.color-3) { background: #ffe484; box-shadow: 0 0 6px 2px rgba(255,228,132,0.5); }
-      :global(.sparkle-star.color-4) { background: #fff;    box-shadow: 0 0 8px 3px rgba(255,255,255,0.7); }
-      :global(.sparkle-star.color-5) { background: #ffcc80; box-shadow: 0 0 6px 2px rgba(255,204,128,0.5); }
+      :global(.sparkle-star.color-1) {
+        background: #ffd700;
+        box-shadow: 0 0 6px 2px rgba(255, 215, 0, 0.5);
+      }
+      :global(.sparkle-star.color-2) {
+        background: #ffb347;
+        box-shadow: 0 0 6px 2px rgba(255, 179, 71, 0.5);
+      }
+      :global(.sparkle-star.color-3) {
+        background: #ffe484;
+        box-shadow: 0 0 6px 2px rgba(255, 228, 132, 0.5);
+      }
+      :global(.sparkle-star.color-4) {
+        background: #fff;
+        box-shadow: 0 0 8px 3px rgba(255, 255, 255, 0.7);
+      }
+      :global(.sparkle-star.color-5) {
+        background: #ffcc80;
+        box-shadow: 0 0 6px 2px rgba(255, 204, 128, 0.5);
+      }
 
-      :global(.sparkle-dot.color-1) { background: #ffd700; }
-      :global(.sparkle-dot.color-2) { background: #ffe484; }
-      :global(.sparkle-dot.color-3) { background: #ffb347; }
-      :global(.sparkle-dot.color-4) { background: #fff; }
-      :global(.sparkle-dot.color-5) { background: #ffcc80; }
+      :global(.sparkle-dot.color-1) {
+        background: #ffd700;
+      }
+      :global(.sparkle-dot.color-2) {
+        background: #ffe484;
+      }
+      :global(.sparkle-dot.color-3) {
+        background: #ffb347;
+      }
+      :global(.sparkle-dot.color-4) {
+        background: #fff;
+      }
+      :global(.sparkle-dot.color-5) {
+        background: #ffcc80;
+      }
 
       /* 心形颜色 */
       :global(.sparkle-heart.color-1)::before,
-      :global(.sparkle-heart.color-1)::after { background: #ff4757; }
+      :global(.sparkle-heart.color-1)::after {
+        background: #ff4757;
+      }
       :global(.sparkle-heart.color-2)::before,
-      :global(.sparkle-heart.color-2)::after { background: #ff6b7a; }
+      :global(.sparkle-heart.color-2)::after {
+        background: #ff6b7a;
+      }
       :global(.sparkle-heart.color-3)::before,
-      :global(.sparkle-heart.color-3)::after { background: #ff3838; }
+      :global(.sparkle-heart.color-3)::after {
+        background: #ff3838;
+      }
       :global(.sparkle-heart.color-4)::before,
-      :global(.sparkle-heart.color-4)::after { background: #ff6b9d; }
+      :global(.sparkle-heart.color-4)::after {
+        background: #ff6b9d;
+      }
       :global(.sparkle-heart.color-5)::before,
-      :global(.sparkle-heart.color-5)::after { background: #c44569; }
+      :global(.sparkle-heart.color-5)::after {
+        background: #c44569;
+      }
 
       /* 花瓣颜色 */
-      :global(.sparkle-petal.color-1) { background: #ff9ff3; }
-      :global(.sparkle-petal.color-2) { background: #54a0ff; }
-      :global(.sparkle-petal.color-3) { background: #5f27cd; }
-      :global(.sparkle-petal.color-4) { background: #00d2d3; }
-      :global(.sparkle-petal.color-5) { background: #ff9f43; }
+      :global(.sparkle-petal.color-1) {
+        background: #ff9ff3;
+      }
+      :global(.sparkle-petal.color-2) {
+        background: #54a0ff;
+      }
+      :global(.sparkle-petal.color-3) {
+        background: #5f27cd;
+      }
+      :global(.sparkle-petal.color-4) {
+        background: #00d2d3;
+      }
+      :global(.sparkle-petal.color-5) {
+        background: #ff9f43;
+      }
 
       /* 圆环颜色 */
-      :global(.sparkle-ring.color-1) { border-color: #ffd700; }
-      :global(.sparkle-ring.color-2) { border-color: #ffb347; }
-      :global(.sparkle-ring.color-3) { border-color: #ffe484; }
-      :global(.sparkle-ring.color-4) { border-color: #fff; }
-      :global(.sparkle-ring.color-5) { border-color: #ffcc80; }
+      :global(.sparkle-ring.color-1) {
+        border-color: #ffd700;
+      }
+      :global(.sparkle-ring.color-2) {
+        border-color: #ffb347;
+      }
+      :global(.sparkle-ring.color-3) {
+        border-color: #ffe484;
+      }
+      :global(.sparkle-ring.color-4) {
+        border-color: #fff;
+      }
+      :global(.sparkle-ring.color-5) {
+        border-color: #ffcc80;
+      }
 
       /* 光晕颜色 */
-      :global(.sparkle-glow.color-1) { background: #ffd700; box-shadow: 0 0 10px 3px rgba(255,215,0,0.8); }
-      :global(.sparkle-glow.color-2) { background: #ffb347; box-shadow: 0 0 10px 3px rgba(255,179,71,0.8); }
-      :global(.sparkle-glow.color-3) { background: #ffe484; box-shadow: 0 0 10px 3px rgba(255,228,132,0.8); }
-      :global(.sparkle-glow.color-4) { background: #fff;    box-shadow: 0 0 10px 3px rgba(255,255,255,0.8); }
-      :global(.sparkle-glow.color-5) { background: #ffcc80; box-shadow: 0 0 10px 3px rgba(255,204,128,0.8); }
+      :global(.sparkle-glow.color-1) {
+        background: #ffd700;
+        box-shadow: 0 0 10px 3px rgba(255, 215, 0, 0.8);
+      }
+      :global(.sparkle-glow.color-2) {
+        background: #ffb347;
+        box-shadow: 0 0 10px 3px rgba(255, 179, 71, 0.8);
+      }
+      :global(.sparkle-glow.color-3) {
+        background: #ffe484;
+        box-shadow: 0 0 10px 3px rgba(255, 228, 132, 0.8);
+      }
+      :global(.sparkle-glow.color-4) {
+        background: #fff;
+        box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.8);
+      }
+      :global(.sparkle-glow.color-5) {
+        background: #ffcc80;
+        box-shadow: 0 0 10px 3px rgba(255, 204, 128, 0.8);
+      }
 
       /* 轨迹颜色 */
-      :global(.sparkle-trail.color-1) { background: #ffd700; box-shadow: 0 0 4px 1px rgba(255,215,0,0.6); }
-      :global(.sparkle-trail.color-2) { background: #ffb347; box-shadow: 0 0 4px 1px rgba(255,179,71,0.6); }
-      :global(.sparkle-trail.color-3) { background: #ffe484; box-shadow: 0 0 4px 1px rgba(255,228,132,0.6); }
-      :global(.sparkle-trail.color-4) { background: #fff;    box-shadow: 0 0 4px 1px rgba(255,255,255,0.6); }
-      :global(.sparkle-trail.color-5) { background: #ffcc80; box-shadow: 0 0 4px 1px rgba(255,204,128,0.6); }
+      :global(.sparkle-trail.color-1) {
+        background: #ffd700;
+        box-shadow: 0 0 4px 1px rgba(255, 215, 0, 0.6);
+      }
+      :global(.sparkle-trail.color-2) {
+        background: #ffb347;
+        box-shadow: 0 0 4px 1px rgba(255, 179, 71, 0.6);
+      }
+      :global(.sparkle-trail.color-3) {
+        background: #ffe484;
+        box-shadow: 0 0 4px 1px rgba(255, 228, 132, 0.6);
+      }
+      :global(.sparkle-trail.color-4) {
+        background: #fff;
+        box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.6);
+      }
+      :global(.sparkle-trail.color-5) {
+        background: #ffcc80;
+        box-shadow: 0 0 4px 1px rgba(255, 204, 128, 0.6);
+      }
 
       /* 暗色主题 */
-      :global(.dark .sparkle-star.color-1) { background: #ffd700; box-shadow: 0 0 8px 3px rgba(255,215,0,0.5); }
-      :global(.dark .sparkle-star.color-2) { background: #ff9f43; box-shadow: 0 0 8px 3px rgba(255,159,67,0.5); }
-      :global(.dark .sparkle-star.color-3) { background: #feca57; box-shadow: 0 0 8px 3px rgba(254,202,87,0.5); }
-      :global(.dark .sparkle-star.color-5) { background: #f0932b; box-shadow: 0 0 8px 3px rgba(240,147,43,0.5); }
+      :global(.dark .sparkle-star.color-1) {
+        background: #ffd700;
+        box-shadow: 0 0 8px 3px rgba(255, 215, 0, 0.5);
+      }
+      :global(.dark .sparkle-star.color-2) {
+        background: #ff9f43;
+        box-shadow: 0 0 8px 3px rgba(255, 159, 67, 0.5);
+      }
+      :global(.dark .sparkle-star.color-3) {
+        background: #feca57;
+        box-shadow: 0 0 8px 3px rgba(254, 202, 87, 0.5);
+      }
+      :global(.dark .sparkle-star.color-5) {
+        background: #f0932b;
+        box-shadow: 0 0 8px 3px rgba(240, 147, 43, 0.5);
+      }
 
-      :global(.dark .sparkle-dot.color-1) { background: #ffd700; }
-      :global(.dark .sparkle-dot.color-2) { background: #feca57; }
-      :global(.dark .sparkle-dot.color-3) { background: #ff9f43; }
-      :global(.dark .sparkle-dot.color-5) { background: #f0932b; }
+      :global(.dark .sparkle-dot.color-1) {
+        background: #ffd700;
+      }
+      :global(.dark .sparkle-dot.color-2) {
+        background: #feca57;
+      }
+      :global(.dark .sparkle-dot.color-3) {
+        background: #ff9f43;
+      }
+      :global(.dark .sparkle-dot.color-5) {
+        background: #f0932b;
+      }
 
       @keyframes sparkle-burst {
         0% {
@@ -288,11 +418,13 @@ const {
         }
         20% {
           opacity: 1;
-          transform: translate(calc(var(--dx) * 0.2), calc(var(--dy) * 0.2)) rotate(calc(var(--rot, 0deg) * 0.5)) scale(1.3);
+          transform: translate(calc(var(--dx) * 0.2), calc(var(--dy) * 0.2))
+            rotate(calc(var(--rot, 0deg) * 0.5)) scale(1.3);
         }
         50% {
           opacity: 0.7;
-          transform: translate(calc(var(--dx) * 0.60), calc(var(--dy) * 0.60)) rotate(var(--rot, 0deg)) scale(0.8);
+          transform: translate(calc(var(--dx) * 0.6), calc(var(--dy) * 0.6))
+            rotate(var(--rot, 0deg)) scale(0.8);
         }
         100% {
           opacity: 0;
@@ -323,11 +455,13 @@ const {
         }
         30% {
           opacity: 1;
-          transform: translate(calc(var(--dx) * 0.2), calc(var(--dy) * 0.2)) scale(1.2) rotate(calc(var(--rot, 0deg) * 0.3));
+          transform: translate(calc(var(--dx) * 0.2), calc(var(--dy) * 0.2)) scale(1.2)
+            rotate(calc(var(--rot, 0deg) * 0.3));
         }
         70% {
           opacity: 0.6;
-          transform: translate(calc(var(--dx) * 0.8), calc(var(--dy) * 0.8)) scale(0.8) rotate(var(--rot, 0deg));
+          transform: translate(calc(var(--dx) * 0.8), calc(var(--dy) * 0.8)) scale(0.8)
+            rotate(var(--rot, 0deg));
         }
         100% {
           opacity: 0;
@@ -343,7 +477,8 @@ const {
         }
         25% {
           opacity: 1;
-          transform: translate(calc(var(--dx) * 0.3), calc(var(--dy) * 0.3)) scale(1.1) rotate(180deg);
+          transform: translate(calc(var(--dx) * 0.3), calc(var(--dy) * 0.3)) scale(1.1)
+            rotate(180deg);
         }
         100% {
           opacity: 0;
@@ -407,250 +542,332 @@ const {
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         // 阅读进度条
-        const progressBar = document.getElementById('reading-progress');
+        const progressBar = document.getElementById('reading-progress')
         if (progressBar) {
-          window.addEventListener('scroll', () => {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-            progressBar.style.width = progress + '%';
-          }, { passive: true });
+          window.addEventListener(
+            'scroll',
+            () => {
+              const scrollTop = window.scrollY
+              const docHeight = document.documentElement.scrollHeight - window.innerHeight
+              const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0
+              progressBar.style.width = progress + '%'
+            },
+            { passive: true }
+          )
         }
 
-        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-        if (prefersReduced.matches) return;
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)')
+        if (prefersReduced.matches) return
 
         // 光标光圈跟随
-        const spotlight = document.getElementById('spotlight');
+        const spotlight = document.getElementById('spotlight')
         if (spotlight) {
-          let ticking = false;
-          let isHovering = false;
+          let ticking = false
+          let isHovering = false
 
           document.addEventListener('mousemove', (e) => {
             if (!ticking) {
               requestAnimationFrame(() => {
-                spotlight.style.setProperty('--spot-x', e.clientX + 'px');
-                spotlight.style.setProperty('--spot-y', e.clientY + 'px');
-                ticking = false;
-              });
-              ticking = true;
+                spotlight.style.setProperty('--spot-x', e.clientX + 'px')
+                spotlight.style.setProperty('--spot-y', e.clientY + 'px')
+                ticking = false
+              })
+              ticking = true
             }
-          });
+          })
 
           // 增强悬停效果
           document.addEventListener('mouseover', (e) => {
-            const target = e.target as HTMLElement;
-            const interactiveElement = target.closest('a, button, [data-hover-effect]') as HTMLElement;
+            const target = e.target as HTMLElement
+            const interactiveElement = target.closest(
+              'a, button, [data-hover-effect]'
+            ) as HTMLElement
             if (interactiveElement) {
               if (!isHovering) {
-                isHovering = true;
-                spotlight.style.transform = 'scale(1.5)';
-                spotlight.style.opacity = '0.8';
+                isHovering = true
+                spotlight.style.transform = 'scale(1.5)'
+                spotlight.style.opacity = '0.8'
 
                 // 悬停时添加小粒子效果
-                const rect = interactiveElement.getBoundingClientRect();
-                const x = rect.left + rect.width / 2;
-                const y = rect.top + rect.height / 2;
+                const rect = interactiveElement.getBoundingClientRect()
+                const x = rect.left + rect.width / 2
+                const y = rect.top + rect.height / 2
 
                 for (let i = 0; i < 3; i++) {
                   setTimeout(() => {
-                    createParticle(x + (Math.random() - 0.5) * 30,
-                                 y + (Math.random() - 0.5) * 30,
-                                 Math.random() * Math.PI * 2,
-                                 8 + Math.random() * 12,
-                                 `sparkle-dot color-${Math.floor(Math.random() * 5) + 1}`, 0);
-                  }, i * 50);
+                    createParticle(
+                      x + (Math.random() - 0.5) * 30,
+                      y + (Math.random() - 0.5) * 30,
+                      Math.random() * Math.PI * 2,
+                      8 + Math.random() * 12,
+                      `sparkle-dot color-${Math.floor(Math.random() * 5) + 1}`,
+                      0
+                    )
+                  }, i * 50)
                 }
               }
             }
-          });
+          })
 
           document.addEventListener('mouseout', (e) => {
-            const target = e.target as HTMLElement;
+            const target = e.target as HTMLElement
             if (target.closest('a, button, [data-hover-effect]')) {
-              isHovering = false;
-              spotlight.style.transform = 'scale(1)';
-              spotlight.style.opacity = '1';
+              isHovering = false
+              spotlight.style.transform = 'scale(1)'
+              spotlight.style.opacity = '1'
             }
-          });
+          })
         }
 
         // 标题悬停光晕效果
         document.addEventListener('mouseover', (e) => {
-          const target = e.target as HTMLElement;
-          const heading = target.closest('h1, h2, h3, h4, h5, h6') as HTMLElement;
+          const target = e.target as HTMLElement
+          const heading = target.closest('h1, h2, h3, h4, h5, h6') as HTMLElement
           if (heading) {
-            const rect = heading.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
+            const rect = heading.getBoundingClientRect()
+            const centerX = rect.left + rect.width / 2
+            const centerY = rect.top + rect.height / 2
 
             // 创建光晕粒子环绕标题
             for (let i = 0; i < 8; i++) {
-              const angle = (Math.PI * 2 / 8) * i;
-              const distance = 30 + Math.random() * 20;
-              const colorIndex = Math.floor(Math.random() * 5) + 1;
+              const angle = ((Math.PI * 2) / 8) * i
+              const distance = 30 + Math.random() * 20
+              const colorIndex = Math.floor(Math.random() * 5) + 1
               setTimeout(() => {
-                createParticle(centerX, centerY, angle, distance, `sparkle-glow color-${colorIndex}`, 0);
-              }, i * 80);
+                createParticle(
+                  centerX,
+                  centerY,
+                  angle,
+                  distance,
+                  `sparkle-glow color-${colorIndex}`,
+                  0
+                )
+              }, i * 80)
             }
           }
-        });
+        })
 
         // 鼠标轨迹效果
-        const trailElements: HTMLElement[] = [];
-        let lastTrailTime = 0;
+        const trailElements: HTMLElement[] = []
+        let lastTrailTime = 0
 
         document.addEventListener('mousemove', (e) => {
-          const now = Date.now();
-          if (now - lastTrailTime > 50) { // 控制轨迹密度
-            lastTrailTime = now;
+          const now = Date.now()
+          if (now - lastTrailTime > 50) {
+            // 控制轨迹密度
+            lastTrailTime = now
 
-            const trail = document.createElement('div');
-            const colorIndex = Math.floor(Math.random() * 5) + 1;
-            trail.className = `sparkle-trail color-${colorIndex}`;
-            trail.style.left = e.clientX + 'px';
-            trail.style.top = e.clientY + 'px';
-            document.body.appendChild(trail);
-            trailElements.push(trail);
+            const trail = document.createElement('div')
+            const colorIndex = Math.floor(Math.random() * 5) + 1
+            trail.className = `sparkle-trail color-${colorIndex}`
+            trail.style.left = e.clientX + 'px'
+            trail.style.top = e.clientY + 'px'
+            document.body.appendChild(trail)
+            trailElements.push(trail)
 
             // 清理轨迹元素
             setTimeout(() => {
               if (trail.parentNode) {
-                trail.parentNode.removeChild(trail);
+                trail.parentNode.removeChild(trail)
               }
-              const index = trailElements.indexOf(trail);
+              const index = trailElements.indexOf(trail)
               if (index > -1) {
-                trailElements.splice(index, 1);
+                trailElements.splice(index, 1)
               }
-            }, 800);
+            }, 800)
 
             // 限制轨迹元素数量
             if (trailElements.length > 20) {
-              const oldTrail = trailElements.shift();
+              const oldTrail = trailElements.shift()
               if (oldTrail && oldTrail.parentNode) {
-                oldTrail.parentNode.removeChild(oldTrail);
+                oldTrail.parentNode.removeChild(oldTrail)
               }
             }
           }
-        });
+        })
 
-        let lastClick = 0;
+        let lastClick = 0
 
-        function createParticle(x: number, y: number, angle: number, distance: number, klass: string, rotDeg: number) {
-          const el = document.createElement('div');
-          el.className = klass;
-          const dx = Math.cos(angle) * distance;
-          const dy = Math.sin(angle) * distance;
-          el.style.setProperty('--dx', dx + 'px');
-          el.style.setProperty('--dy', dy + 'px');
-          el.style.setProperty('--rot', rotDeg + 'deg');
-          el.style.left = x + 'px';
-          el.style.top = y + 'px';
-          document.body.appendChild(el);
+        function createParticle(
+          x: number,
+          y: number,
+          angle: number,
+          distance: number,
+          klass: string,
+          rotDeg: number
+        ) {
+          const el = document.createElement('div')
+          el.className = klass
+          const dx = Math.cos(angle) * distance
+          const dy = Math.sin(angle) * distance
+          el.style.setProperty('--dx', dx + 'px')
+          el.style.setProperty('--dy', dy + 'px')
+          el.style.setProperty('--rot', rotDeg + 'deg')
+          el.style.left = x + 'px'
+          el.style.top = y + 'px'
+          document.body.appendChild(el)
           setTimeout(() => {
-            if (el.parentNode) el.parentNode.removeChild(el);
-          }, 850);
+            if (el.parentNode) el.parentNode.removeChild(el)
+          }, 850)
         }
 
         document.addEventListener('click', (e) => {
-          const now = Date.now();
-          if (now - lastClick < 80) return;
-          lastClick = now;
+          const now = Date.now()
+          if (now - lastClick < 80) return
+          lastClick = now
 
-          const target = e.target as HTMLElement;
-          const isSpecialElement = target.closest('a, button, .special-click');
-          const particleCount = isSpecialElement ? 8 : 4;
-          const hasHearts = Math.random() > 0.7; // 30%概率出现心形
-          const hasPetals = Math.random() > 0.6; // 40%概率出现花瓣
+          const target = e.target as HTMLElement
+          const isSpecialElement = target.closest('a, button, .special-click')
+          const particleCount = isSpecialElement ? 8 : 4
+          const hasHearts = Math.random() > 0.7 // 30%概率出现心形
+          const hasPetals = Math.random() > 0.6 // 40%概率出现花瓣
 
           // 星星粒子
-          const baseAngle = Math.random() * Math.PI * 2;
+          const baseAngle = Math.random() * Math.PI * 2
           for (let i = 0; i < particleCount; i++) {
-            const angle = baseAngle + (Math.PI * 2 / particleCount) * i + (Math.random() - 0.5) * 0.5;
-            const distance = isSpecialElement ? 25 + Math.random() * 30 : 18 + Math.random() * 22;
-            const colorIndex = (i % 5) + 1;
-            const rot = (Math.random() > 0.5 ? 1 : -1) * (200 + Math.random() * 160);
-            setTimeout(() => {
-              createParticle(e.clientX, e.clientY, angle, distance, `sparkle-star color-${colorIndex}`, rot);
-            }, i * (isSpecialElement ? 30 : 40));
+            const angle =
+              baseAngle + ((Math.PI * 2) / particleCount) * i + (Math.random() - 0.5) * 0.5
+            const distance = isSpecialElement ? 25 + Math.random() * 30 : 18 + Math.random() * 22
+            const colorIndex = (i % 5) + 1
+            const rot = (Math.random() > 0.5 ? 1 : -1) * (200 + Math.random() * 160)
+            setTimeout(
+              () => {
+                createParticle(
+                  e.clientX,
+                  e.clientY,
+                  angle,
+                  distance,
+                  `sparkle-star color-${colorIndex}`,
+                  rot
+                )
+              },
+              i * (isSpecialElement ? 30 : 40)
+            )
           }
 
           // 圆点粒子
           for (let i = 0; i < (isSpecialElement ? 5 : 3); i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const distance = 6 + Math.random() * 14;
-            const colorIndex = Math.floor(Math.random() * 5) + 1;
-            setTimeout(() => {
-              createParticle(e.clientX, e.clientY, angle, distance, `sparkle-dot color-${colorIndex}`, 0);
-            }, 60 + i * 25);
+            const angle = Math.random() * Math.PI * 2
+            const distance = 6 + Math.random() * 14
+            const colorIndex = Math.floor(Math.random() * 5) + 1
+            setTimeout(
+              () => {
+                createParticle(
+                  e.clientX,
+                  e.clientY,
+                  angle,
+                  distance,
+                  `sparkle-dot color-${colorIndex}`,
+                  0
+                )
+              },
+              60 + i * 25
+            )
           }
 
           // 心形粒子（偶尔出现）
           if (hasHearts) {
             for (let i = 0; i < 3; i++) {
-              const angle = Math.random() * Math.PI * 2;
-              const distance = 20 + Math.random() * 25;
-              const colorIndex = Math.floor(Math.random() * 5) + 1;
-              const rot = (Math.random() > 0.5 ? 1 : -1) * (150 + Math.random() * 100);
-              setTimeout(() => {
-                createParticle(e.clientX, e.clientY, angle, distance, `sparkle-heart color-${colorIndex}`, rot);
-              }, 100 + i * 60);
+              const angle = Math.random() * Math.PI * 2
+              const distance = 20 + Math.random() * 25
+              const colorIndex = Math.floor(Math.random() * 5) + 1
+              const rot = (Math.random() > 0.5 ? 1 : -1) * (150 + Math.random() * 100)
+              setTimeout(
+                () => {
+                  createParticle(
+                    e.clientX,
+                    e.clientY,
+                    angle,
+                    distance,
+                    `sparkle-heart color-${colorIndex}`,
+                    rot
+                  )
+                },
+                100 + i * 60
+              )
             }
           }
 
           // 花瓣粒子（偶尔出现）
           if (hasPetals) {
             for (let i = 0; i < 4; i++) {
-              const angle = Math.random() * Math.PI * 2;
-              const distance = 15 + Math.random() * 20;
-              const colorIndex = Math.floor(Math.random() * 5) + 1;
-              const rot = Math.random() * 360;
-              setTimeout(() => {
-                createParticle(e.clientX, e.clientY, angle, distance, `sparkle-petal color-${colorIndex}`, rot);
-              }, 150 + i * 40);
+              const angle = Math.random() * Math.PI * 2
+              const distance = 15 + Math.random() * 20
+              const colorIndex = Math.floor(Math.random() * 5) + 1
+              const rot = Math.random() * 360
+              setTimeout(
+                () => {
+                  createParticle(
+                    e.clientX,
+                    e.clientY,
+                    angle,
+                    distance,
+                    `sparkle-petal color-${colorIndex}`,
+                    rot
+                  )
+                },
+                150 + i * 40
+              )
             }
           }
 
           // 圆环粒子（特殊元素点击时出现）
           if (isSpecialElement) {
             for (let i = 0; i < 2; i++) {
-              const angle = Math.random() * Math.PI * 2;
-              const distance = 10 + Math.random() * 15;
-              const colorIndex = Math.floor(Math.random() * 5) + 1;
-              setTimeout(() => {
-                createParticle(e.clientX, e.clientY, angle, distance, `sparkle-ring color-${colorIndex}`, 0);
-              }, 200 + i * 80);
+              const angle = Math.random() * Math.PI * 2
+              const distance = 10 + Math.random() * 15
+              const colorIndex = Math.floor(Math.random() * 5) + 1
+              setTimeout(
+                () => {
+                  createParticle(
+                    e.clientX,
+                    e.clientY,
+                    angle,
+                    distance,
+                    `sparkle-ring color-${colorIndex}`,
+                    0
+                  )
+                },
+                200 + i * 80
+              )
             }
           }
-        });
+        })
 
         // 双击增强效果
-        let lastDblClick = 0;
+        let lastDblClick = 0
         document.addEventListener('dblclick', (e) => {
-          const now = Date.now();
-          if (now - lastDblClick < 100) return;
-          lastDblClick = now;
+          const now = Date.now()
+          if (now - lastDblClick < 100) return
+          lastDblClick = now
 
           // 双击时产生大量粒子
           for (let i = 0; i < 12; i++) {
-            const angle = (Math.PI * 2 / 12) * i;
-            const distance = 30 + Math.random() * 40;
-            const colorIndex = (i % 5) + 1;
-            const rot = (Math.random() > 0.5 ? 1 : -1) * (300 + Math.random() * 200);
+            const angle = ((Math.PI * 2) / 12) * i
+            const distance = 30 + Math.random() * 40
+            const colorIndex = (i % 5) + 1
+            const rot = (Math.random() > 0.5 ? 1 : -1) * (300 + Math.random() * 200)
             setTimeout(() => {
-              const typeRand = Math.random();
-              let className = 'sparkle-star';
+              const typeRand = Math.random()
+              let className = 'sparkle-star'
 
-              if (typeRand < 0.2) className = 'sparkle-heart';
-              else if (typeRand < 0.4) className = 'sparkle-petal';
-              else if (typeRand < 0.6) className = 'sparkle-ring';
-              else if (typeRand < 0.8) className = 'sparkle-dot';
+              if (typeRand < 0.2) className = 'sparkle-heart'
+              else if (typeRand < 0.4) className = 'sparkle-petal'
+              else if (typeRand < 0.6) className = 'sparkle-ring'
+              else if (typeRand < 0.8) className = 'sparkle-dot'
 
-              createParticle(e.clientX, e.clientY, angle, distance, `${className} color-${colorIndex}`, rot);
-            }, i * 20);
+              createParticle(
+                e.clientX,
+                e.clientY,
+                angle,
+                distance,
+                `${className} color-${colorIndex}`,
+                rot
+              )
+            }, i * 20)
           }
-        });
-      });
+        })
+      })
     </script>
   </body>
 </html>

@@ -187,6 +187,8 @@
         container.addEventListener('click', () => {
           model.motion(pick(MOTIONS))
           model.expression(pick(EXPRESSIONS))
+          // Live2DChat 监听这个事件来开合对话面板
+          container.dispatchEvent(new CustomEvent('live2d:tap', { bubbles: true }))
         })
 
         window.addEventListener('resize', () => {

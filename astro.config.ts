@@ -1,7 +1,7 @@
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
 import vercel from '@astrojs/vercel'
 import AstroPureIntegration from 'astro-pure'
-import { defineConfig, fontProviders } from 'astro/config'
+import { defineConfig, envField, fontProviders } from 'astro/config'
 import rehypeKatex from 'rehype-katex'
 import remarkMath from 'remark-math'
 
@@ -39,6 +39,19 @@ export default defineConfig({
   // https://docs.astro.build/en/guides/deploy/
   adapter: vercel(),
   output: 'static',
+
+  // [Env]
+  // 看板娘 AI 对话的环境变量。context:'server' + access:'secret' = 只在服务端可见，
+  // 不会被打包进前端产物。声明成 optional 是为了缺变量时不让构建直接挂掉，
+  // 改由 src/pages/api/chat.ts 在运行时返回一句能看懂的报错。
+  // 本地读 .env，线上读 Vercel 项目设置里的同名环境变量。
+  env: {
+    schema: {
+      AI_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
+      AI_MODEL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      AI_BASE_URL: envField.string({ context: 'server', access: 'secret', optional: true })
+    }
+  },
   // Local (standalone)
   // adapter: node({ mode: 'standalone' }),
   // output: 'server',
