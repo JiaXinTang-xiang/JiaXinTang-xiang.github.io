@@ -9,7 +9,7 @@ const { size } = live2dConfig
   role='button'
   tabindex='0'
   aria-label='嘉心糖看板娘，按回车打开对话框'
-  style={`--live2d-width:${size.desktop.width}px;--live2d-height:${size.desktop.height}px;--live2d-mobile-width:${size.mobile.width}px;--live2d-mobile-height:${size.mobile.height}px;`}
+  style={`--live2d-width:${size.desktop.width}px;--live2d-height:${size.desktop.height}px;--live2d-mobile-width:${size.mobile.width}px;--live2d-mobile-height:${size.mobile.height}px;--live2d-reading-peek:${live2dConfig.reading.peekWidth}px;`}
 >
   <canvas id='live2d-canvas'></canvas>
   <div id='live2d-status' role='status' aria-live='polite' aria-busy='true'>
@@ -61,6 +61,31 @@ const { size } = live2dConfig
     // 下面 start() 会直接返回，但对话框仍然要能打开，否则就等于没有入口了。
     const pick = (list) => list[Math.floor(Math.random() * list.length)]
     let messageTimer = 0
+    let readingTimer = 0
+
+    const isReadingModeEnabled = () =>
+      config.reading?.enabled && window.innerWidth > config.responsive.breakpoint
+
+    const setReadingMode = (reading) => {
+      if (!container || !isReadingModeEnabled()) {
+        container?.removeAttribute('data-reading')
+        return
+      }
+      container.dataset.reading = String(reading)
+      if (reading && message) message.hidden = true
+    }
+
+    const scheduleReadingMode = () => {
+      if (!isReadingModeEnabled()) return
+      // 聊天面板打开时不要把入口移走，避免用户滚动查看上下文时失去对话框。
+      if (document.getElementById('ai-chat')?.dataset.open === 'true') return
+      setReadingMode(true)
+      window.clearTimeout(readingTimer)
+      readingTimer = window.setTimeout(
+        () => setReadingMode(false),
+        config.reading?.restoreDelay ?? 1400
+      )
+    }
 
     const positionMessage = () => {
       if (!message || message.hidden) return
@@ -94,6 +119,8 @@ const { size } = live2dConfig
     }
 
     const openChat = () => {
+      window.clearTimeout(readingTimer)
+      setReadingMode(false)
       const line = pick(config.messages.click)
       showMessage(line)
       container.dispatchEvent(
@@ -161,6 +188,7 @@ const { size } = live2dConfig
         setCollapsed(false, false)
         return
       }
+      container.removeAttribute('data-reading')
       let saved = null
       try {
         saved = localStorage.getItem(config.responsive.storageKey)
@@ -180,6 +208,12 @@ const { size } = live2dConfig
     })
 
     syncResponsive()
+
+    window.addEventListener('scroll', scheduleReadingMode, { passive: true })
+    container.addEventListener('pointerenter', () => {
+      window.clearTimeout(readingTimer)
+      setReadingMode(false)
+    })
 
     // 留出一点余量，避免头发/肢体的物理摆动被容器边缘切掉
     const FIT_RATIO = 0.96
@@ -387,6 +421,20 @@ const { size } = live2dConfig
     overflow: hidden;
     cursor: pointer;
     pointer-events: auto;
+    transition:
+      transform 0.35s ease,
+      opacity 0.35s ease;
+  }
+
+  /* 阅读文章滚动时只留一小条边缘，避免遮挡正文；停止滚动后自动回来。 */
+  #live2d-widget[data-reading='true'] {
+    transform: translateX(calc(-100% + var(--live2d-reading-peek, 26px)));
+    opacity: 0.2;
+  }
+
+  #live2d-widget[data-reading='true']:hover {
+    transform: translateX(0);
+    opacity: 1;
   }
 
   #live2d-widget[data-collapsed='true'] {

@@ -23,6 +23,13 @@ export const live2dConfig = {
     storageKey: 'jiaxintang-live2d-mobile-collapsed'
   },
 
+  reading: {
+    /** 桌面端阅读时自动让开页面内容。 */
+    enabled: true,
+    restoreDelay: 1400,
+    peekWidth: 26
+  },
+
   expressions: {
     neutral: '普通',
     available: ['微笑', '惊讶', '半闭眼', '嫌弃眼', '左眼眨', '右眼眨']
