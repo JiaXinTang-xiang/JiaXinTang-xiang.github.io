@@ -1,7 +1,36 @@
-<div id='live2d-widget' role='button' tabindex='0' aria-label='嘉心糖看板娘，按回车打开对话框'>
+---
+import { live2dConfig } from '@/live2d-config'
+
+const { size } = live2dConfig
+---
+
+<div
+  id='live2d-widget'
+  role='button'
+  tabindex='0'
+  aria-label='嘉心糖看板娘，按回车打开对话框'
+  style={`--live2d-width:${size.desktop.width}px;--live2d-height:${size.desktop.height}px;--live2d-mobile-width:${size.mobile.width}px;--live2d-mobile-height:${size.mobile.height}px;`}
+>
   <canvas id='live2d-canvas'></canvas>
   <p id='live2d-status' role='status'>模型加载中…</p>
 </div>
+
+<div id='live2d-message' role='status' aria-live='polite' aria-atomic='true' hidden>
+  <span id='live2d-message-text'></span>
+  <span id='live2d-message-arrow' aria-hidden='true'></span>
+</div>
+
+<button
+  type='button'
+  id='live2d-mobile-toggle'
+  aria-controls='live2d-widget'
+  aria-expanded='true'
+  aria-label='折叠嘉心糖看板娘'
+  hidden
+>
+  <img src={live2dConfig.avatar} alt='' width='44' height='44' />
+  <span aria-hidden='true'>×</span>
+</button>
 
 <script is:inline src='https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js'
 ></script>
@@ -9,18 +38,61 @@
 <script is:inline src='https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js'
 ></script>
 
-<script is:inline>
+<script is:inline define:vars={{ config: live2dConfig }}>
   ;(() => {
     const container = document.getElementById('live2d-widget')
     const canvas = document.getElementById('live2d-canvas')
     const status = document.getElementById('live2d-status')
+    const message = document.getElementById('live2d-message')
+    const messageText = document.getElementById('live2d-message-text')
+    const mobileToggle = document.getElementById('live2d-mobile-toggle')
 
     if (!container || !canvas || container.dataset.initialized === 'true') return
     container.dataset.initialized = 'true'
 
     // 对话入口先注册，而且不依赖模型：CDN 被墙、不支持 WebGL、模型 404 的时候，
     // 下面 start() 会直接返回，但对话框仍然要能打开，否则就等于没有入口了。
-    const openChat = () => container.dispatchEvent(new CustomEvent('live2d:tap', { bubbles: true }))
+    const pick = (list) => list[Math.floor(Math.random() * list.length)]
+    let messageTimer = 0
+
+    const positionMessage = () => {
+      if (!message || message.hidden) return
+      const rect = container.getBoundingClientRect()
+      const padding = 10
+      const width = message.offsetWidth
+      const left = Math.min(
+        Math.max(rect.left + rect.width / 2 - width / 2, padding),
+        window.innerWidth - width - padding
+      )
+      const top = Math.max(padding, rect.top - message.offsetHeight - 14)
+      message.style.left = `${left}px`
+      message.style.top = `${top}px`
+    }
+
+    const showMessage = (text, displayTime = config.messages.displayTime) => {
+      if (!message || !messageText || !text) return
+      window.clearTimeout(messageTimer)
+      messageText.textContent = text
+      message.hidden = false
+      requestAnimationFrame(() => {
+        positionMessage()
+        message.dataset.visible = 'true'
+      })
+      messageTimer = window.setTimeout(() => {
+        message.dataset.visible = 'false'
+        window.setTimeout(() => {
+          if (message.dataset.visible === 'false') message.hidden = true
+        }, 240)
+      }, displayTime)
+    }
+
+    const openChat = () => {
+      const line = pick(config.messages.click)
+      showMessage(line)
+      container.dispatchEvent(
+        new CustomEvent('live2d:tap', { bubbles: true, detail: { message: line } })
+      )
+    }
 
     container.addEventListener('click', openChat)
 
@@ -50,6 +122,52 @@
       })
       status.appendChild(fallback)
     }
+
+    const isMobile = () => window.innerWidth <= config.responsive.breakpoint
+
+    const setCollapsed = (collapsed, remember = true) => {
+      if (!mobileToggle) return
+      container.dataset.collapsed = String(collapsed)
+      mobileToggle.dataset.collapsed = String(collapsed)
+      mobileToggle.setAttribute('aria-expanded', String(!collapsed))
+      mobileToggle.setAttribute('aria-label', collapsed ? '展开嘉心糖看板娘' : '折叠嘉心糖看板娘')
+      const mark = mobileToggle.querySelector('span')
+      if (mark) mark.textContent = collapsed ? '聊聊' : '×'
+      if (collapsed && message) message.hidden = true
+      if (remember) {
+        try {
+          localStorage.setItem(config.responsive.storageKey, String(collapsed))
+        } catch {}
+      }
+    }
+
+    const syncResponsive = () => {
+      if (!mobileToggle) return
+      const mobile = isMobile()
+      mobileToggle.hidden = !mobile
+      if (!mobile) {
+        setCollapsed(false, false)
+        return
+      }
+      let saved = null
+      try {
+        saved = localStorage.getItem(config.responsive.storageKey)
+      } catch {}
+      const collapsed = saved === null ? config.responsive.defaultCollapsed : saved === 'true'
+      setCollapsed(collapsed, false)
+    }
+
+    mobileToggle?.addEventListener('click', () => {
+      const collapsed = container.dataset.collapsed === 'true'
+      if (collapsed) {
+        setCollapsed(false)
+        showMessage('我在这里～点击我就可以开始聊天。')
+      } else {
+        setCollapsed(true)
+      }
+    })
+
+    syncResponsive()
 
     // 留出一点余量，避免头发/肢体的物理摆动被容器边缘切掉
     const FIT_RATIO = 0.96
@@ -87,11 +205,10 @@
     }
 
     // 模型自带的表情与动作（见 seethrough_output.model3.json）
-    const EXPRESSIONS = ['微笑', '惊讶', '半闭眼', '嫌弃眼', '左眼眨', '右眼眨']
-    const NEUTRAL = '普通'
-    const MOTIONS = ['Nod', 'Shake', 'Blink']
+    const EXPRESSIONS = config.expressions.available
+    const NEUTRAL = config.expressions.neutral
+    const MOTIONS = config.motions
 
-    const pick = (list) => list[Math.floor(Math.random() * list.length)]
     const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
     // 把量到的轮廓等比缩放到容器内并居中，anchor 取 (0,0) 即画布左上角
@@ -128,10 +245,7 @@
       })
 
       try {
-        const model = await Live2DModel.from(
-          '/live2d/seethrough_output/seethrough_output.model3.json',
-          { autoInteract: false }
-        )
+        const model = await Live2DModel.from(config.modelPath, { autoInteract: false })
 
         app.stage.addChild(model)
 
@@ -219,16 +333,19 @@
         // 让动作跟着对话走：Live2DChat 用这个事件点名要哪个表情 / 动作。
         // 只认白名单里的名字，避免外面塞个乱七八糟的值进来。
         container.addEventListener('live2d:react', (event) => {
-          const { expression, motion } = event.detail || {}
+          const { expression, motion, message: reactionMessage } = event.detail || {}
           stopIdleActing()
           if (expression === NEUTRAL || EXPRESSIONS.includes(expression))
             model.expression(expression)
           if (MOTIONS.includes(motion)) model.motion(motion)
+          if (typeof reactionMessage === 'string') showMessage(reactionMessage)
         })
 
         window.addEventListener('resize', () => {
+          syncResponsive()
           app.renderer.resize(container.clientWidth, container.clientHeight)
           fitContent(model, content)
+          positionMessage()
         })
       } catch (error) {
         showError('模型加载失败，请打开控制台查看详细信息。', error)
@@ -249,11 +366,99 @@
     bottom: 0;
     left: 0;
     z-index: 40;
-    width: 280px;
-    height: 380px;
+    width: var(--live2d-width);
+    height: var(--live2d-height);
     overflow: hidden;
     cursor: pointer;
     pointer-events: auto;
+  }
+
+  #live2d-widget[data-collapsed='true'] {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  #live2d-message {
+    position: fixed;
+    z-index: 42;
+    max-width: min(260px, calc(100vw - 20px));
+    padding: 10px 14px;
+    border: 1px solid hsl(var(--border) / 80%);
+    border-radius: 16px;
+    background: hsl(var(--background) / 94%);
+    box-shadow: 0 10px 30px rgb(0 0 0 / 16%);
+    color: hsl(var(--foreground));
+    font-size: 13px;
+    line-height: 1.5;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px) scale(0.96);
+    transition:
+      opacity 0.22s ease,
+      transform 0.22s ease;
+    backdrop-filter: blur(12px);
+  }
+
+  #live2d-message[data-visible='true'] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  #live2d-message-arrow {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    border-right: 1px solid hsl(var(--border) / 80%);
+    border-bottom: 1px solid hsl(var(--border) / 80%);
+    background: hsl(var(--background) / 94%);
+    transform: translate(-50%, -6px) rotate(45deg);
+  }
+
+  #live2d-mobile-toggle {
+    position: fixed;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    left: calc(10px + env(safe-area-inset-left));
+    z-index: 43;
+    align-items: center;
+    gap: 6px;
+    min-width: 54px;
+    height: 54px;
+    padding: 4px 10px 4px 4px;
+    border: 1px solid hsl(var(--border));
+    border-radius: 999px;
+    background: hsl(var(--background) / 92%);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+    color: hsl(var(--foreground));
+    cursor: pointer;
+    font-size: 11px;
+    backdrop-filter: blur(10px);
+  }
+
+  #live2d-mobile-toggle:not([hidden]) {
+    display: flex;
+  }
+
+  #live2d-mobile-toggle img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: 50% 18%;
+  }
+
+  #live2d-mobile-toggle:not([data-collapsed='true']) {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    padding: 0;
+    justify-content: center;
+    background: hsl(var(--background) / 78%);
+  }
+
+  #live2d-mobile-toggle:not([data-collapsed='true']) img {
+    display: none;
   }
 
   #live2d-canvas {
@@ -307,9 +512,15 @@
 
   @media (max-width: 767px) {
     #live2d-widget {
-      width: 180px;
-      height: 250px;
+      width: var(--live2d-mobile-width);
+      height: var(--live2d-mobile-height);
       left: -8px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #live2d-message {
+      transition: none;
     }
   }
 </style>

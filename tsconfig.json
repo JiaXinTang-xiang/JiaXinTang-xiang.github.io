@@ -23,6 +23,7 @@
       "@/plugins/*": ["src/plugins/*"],
       "@/pages/*": ["src/pages/*"],
       "@/types": ["src/types/index.ts"],
+      "@/live2d-config": ["src/live2d-config.ts"],
       "@/site-config": ["src/site.config.ts"],
       "@/ai-config": ["src/ai.config.ts"]
     }
