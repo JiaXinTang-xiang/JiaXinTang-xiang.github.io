@@ -57,13 +57,6 @@ function loadFonts() {
 async function assetToDataUri(publicPath: string | undefined) {
   if (!publicPath) return null
   try {
-    if (/^https?:\/\//.test(publicPath)) {
-      const response = await fetch(publicPath)
-      if (!response.ok) return null
-      const mime = response.headers.get('content-type')?.split(';')[0] || 'image/jpeg'
-      const buf = Buffer.from(await response.arrayBuffer())
-      return `data:${mime};base64,${buf.toString('base64')}`
-    }
     // config.logo.src 形如 /src/assets/head.jpg，构建时 cwd 即项目根目录
     const rel = publicPath.replace(/^\/+/, '')
     const buf = await fs.readFile(path.resolve(process.cwd(), rel))

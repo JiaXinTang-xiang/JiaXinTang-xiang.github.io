@@ -43,7 +43,7 @@ export const theme: ThemeUserConfig = {
   },
   /** Set a logo image to show in the homepage. */
   logo: {
-    src: 'https://jiaxin404.top/images/avatar.jpg',
+    src: '/src/assets/head.jpg',
     alt: 'Avatar'
   },
   //建议：保持现状
