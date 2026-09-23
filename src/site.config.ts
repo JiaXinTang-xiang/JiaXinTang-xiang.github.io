@@ -43,13 +43,13 @@ export const theme: ThemeUserConfig = {
   },
   /** Set a logo image to show in the homepage. */
   logo: {
-    src: '/src/assets/head.jpg',
+    src: 'https://jiaxin404.top/images/avatar.jpg',
     alt: 'Avatar'
   },
   //建议：保持现状
-  titleDelimiter: '•',  //网站页面标题中各部分之间的分隔符  
+  titleDelimiter: '•', //网站页面标题中各部分之间的分隔符
   prerender: true, // pagefind search is not supported with prerendering disabled
-  npmCDN: 'https://cdn.jsdelivr.net/npm',   //依赖第三方库时用的 CDN 源
+  npmCDN: 'https://cdn.jsdelivr.net/npm', //依赖第三方库时用的 CDN 源
 
   // Still in test  这是用来在 HTML 的 <head> 标签中添加自定义元数据或标签的
   head: [
@@ -70,7 +70,6 @@ export const theme: ThemeUserConfig = {
 
   /** Configure the header of your site. */
   header: {
-
     menu: [
       {
         title: 'Blog',
@@ -109,7 +108,6 @@ export const theme: ThemeUserConfig = {
     ]
   },
 
-
   /** Configure the footer of your site. */
   footer: {
     // Year format  年份格式
@@ -130,23 +128,23 @@ export const theme: ThemeUserConfig = {
       }
     ],
     /** Enable displaying a “Astro & Pure theme powered” link in your site’s footer. */
-    credits: true,    //这是对主题作者的尊重
+    credits: true, //这是对主题作者的尊重
     /** Optional details about the social media accounts for this site. */
     social: {
       github: 'https://github.com/jiaxintang-xiang',
-      email: 'mailto:2174064279@qq.com',
+      email: 'mailto:2174064279@qq.com'
       // 可以添加更多社交链接
       // twitter: 'https://twitter.com/yourusername',
       // weibo: 'https://weibo.com/yourusername',
       // bilibili: 'https://space.bilibili.com/yourid'
     }
   },
-  
+
   // [Content]
   content: {
-    /** External links configuration  外部链接配置*/ 
+    /** External links configuration  外部链接配置*/
     externalLinks: {
-      content: ' ↗',   //提示用户这是外部链接（会跳转到其他网站）
+      content: ' ↗', //提示用户这是外部链接（会跳转到其他网站）
       /** Properties for the external links element */
       properties: {
         style: 'user-select:none'
@@ -155,7 +153,7 @@ export const theme: ThemeUserConfig = {
     /** Blog page size for pagination (optional) */
     blogPageSize: 8,
     // Currently support weibo, x, bluesky 社交分享按钮
-    share: ['weibo', 'x', 'bluesky']  
+    share: ['weibo', 'x', 'bluesky']
   }
 }
 
@@ -164,7 +162,7 @@ export const integ: IntegrationUserConfig = {
   // https://astro-pure.js.org/docs/integrations/links
   links: {
     // Friend logbook
-      logbook: [],  // 不注释，给空数组
+    logbook: [], // 不注释，给空数组
     // logbook: [
     //   { date: '2025-03-30', content: '开始完善个人博客，记录技术成长之路' },
     //   { date: '2025-03-29', content: '学习 Astro 框架，体验现代前端开发的魅力' },
@@ -173,7 +171,7 @@ export const integ: IntegrationUserConfig = {
     //   { date: '2025-03-26', content: '每一个项目都是成长的见证，每一篇文章都是思考的结晶' }
     // ],
     // Yourself link info
-    
+
     applyTip: [
       { name: 'Name', val: `JiaXin's Blog` },
       { name: 'Desc', val: '心有山海，静而无边' },

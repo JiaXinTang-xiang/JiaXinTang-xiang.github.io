@@ -13,27 +13,38 @@ const languages = ['HTML', 'CSS', 'JavaScript', 'TypeScript']
 const frontend = ['React', 'Vue.js', 'Astro', 'Tailwind CSS']
 const backend = ['Node.js', 'Express', 'MongoDB', 'Vercel']
 
-
 const imagePath = config.logo.src
-const images = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/assets/*.{jpeg,jpg,png,gif,avif,webp}'
-)
-if (!images[imagePath])
-  throw new Error(
-    `"${imagePath}" does not exist in glob: "src/assets/*.{jpeg,jpg,png,gif,avif,webp}"`
-  )
+const isExternalImage = /^https?:\/\//.test(imagePath)
+const images = isExternalImage
+  ? null
+  : import.meta.glob<{ default: ImageMetadata }>('/src/assets/*.{jpeg,jpg,png,gif,avif,webp}')
+if (!isExternalImage && images && !images[imagePath])
+  throw new Error(`"${imagePath}" does not exist in the local asset glob`)
 ---
 
 <PageLayout meta={{ title: 'Home' }} highlightColor='#659EB9'>
   <main class='flex w-full flex-col items-center'>
     <section class='animate mb-10 flex flex-col items-center gap-y-7' id='content-header'>
-      <Image
-        src={images[imagePath]()}
-        alt={config.logo.alt || 'Profile'}
-        class='h-28 w-auto rounded-full border p-1'
-        loading='eager'
-        fetchpriority='high'
-      />
+      {
+        isExternalImage ? (
+          <img
+            src={imagePath}
+            alt={config.logo.alt || 'Profile'}
+            class='h-28 w-auto rounded-full border p-1'
+            loading='eager'
+            fetchpriority='high'
+            referrerpolicy='no-referrer'
+          />
+        ) : (
+          <Image
+            src={images![imagePath]()}
+            alt={config.logo.alt || 'Profile'}
+            class='h-28 w-auto rounded-full border p-1'
+            loading='eager'
+            fetchpriority='high'
+          />
+        )
+      }
 
       <div class='flex flex-col items-center gap-y-4'>
         <h1 class='text-3xl font-medium' data-i18n='home.author'>{config.author}</h1>
@@ -41,20 +52,10 @@ if (!images[imagePath])
           <Label title='China'>
             <Icon name='location' class='size-5' slot='icon' />
           </Label>
-          <Label
-            title='GitHub'
-            as='a'
-            href='https://github.com/jiaxintang-xiang'
-            target='_blank'
-          >
+          <Label title='GitHub' as='a' href='https://github.com/jiaxintang-xiang' target='_blank'>
             <Icon name='github' class='size-5' slot='icon' />
           </Label>
-          <Label
-            title='Email'
-            as='a'
-            href='mailto:2174064279@qq.com'
-            target='_blank'
-          >
+          <Label title='Email' as='a' href='mailto:2174064279@qq.com' target='_blank'>
             <Icon name='email' class='size-5' slot='icon' />
           </Label>
         </div>
@@ -76,134 +77,276 @@ if (!images[imagePath])
       </a>
     </section> -->
 
-    <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>
-      <Section title='About' i18nKey='home.about'>
-        <p class='text-muted-foreground' data-i18n='home.student'>学生/</p>
-        <p class='text-muted-foreground' data-i18n='home.bio'>
-        这里分享自己的学习和成长经历。Feel free to contact me~
-        </p>
-        <Button title='Learn more' class='w-fit self-end' href='/about' variant='ahead' />
-      </Section>
+      <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>
+        <Section title='About' i18nKey='home.about'>
+          <p class='text-muted-foreground' data-i18n='home.student'>学生/</p>
+          <p class='text-muted-foreground' data-i18n='home.bio'>
+            这里分享自己的学习和成长经历。Feel free to contact me~
+          </p>
+          <Button title='Learn more' class='w-fit self-end' href='/about' variant='ahead' />
+        </Section>
 
-      <Section title='Education' i18nKey='home.education'>
-        <!-- <Card
+        <Section title='Education' i18nKey='home.education'>
+          <!-- <Card
           as='a'
           heading='广西无人机遥测实验室'
           subheading='成员'
           date='Sept 2024 - Present'
         >
         </Card> -->
-        <Card
-          as='a'
-          heading='桂林航天工业学院'
-          subheading='电子信息工程专业 - 本科'
-          date='Sept 2024 - Present'
-          href='https://dept4.guat.edu.cn/'
-        >
-           <!-- <ul class='ms-4 list-disc text-muted-foreground'>
+          <Card
+            as='a'
+            heading='桂林航天工业学院'
+            subheading='电子信息工程专业 - 本科'
+            date='Sept 2024 - Present'
+            href='https://dept4.guat.edu.cn/'
+          >
+            <!-- <ul class='ms-4 list-disc text-muted-foreground'>
             <li>主修课程：数据结构、算法设计、Web开发、数据库系统</li>
             <li>获得奖学金：校级一等奖学金</li>
 
             <li>参与多个前端项目开发，积累实战经验</li>
           </ul>  -->
-        </Card>
-      </Section>
+          </Card>
+        </Section>
 
-      <Section title='Posts' i18nKey='home.posts'>
-        <div class='flex flex-col gap-y-3'>
-          <div class='flex flex-col gap-y-1.5 sm:gap-y-2'>
-            <div class='post-preview group/card flex flex-col relative rounded-xl border bg-background transition-colors ease-in-out px-4 py-3 hover:bg-muted'>
-              <a class='group/link w-full flex flex-col transition-all hover:text-primary sm:flex-row' href='/tech/about-my-notes'>
-                <span class='text-muted-foreground font-mono min-w-[95px] py-1 text-xs'>
-                  <time datetime='2026-07-06T00:00:00.000Z'>2026年7月6日</time>
-                </span>
-                <div class='z-10 flex-grow'>
-                  <div class='flex justify-between'>
-                    <div>搭建 VitePress 站点教程</div>
-                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' class='preview-redirect my-1 stroke-muted-foreground group-hover/link:stroke-primary'>
-                      <line x1='5' y1='12' x2='19' y2='12' class='translate-x-4 scale-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1 group-hover/link:scale-x-100'></line>
-                      <polyline points='12 5 19 12 12 19' class='translate-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1'></polyline>
-                    </svg>
+        <Section title='Posts' i18nKey='home.posts'>
+          <div class='flex flex-col gap-y-3'>
+            <div class='flex flex-col gap-y-1.5 sm:gap-y-2'>
+              <div
+                class='post-preview group/card flex flex-col relative rounded-xl border bg-background transition-colors ease-in-out px-4 py-3 hover:bg-muted'
+              >
+                <a
+                  class='group/link w-full flex flex-col transition-all hover:text-primary sm:flex-row'
+                  href='/tech/about-my-notes'
+                >
+                  <span class='text-muted-foreground font-mono min-w-[95px] py-1 text-xs'>
+                    <time datetime='2026-07-06T00:00:00.000Z'>2026年7月6日</time>
+                  </span>
+                  <div class='z-10 flex-grow'>
+                    <div class='flex justify-between'>
+                      <div>搭建 VitePress 站点教程</div>
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        width='16'
+                        height='16'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke-width='2.5'
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        class='preview-redirect my-1 stroke-muted-foreground group-hover/link:stroke-primary'
+                      >
+                        <line
+                          x1='5'
+                          y1='12'
+                          x2='19'
+                          y2='12'
+                          class='translate-x-4 scale-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1 group-hover/link:scale-x-100'
+                        ></line>
+                        <polyline
+                          points='12 5 19 12 12 19'
+                          class='translate-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1'
+                        ></polyline>
+                      </svg>
+                    </div>
                   </div>
-                </div>
-              </a>
-            </div>
-            <div class='post-preview group/card flex flex-col relative rounded-xl border bg-background transition-colors ease-in-out px-4 py-3 hover:bg-muted'>
-              <a class='group/link w-full flex flex-col transition-all hover:text-primary sm:flex-row' href='/tech/camera-calibration'>
-                <span class='text-muted-foreground font-mono min-w-[95px] py-1 text-xs'>
-                  <time datetime='2026-06-27T00:00:00.000Z'>2026年6月27日</time>
-                </span>
-                <div class='z-10 flex-grow'>
-                  <div class='flex justify-between'>
-                    <div>相机标定教程</div>
-                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' class='preview-redirect my-1 stroke-muted-foreground group-hover/link:stroke-primary'>
-                      <line x1='5' y1='12' x2='19' y2='12' class='translate-x-4 scale-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1 group-hover/link:scale-x-100'></line>
-                      <polyline points='12 5 19 12 12 19' class='translate-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1'></polyline>
-                    </svg>
+                </a>
+              </div>
+              <div
+                class='post-preview group/card flex flex-col relative rounded-xl border bg-background transition-colors ease-in-out px-4 py-3 hover:bg-muted'
+              >
+                <a
+                  class='group/link w-full flex flex-col transition-all hover:text-primary sm:flex-row'
+                  href='/tech/camera-calibration'
+                >
+                  <span class='text-muted-foreground font-mono min-w-[95px] py-1 text-xs'>
+                    <time datetime='2026-06-27T00:00:00.000Z'>2026年6月27日</time>
+                  </span>
+                  <div class='z-10 flex-grow'>
+                    <div class='flex justify-between'>
+                      <div>相机标定教程</div>
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        width='16'
+                        height='16'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke-width='2.5'
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        class='preview-redirect my-1 stroke-muted-foreground group-hover/link:stroke-primary'
+                      >
+                        <line
+                          x1='5'
+                          y1='12'
+                          x2='19'
+                          y2='12'
+                          class='translate-x-4 scale-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1 group-hover/link:scale-x-100'
+                        ></line>
+                        <polyline
+                          points='12 5 19 12 12 19'
+                          class='translate-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1'
+                        ></polyline>
+                      </svg>
+                    </div>
                   </div>
-                </div>
-              </a>
-            </div>
-            <div class='post-preview group/card flex flex-col relative rounded-xl border bg-background transition-colors ease-in-out px-4 py-3 hover:bg-muted'>
-              <a class='group/link w-full flex flex-col transition-all hover:text-primary sm:flex-row' href='/monthly/26_05'>
-                <span class='text-muted-foreground font-mono min-w-[95px] py-1 text-xs'>
-                  <time datetime='2026-06-07T00:00:00.000Z'>2026年6月7日</time>
-                </span>
-                <div class='z-10 flex-grow'>
-                  <div class='flex justify-between'>
-                    <div>月记·26-05</div>
-                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' class='preview-redirect my-1 stroke-muted-foreground group-hover/link:stroke-primary'>
-                      <line x1='5' y1='12' x2='19' y2='12' class='translate-x-4 scale-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1 group-hover/link:scale-x-100'></line>
-                      <polyline points='12 5 19 12 12 19' class='translate-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1'></polyline>
-                    </svg>
+                </a>
+              </div>
+              <div
+                class='post-preview group/card flex flex-col relative rounded-xl border bg-background transition-colors ease-in-out px-4 py-3 hover:bg-muted'
+              >
+                <a
+                  class='group/link w-full flex flex-col transition-all hover:text-primary sm:flex-row'
+                  href='/monthly/26_05'
+                >
+                  <span class='text-muted-foreground font-mono min-w-[95px] py-1 text-xs'>
+                    <time datetime='2026-06-07T00:00:00.000Z'>2026年6月7日</time>
+                  </span>
+                  <div class='z-10 flex-grow'>
+                    <div class='flex justify-between'>
+                      <div>月记·26-05</div>
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        width='16'
+                        height='16'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke-width='2.5'
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        class='preview-redirect my-1 stroke-muted-foreground group-hover/link:stroke-primary'
+                      >
+                        <line
+                          x1='5'
+                          y1='12'
+                          x2='19'
+                          y2='12'
+                          class='translate-x-4 scale-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1 group-hover/link:scale-x-100'
+                        ></line>
+                        <polyline
+                          points='12 5 19 12 12 19'
+                          class='translate-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1'
+                        ></polyline>
+                      </svg>
+                    </div>
                   </div>
-                </div>
-              </a>
-            </div>
-            <div class='post-preview group/card flex flex-col relative rounded-xl border bg-background transition-colors ease-in-out px-4 py-3 hover:bg-muted'>
-              <a class='group/link w-full flex flex-col transition-all hover:text-primary sm:flex-row' href='/tech/waline_jia'>
-                <span class='text-muted-foreground font-mono min-w-[95px] py-1 text-xs'>
-                  <time datetime='2026-05-30T00:00:00.000Z'>2026年5月30日</time>
-                </span>
-                <div class='z-10 flex-grow'>
-                  <div class='flex justify-between'>
-                    <div>Astro 搭建 Waline 评论区</div>
-                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' class='preview-redirect my-1 stroke-muted-foreground group-hover/link:stroke-primary'>
-                      <line x1='5' y1='12' x2='19' y2='12' class='translate-x-4 scale-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1 group-hover/link:scale-x-100'></line>
-                      <polyline points='12 5 19 12 12 19' class='translate-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1'></polyline>
-                    </svg>
+                </a>
+              </div>
+              <div
+                class='post-preview group/card flex flex-col relative rounded-xl border bg-background transition-colors ease-in-out px-4 py-3 hover:bg-muted'
+              >
+                <a
+                  class='group/link w-full flex flex-col transition-all hover:text-primary sm:flex-row'
+                  href='/tech/waline_jia'
+                >
+                  <span class='text-muted-foreground font-mono min-w-[95px] py-1 text-xs'>
+                    <time datetime='2026-05-30T00:00:00.000Z'>2026年5月30日</time>
+                  </span>
+                  <div class='z-10 flex-grow'>
+                    <div class='flex justify-between'>
+                      <div>Astro 搭建 Waline 评论区</div>
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        width='16'
+                        height='16'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke-width='2.5'
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        class='preview-redirect my-1 stroke-muted-foreground group-hover/link:stroke-primary'
+                      >
+                        <line
+                          x1='5'
+                          y1='12'
+                          x2='19'
+                          y2='12'
+                          class='translate-x-4 scale-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1 group-hover/link:scale-x-100'
+                        ></line>
+                        <polyline
+                          points='12 5 19 12 12 19'
+                          class='translate-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1'
+                        ></polyline>
+                      </svg>
+                    </div>
                   </div>
-                </div>
-              </a>
-            </div>
-            <div class='post-preview group/card flex flex-col relative rounded-xl border bg-background transition-colors ease-in-out px-4 py-3 hover:bg-muted'>
-              <a class='group/link w-full flex flex-col transition-all hover:text-primary sm:flex-row' href='/tech/About-Ubuntu-command'>
-                <span class='text-muted-foreground font-mono min-w-[95px] py-1 text-xs'>
-                  <time datetime='2026-04-14T00:00:00.000Z'>2026年4月14日</time>
-                </span>
-                <div class='z-10 flex-grow'>
-                  <div class='flex justify-between'>
-                    <div>Ubuntu常用命令大全</div>
-                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' class='preview-redirect my-1 stroke-muted-foreground group-hover/link:stroke-primary'>
-                      <line x1='5' y1='12' x2='19' y2='12' class='translate-x-4 scale-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1 group-hover/link:scale-x-100'></line>
-                      <polyline points='12 5 19 12 12 19' class='translate-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1'></polyline>
-                    </svg>
+                </a>
+              </div>
+              <div
+                class='post-preview group/card flex flex-col relative rounded-xl border bg-background transition-colors ease-in-out px-4 py-3 hover:bg-muted'
+              >
+                <a
+                  class='group/link w-full flex flex-col transition-all hover:text-primary sm:flex-row'
+                  href='/tech/About-Ubuntu-command'
+                >
+                  <span class='text-muted-foreground font-mono min-w-[95px] py-1 text-xs'>
+                    <time datetime='2026-04-14T00:00:00.000Z'>2026年4月14日</time>
+                  </span>
+                  <div class='z-10 flex-grow'>
+                    <div class='flex justify-between'>
+                      <div>Ubuntu常用命令大全</div>
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        width='16'
+                        height='16'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke-width='2.5'
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        class='preview-redirect my-1 stroke-muted-foreground group-hover/link:stroke-primary'
+                      >
+                        <line
+                          x1='5'
+                          y1='12'
+                          x2='19'
+                          y2='12'
+                          class='translate-x-4 scale-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1 group-hover/link:scale-x-100'
+                        ></line>
+                        <polyline
+                          points='12 5 19 12 12 19'
+                          class='translate-x-0 transition-all duration-300 ease-in-out group-hover/link:translate-x-1'
+                        ></polyline>
+                      </svg>
+                    </div>
                   </div>
-                </div>
-              </a>
+                </a>
+              </div>
             </div>
+            <a
+              class='group inline-flex items-center gap-x-1 rounded-lg bg-muted border px-3 py-2 text-sm text-muted-foreground transition-all hover:bg-primary-foreground no-underline w-fit self-end'
+              href='/blog'
+            >
+              <p class='my-0'>Read more articles</p>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                width='16'
+                height='16'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke-width='2.5'
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                class='stroke-muted-foreground group-hover:stroke-primary'
+              >
+                <line
+                  x1='5'
+                  y1='12'
+                  x2='19'
+                  y2='12'
+                  class='translate-x-4 scale-x-0 transition-all duration-300 ease-in-out group-hover:translate-x-1 group-hover:scale-x-100'
+                ></line>
+                <polyline
+                  points='12 5 19 12 12 19'
+                  class='translate-x-0 transition-all duration-300 ease-in-out group-hover:translate-x-1'
+                ></polyline>
+              </svg>
+            </a>
           </div>
-          <a class='group inline-flex items-center gap-x-1 rounded-lg bg-muted border px-3 py-2 text-sm text-muted-foreground transition-all hover:bg-primary-foreground no-underline w-fit self-end' href='/blog'>
-            <p class='my-0'>Read more articles</p>
-            <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' class='stroke-muted-foreground group-hover:stroke-primary'>
-              <line x1='5' y1='12' x2='19' y2='12' class='translate-x-4 scale-x-0 transition-all duration-300 ease-in-out group-hover:translate-x-1 group-hover:scale-x-100'></line>
-              <polyline points='12 5 19 12 12 19' class='translate-x-0 transition-all duration-300 ease-in-out group-hover:translate-x-1'></polyline>
-            </svg>
-          </a>
-        </div>
-      </Section>
+        </Section>
 
-      <!-- <Section title='Projects' i18nKey='home.projects'>
+        <!-- <Section title='Projects' i18nKey='home.projects'>
         <div class='grid grid-cols-1 gap-3 sm:grid-cols-2'>
           <ProjectCard
             href='https://github.com/jiaxintang-xiang/JIABlog'
@@ -220,35 +363,34 @@ if (!images[imagePath])
         </div>
       </Section> -->
 
-      <Section title='Skills' i18nKey='home.skills'>
-        <SkillLayout title='Programming Languages' skills={languages} />
-        <SkillLayout title='Frontend Technologies' skills={frontend} />
-        <SkillLayout title='Backend Tools' skills={backend} />
-      </Section>
+        <Section title='Skills' i18nKey='home.skills'>
+          <SkillLayout title='Programming Languages' skills={languages} />
+          <SkillLayout title='Frontend Technologies' skills={frontend} />
+          <SkillLayout title='Backend Tools' skills={backend} />
+        </Section>
 
-      <Section title='Statistics' i18nKey='home.statistics'>
-        <div class='grid grid-cols-2 gap-4 sm:grid-cols-4'>
-          <div class='rounded-lg border p-4 text-center'>
-            <div class='text-2xl font-bold text-primary'>459</div>
-            <div class='text-sm text-muted-foreground'>Days Online</div>
+        <Section title='Statistics' i18nKey='home.statistics'>
+          <div class='grid grid-cols-2 gap-4 sm:grid-cols-4'>
+            <div class='rounded-lg border p-4 text-center'>
+              <div class='text-2xl font-bold text-primary'>459</div>
+              <div class='text-sm text-muted-foreground'>Days Online</div>
+            </div>
+            <div class='rounded-lg border p-4 text-center'>
+              <div class='text-2xl font-bold text-primary'>2026</div>
+              <div class='text-sm text-muted-foreground'>Last Updated</div>
+            </div>
+            <div class='rounded-lg border p-4 text-center'>
+              <div class='text-2xl font-bold text-primary'>173k</div>
+              <div class='text-sm text-muted-foreground'>Total Words</div>
+            </div>
+            <div class='rounded-lg border p-4 text-center'>
+              <div class='text-2xl font-bold text-primary'>23</div>
+              <div class='text-sm text-muted-foreground'>Total Posts</div>
+            </div>
           </div>
-          <div class='rounded-lg border p-4 text-center'>
-            <div class='text-2xl font-bold text-primary'>2026</div>
-            <div class='text-sm text-muted-foreground'>Last Updated</div>
-          </div>
-          <div class='rounded-lg border p-4 text-center'>
-            <div class='text-2xl font-bold text-primary'>173k</div>
-            <div class='text-sm text-muted-foreground'>Total Words</div>
-          </div>
-          <div class='rounded-lg border p-4 text-center'>
-            <div class='text-2xl font-bold text-primary'>23</div>
-            <div class='text-sm text-muted-foreground'>Total Posts</div>
-          </div>
-        </div>
-      </Section>
+        </Section>
 
-
-      <!-- <Section title='Update Log'>
+        <!-- <Section title='Update Log'>
         <div class="overflow-x-auto">
           <table class="w-full border-collapse">
             <thead>
@@ -279,21 +421,22 @@ if (!images[imagePath])
         </div>
       </Section> -->
 
-      <Section>
-        <div class="overflow-x-auto">
-          <img
-            src="https://ghchart.rshah.org/jiaxintang-xiang"
-            alt="GitHub Contributions Chart"
-            class="h-auto w-full rounded-lg border"
-          >
-        </div>
-          <p class="mt-2 text-left text-sm text-muted-foreground">
+        <Section>
+          <div class='overflow-x-auto'>
+            <img
+              src='https://ghchart.rshah.org/jiaxintang-xiang'
+              alt='GitHub Contributions Chart'
+              class='h-auto w-full rounded-lg border'
+            />
+          </div>
+          <p class='mt-2 text-left text-sm text-muted-foreground'>
             3010 contributions in 2025 ~ 2026
-        </p>
+          </p>
 
-     <Quote class='mt-12' />   <!--//Quote 组件的配置 -->
-
-  </main>
-</PageLayout>
-
-
+          <Quote class='mt-12' />
+          <!--//Quote 组件的配置 -->
+        </Section>
+      </div>
+    </section>
+  </main></PageLayout
+>
