@@ -176,7 +176,8 @@ export const integ: IntegrationUserConfig = {
       { name: 'Name', val: `JiaXin's Blog` },
       { name: 'Desc', val: '心有山海，静而无边' },
       { name: 'Link', val: 'https://jiaxin404.top/' },
-      { name: 'Avatar', val: 'https://jiaxin404.top/images/avatar.jpg' }
+      { name: 'Avatar', val: 'https://jiaxin404.top/images/avatar.jpg' },
+      { name: 'RSS', val: 'https://jiaxin404.top/rss.xml' }
     ],
     // Cache avatars in `public/avatars/` to improve user experience.
     cacheAvatar: false
