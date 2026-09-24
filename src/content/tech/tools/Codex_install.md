@@ -37,7 +37,7 @@ chmod +x ccx-linux-amd64
 
 在二进制同目录创建 `.env` 文件：
 
-```env
+```dotenv
 PORT=3688
 ENV=production
 ENABLE_WEB_UI=true

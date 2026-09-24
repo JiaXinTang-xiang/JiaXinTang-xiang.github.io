@@ -9,7 +9,7 @@ tags:
   - 图床
 language: 'Chinese'
 draft: true
-heroImage: { src: 'src\content\tech\blog-build\images\cloudflare-r2\cloudflare-r2-cover.jpg', color: '#f48120', inferSize: true }
+heroImage: { src: './images/cloudflare-r2/cloudflare-r2-cover.jpg', color: '#f48120' }
 ---
 
 ## 前言
@@ -192,7 +192,6 @@ heroImage: {
 ## 小结
 
 至此，R2 图床图床已经可以正常使用了。
-
 
 
 
