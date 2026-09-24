@@ -8,7 +8,7 @@ tags:
   - R2
   - 图床
 language: 'Chinese'
-draft: true
+draft: false
 heroImage: { src: './images/cloudflare-r2/cloudflare-r2-cover.jpg', color: '#f48120' }
 ---
 
@@ -53,8 +53,10 @@ Astro 构建时下载并优化图片
 
  Github 上有不少的使用 CF 的 R2 搭建图床的项目，用于我是看[axi的教程](https://axi404.top/blog/r2-image-host)简洁可控,由于时间比较紧，就直接fork下来，先部署完成，后续有时间再在基础上优化。
 
-| 我的项目仓库 | [JiaXinTang-xiang/jiaxin_picr2](https://github.com/JiaXinTang-xiang/jiaxin_picr2) | 对原作者图床进行vibecoding修改和完善 |
-| 源作者r2参考项目 | [Axi404/astro-r2](https://github.com/Axi404/astro-r2) | 感谢源作者的开源 |
+| 项目 | 链接 | 说明 |
+|------|------|------|
+| 我的项目仓库 | [JiaXinTang-xiang/jiaxin_picr2](https://github.com/JiaXinTang-xiang/jiaxin_picr2) | 在原项目基础上进行修改和完善 |
+| 原作者参考项目 | [Axi404/astro-r2](https://github.com/Axi404/astro-r2) | 感谢原作者的开源分享 |
 
 
 ## 二、创建 Cloudflare R2 存储桶
@@ -70,11 +72,12 @@ Astro 构建时下载并优化图片
 
 进入存储桶的 **Settings / 设置**，找到 **Custom Domains / 自定义域**，添加：
 
-![alt text](images/cloudflare-r2/cloudflare-r2-2.png)
-![alt text](images/cloudflare-r2/cloudflare-r2-3.png)
+| 添加 R2 自定义域 | 自定义域绑定完成 |
+|------------------|------------------|
+| ![添加 R2 自定义域](images/cloudflare-r2/cloudflare-r2-2.png) | ![R2 自定义域绑定完成](images/cloudflare-r2/cloudflare-r2-3.png) |
 
 
-## 三、## 准备环境变量
+## 三、准备环境变量
 在 Cloudflare R2 页面进入 **Manage R2 API Tokens**，创建一个具有对象读取和写入权限的 Token。为了减少权限范围，建议只允许它访问这一个存储桶，图床后台需要通过 S3 兼容 API 上传和管理文件，因此还要创建一组 R2 API 凭据。需要创建一个 用户API令牌。之后创建的权限可以选择管理员读和写。
 
 创建完成后会得到：
@@ -192,7 +195,6 @@ heroImage: {
 ## 小结
 
 至此，R2 图床图床已经可以正常使用了。
-
 
 
 
