@@ -9,7 +9,7 @@ tags:
 language: 'Chinese'
 draft: false
 slug: 'tools/about-ubuntu-command'
-heroImage: { src: './images/About-Ubuntu-command/cover.jpg', color: '#24292e' }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/tools/about-ubuntu-command/about-ubuntu-command-cover.webp', color: '#24292e', inferSize: true }
 ---
 
 

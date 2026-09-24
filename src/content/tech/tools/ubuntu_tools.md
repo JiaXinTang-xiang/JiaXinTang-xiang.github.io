@@ -9,7 +9,7 @@ tags:
   - 工具
 language: 'Chinese'
 draft: false
-heroImage: { src: './images/ubuntu_tools/cover.jpg', color: '#24292e' }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/tools/ubuntu-tools/ubuntu-tools-cover.webp', color: '#24292e', inferSize: true }
 ---
 
 ## 前言

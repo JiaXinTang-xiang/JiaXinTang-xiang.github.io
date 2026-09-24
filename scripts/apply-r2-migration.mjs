@@ -85,7 +85,10 @@ for (const markdownPath of markdownFiles) {
   for (const record of records) {
     const sourceAbsolute = path.join(projectRoot, ...record.source.split('/'))
     const relative = toPosix(path.relative(path.dirname(markdownPath), sourceAbsolute))
-    const candidates = new Set([relative, relative.startsWith('.') ? relative : `./${relative}`])
+    // Replace the most specific form first. Otherwise `day1.jpg` inside
+    // `./day1.jpg` leaves a broken `./https://...` URL behind.
+    const candidates = [...new Set([relative, relative.startsWith('.') ? relative : `./${relative}`])]
+      .sort((left, right) => right.length - left.length)
 
     for (const candidate of candidates) {
       const pattern = new RegExp(escapeRegExp(candidate), 'g')
@@ -96,6 +99,12 @@ for (const markdownPath of markdownFiles) {
       }
     }
   }
+
+  // Repair output produced by older versions of this migration script.
+  next = next.replaceAll(
+    './https://picr2.jiaxin404.top/',
+    'https://picr2.jiaxin404.top/'
+  )
 
   next = next.replace(
     /heroImage:\s*\{([^}\n]*src:\s*['"]https:\/\/picr2\.jiaxin404\.top\/[^}\n]*)(\})/g,

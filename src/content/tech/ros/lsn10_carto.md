@@ -12,7 +12,7 @@ tags:
 language: 'Chinese'
 draft: false
 slug: 'ros/lsn10-carto'
-heroImage: { src: './images/lsn10_carto/cover.jpg', color: '#1a1a2e' }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/ros/lsn10-carto/lsn10-carto-cover.webp', color: '#1a1a2e', inferSize: true }
 ---
 
 ## 前言

@@ -13,7 +13,7 @@ tags:
 language: 'Chinese'
 draft: false
 slug: 'vision/opencv-scr'
-heroImage: { src: './images/opencv_scr/cover.jpg', color: '#1a1a2e' }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/vision/opencv-scr/opencv-scr-cover.webp', color: '#1a1a2e', inferSize: true }
 ---
 
 ## 前言

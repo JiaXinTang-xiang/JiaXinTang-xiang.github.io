@@ -5,7 +5,7 @@ publishDate: '2026-04-01'
 tags: ['技术', '学习']
 draft: false
 slug: 'blog-build/first-tech-post'
-heroImage: { src: './images/first-tech-post/cover.jpg', color: '#1b2229' }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/first-tech-post/first-tech-post-cover.webp', color: '#1b2229', inferSize: true }
 ---
 
 # 我的第一篇技术文章

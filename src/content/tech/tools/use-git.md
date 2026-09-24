@@ -5,7 +5,7 @@ publishDate: '2026-04-28'
 slug: 'tools/use-git'
 tags: ['git', '学习']
 draft: false
-heroImage: { src: './images/use-git/cover.jpg', color: '#1b2229' }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/tools/use-git/use-git-cover.webp', color: '#1b2229', inferSize: true }
 ---
 
 

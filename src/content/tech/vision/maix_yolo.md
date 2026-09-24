@@ -11,7 +11,7 @@ tags:
 language: 'Chinese'
 draft: false
 slug: 'vision/maix-yolo'
-heroImage: { src: './images/maix_yolo/cover.jpg', color: '#4A90E2' }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/vision/maix-yolo/maix-yolo-cover.webp', color: '#4A90E2', inferSize: true }
 ---
 
 ## 前言

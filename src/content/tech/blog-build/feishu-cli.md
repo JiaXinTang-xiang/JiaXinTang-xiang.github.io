@@ -9,7 +9,7 @@ tags:
 language: 'Chinese'
 draft: false
 slug: 'blog-build/feishu-cli'
-heroImage: { src: './images/feishu_cli/cover.jpg', color: '#1b2229' }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/feishu-cli/feishu-cli-cover.webp', color: '#1b2229', inferSize: true }
 ---
 
 ## 前言
