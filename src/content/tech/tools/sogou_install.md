@@ -10,7 +10,7 @@ tags:
   - 输入法
 language: 'Chinese'
 draft: false
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/tools/sogou-install/sogou-install-cover.webp', color: '#4A90E2' }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/tools/sogou-install/sogou-install-cover.webp', color: '#4A90E2', inferSize: true }
 ---
 
 ## 前言

@@ -10,7 +10,7 @@ tags:
 language: 'Chinese'
 draft: false
 slug: 'ros/orb-slam3'
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/ros/orb-slam3/orb-slam3-cover.webp', color: '#1a1a2e' }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/ros/orb-slam3/orb-slam3-cover.webp', color: '#1a1a2e', inferSize: true }
 ---
 
 ## 前言

@@ -15,9 +15,12 @@ const { post, detailed = false, class: className } = Astro.props
 const { id, data } = post
 const { remarkPluginFrontmatter } = await render(post)
 const postDate = data.updatedDate ?? data.publishDate
-const heroImageSrc =
-  typeof data.heroImage?.src === 'string' ? data.heroImage.src : data.heroImage?.src?.src
-const isRemoteHeroImage = heroImageSrc?.startsWith('http://') || heroImageSrc?.startsWith('https://')
+
+/*
+ * 直接使用 R2 原图的备用方案（当前关闭）：
+ * 取出 data.heroImage.src 后，远程地址使用普通 <img>，本地图片继续使用 <Image>。
+ * 当前统一交给 Astro <Image>，让构建产物输出 /_astro/ 优化图片。
+ */
 ---
 
 <li
@@ -38,24 +41,12 @@ const isRemoteHeroImage = heroImageSrc?.startsWith('http://') || heroImageSrc?.s
   >
     {
       detailed && data.heroImage && (
-        isRemoteHeroImage ? (
-          <img
-            src={heroImageSrc}
-            alt={data.heroImage.alt || data.title}
-            class='cover-image absolute end-0 top-0 z-0 h-2/3 w-full rounded-2xl object-cover opacity-50 transition-opacity duration-300 group-hover:opacity-70 md:h-full md:w-3/5'
-            loading='lazy'
-            decoding='async'
-            width={data.heroImage.width}
-            height={data.heroImage.height}
-          />
-        ) : (
-          <Image
-            alt={data.heroImage.alt || data.title}
-            class='cover-image absolute end-0 top-0 z-0 h-2/3 w-full rounded-2xl object-cover opacity-50 transition-opacity duration-300 group-hover:opacity-70 md:h-full md:w-3/5'
-            loading='eager'
-            {...data.heroImage}
-          />
-        )
+        <Image
+          alt={data.heroImage.alt || data.title}
+          class='cover-image absolute end-0 top-0 z-0 h-2/3 w-full rounded-2xl object-cover opacity-50 transition-opacity duration-300 group-hover:opacity-70 md:h-full md:w-3/5'
+          loading='eager'
+          {...data.heroImage}
+        />
       )
     }
     <div

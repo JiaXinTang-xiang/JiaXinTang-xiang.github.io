@@ -12,7 +12,7 @@ tags:
 language: 'Chinese'
 draft: false
 slug: 'ros/sam-bot'
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/ros/sam-bot/sam-bot-cover.webp', color: '#0d1117' }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/ros/sam-bot/sam-bot-cover.webp', color: '#0d1117', inferSize: true }
 ---
 
 ## 前言

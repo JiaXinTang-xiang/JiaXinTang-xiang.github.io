@@ -15,14 +15,6 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-function escapeHtmlAttribute(value) {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('"', '&quot;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-}
-
 async function collectMarkdown(directory) {
   const entries = await readdir(directory, { withFileTypes: true })
   const files = []
@@ -114,20 +106,28 @@ for (const markdownPath of markdownFiles) {
     'https://picr2.jiaxin404.top/'
   )
 
-  // Astro optimizes remote Markdown images into local /_astro files. Use a
-  // normal HTML image for R2 URLs so browsers request the image host directly.
+  // Astro optimizes remote Markdown images into local /_astro files.
+  // Convert images previously switched to direct-R2 HTML back to Markdown.
   next = next.replace(
-    /!\[([^\]]*)\]\((https:\/\/picr2\.jiaxin404\.top\/[^)\s]+)\)/g,
-    (_match, alt, src) =>
-      `<img src="${src}" alt="${escapeHtmlAttribute(alt)}" loading="lazy" decoding="async" />`
+    /<img\s+src="(https:\/\/picr2\.jiaxin404\.top\/[^"]+)"\s+alt="([^"]*)"\s+loading="lazy"\s+decoding="async"\s*\/>/g,
+    (_match, src, alt) => `![${alt}](${src})`
   )
 
-  // R2 hero images are rendered as normal <img> elements and no longer need
-  // Astro to fetch their dimensions during the build.
+  // Remote hero images need inferred dimensions when rendered by Astro <Image>.
   next = next.replace(
-    /(heroImage:\s*\{[^}\n]*src:\s*['"]https:\/\/picr2\.jiaxin404\.top\/[^}\n]*),\s*inferSize:\s*true(\s*\})/g,
-    '$1$2'
+    /heroImage:\s*\{([^}\n]*src:\s*['"]https:\/\/picr2\.jiaxin404\.top\/[^}\n]*)(\})/g,
+    (match, body, close) =>
+      /\binferSize\s*:/.test(body)
+        ? match
+        : `heroImage: {${body.trimEnd()}, inferSize: true ${close}`
   )
+
+  /*
+   * 直接 R2 模式的备用处理（当前关闭）：
+   * 1. 把远程 Markdown 图片改成普通 <img loading="lazy">；
+   * 2. 从远程 heroImage 中移除 inferSize；
+   * 3. Hero/PostPreview 组件对远程地址使用普通 <img>。
+   */
 
   if (next !== original) {
     const relativeMarkdown = toPosix(path.relative(projectRoot, markdownPath))

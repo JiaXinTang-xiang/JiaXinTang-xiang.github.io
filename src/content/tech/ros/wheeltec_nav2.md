@@ -12,7 +12,7 @@ tags:
 language: 'Chinese'
 draft: false
 slug: 'ros/wheeltec-nav2'
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/ros/wheeltec-nav2/wheeltec-nav2-cover.webp', color: '#24292e' }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/ros/wheeltec-nav2/wheeltec-nav2-cover.webp', color: '#24292e', inferSize: true }
 ---
 
 ## 前言
