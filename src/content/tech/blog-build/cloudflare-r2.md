@@ -131,7 +131,7 @@ Vercel 部署完成后会分配一个 `.vercel.app` 地址，但日常使用自�
 
 添加 `r2.jiaxin404.top`。随后 Vercel 会显示需要配置的 DNS 记录，目标可能是通用的 `cname.vercel-dns.com`，也可能是 Vercel 为项目给出的专用 `*.vercel-dns-xxx.com` 地址，应以项目域名页面显示的值为准。
 
-![alt text](images/cloudflare-r2/4.png)
+![alt text](images/cloudflare-r2/cloudflare-r2-5.png)
 然后进入 Cloudflare 的 **DNS → Records**，添加：
 
 | 字段 | 内容 |
@@ -197,8 +197,6 @@ heroImage: {
 
 至此，R2 图床图床已经可以正常使用了。
 
-
-参考了阿汐的文章：[《Cloudflare R2 图床搭建》](https://axi404.top/blog/r2-image-host)，感谢！
 
 
 
