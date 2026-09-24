@@ -10,7 +10,7 @@ tags:
 language: 'Chinese'
 draft: false
 slug: 'vision/camera-calibration'
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/vision/camera-calibration/camera-calibration-cover.webp', color: '#1a1a2e', inferSize: true }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/vision/camera-calibration/camera-calibration-cover.webp', color: '#1a1a2e' }
 ---
 
 
@@ -57,7 +57,7 @@ pip install "numpy<2" -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 > 内角点是黑白格子交叉的顶点，从外侧数：7 列 5 行的棋盘格，内角点为 6×4。
 
-![标定图形](https://picr2.jiaxin404.top/posts/tech/vision/camera-calibration/chessboard-pattern.webp)
+<img src="https://picr2.jiaxin404.top/posts/tech/vision/camera-calibration/chessboard-pattern.webp" alt="标定图形" loading="lazy" decoding="async" />
 
 ## 3. 启动摄像头
 

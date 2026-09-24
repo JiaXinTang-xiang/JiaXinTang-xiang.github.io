@@ -10,7 +10,7 @@ tags:
 language: 'Chinese'
 draft: false
 slug: 'blog-build/waline-jia'
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/waline-jia/waline-jia-cover.webp', color: '#24292e', inferSize: true }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/waline-jia/waline-jia-cover.webp', color: '#24292e' }
 ---
 
 ## 前言

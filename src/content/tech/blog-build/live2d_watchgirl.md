@@ -11,7 +11,7 @@ tags:
 language: 'Chinese'
 draft: false
 slug: 'blog-build/live2d-watchgirl'
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/live2d-watchgirl/live2d-watchgirl-cover.webp', color: '#96bede', inferSize: true }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/live2d-watchgirl/live2d-watchgirl-cover.webp', color: '#96bede' }
 ---
 
 ## 前言

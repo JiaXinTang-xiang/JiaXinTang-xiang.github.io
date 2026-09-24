@@ -17,18 +17,35 @@ const {
 const dateTimeOptions: Intl.DateTimeFormatOptions = {
   month: 'short'
 }
+
+const heroImageSrc =
+  typeof heroImage?.src === 'string' ? heroImage.src : heroImage?.src?.src
+const isRemoteHeroImage = heroImageSrc?.startsWith('http://') || heroImageSrc?.startsWith('https://')
 ---
 
 {
   heroImage && (
     <div class='hero-image relative mb-6'>
-      <Image
-        alt={heroImage.alt || title}
-        class='cover-image relative z-10 h-auto w-full max-w-[65ch] rounded-2xl object-contain'
-        fetchpriority='high'
-        loading='eager'
-        {...heroImage}
-      />
+      {isRemoteHeroImage ? (
+        <img
+          src={heroImageSrc}
+          alt={heroImage.alt || title}
+          class='cover-image relative z-10 h-auto w-full max-w-[65ch] rounded-2xl object-contain'
+          fetchpriority='high'
+          loading='eager'
+          decoding='async'
+          width={heroImage.width}
+          height={heroImage.height}
+        />
+      ) : (
+        <Image
+          alt={heroImage.alt || title}
+          class='cover-image relative z-10 h-auto w-full max-w-[65ch] rounded-2xl object-contain'
+          fetchpriority='high'
+          loading='eager'
+          {...heroImage}
+        />
+      )}
     </div>
   )
 }

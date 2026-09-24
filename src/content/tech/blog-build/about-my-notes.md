@@ -12,7 +12,7 @@ tags:
   - 域名
 language: 'Chinese'
 draft: false
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/about-my-notes-cover.webp', color: '#4A90E2', inferSize: true }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/about-my-notes-cover.webp', color: '#4A90E2' }
 ---
 
 ## 前言
@@ -129,12 +129,12 @@ git push -u origin main
 2. GitHub 授权 Vercel，登录后，在主面板点击 Add New… → Project
 
 3. Import 仓库，找到你刚刚创建的网站仓库，点击旁边的 Import 按钮
-![alt text](https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/vercel-import-repository.webp)
+<img src="https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/vercel-import-repository.webp" alt="Vercel 导入仓库" loading="lazy" decoding="async" />
 4. Deploy，在Vercel 会自动识别你的项目是什么框架（Astro, Next.js, etc.），并帮你填好所有构建设置。你什么都不用改，直接点击 Deploy 按钮
-![alt text](https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/vercel-deploy-settings.webp)
+<img src="https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/vercel-deploy-settings.webp" alt="Vercel 部署设置" loading="lazy" decoding="async" />
 
 5. 稍等片刻，Vercel网站就已经上线了！Vercel 会提供一个 .vercel.app 结尾的免费域名供你访问。
-![alt text](https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/vercel-production-deployment.webp)
+<img src="https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/vercel-production-deployment.webp" alt="Vercel 生产部署" loading="lazy" decoding="async" />
 
 全程不需要写一行配置，Vercel 会自动检测到 VitePress。后面只需要在本地修改代码，然后 git push 到 GitHub，Vercel 就会自动拉取最新代码，重新构建和部署你的网站。完全自动化！
 
@@ -144,7 +144,7 @@ git push -u origin main
 1.购买域名
 前往 NameSilo、GoDaddy 等域名注册商，购买一个你喜欢的域名。
 我是在 NameSilo 购买的，后面以它为例：
-![alt text](https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/namesilo-domain-search.webp)
+<img src="https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/namesilo-domain-search.webp" alt="Namesilo 域名搜索" loading="lazy" decoding="async" />
 
 我之前博客用的是 `jiaxin404.top`，所以这次笔记站用子域名 `notes.jiaxin404.top`。
 
@@ -157,7 +157,7 @@ git push -u origin main
 |------|------|------|
 | CNAME | `notes` | Vercel 分配的地址（如 `xxx.vercel.app`） |
 
-![alt text](https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/cloudflare-dns-records.webp)
+<img src="https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/cloudflare-dns-records.webp" alt="Cloudflare DNS 记录" loading="lazy" decoding="async" />
 
 **注意**：如果开启了 Cloudflare 代理（橙色云），这里要先把代理关掉（灰色云），否则 Vercel 没法验证。验证通过后再开回去即可。
 
@@ -177,7 +177,7 @@ git push -u origin main
 
 进入 Vercel 项目 → Settings → Domains → 输入 `notes.jiaxin404.top` → Add。
 
-![alt text](https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/vercel-domain-status.webp)
+<img src="https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/vercel-domain-status.webp" alt="Vercel 域名状态" loading="lazy" decoding="async" />
 
 ### 3. Cloudflare 加 CNAME 指向 Vercel
 

@@ -9,7 +9,7 @@ tags:
 language: 'Chinese'
 draft: false
 # password: '301'
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/vision/yaoce-baby/yaoce-baby-cover.webp', color: '#24292e', inferSize: true }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/vision/yaoce-baby/yaoce-baby-cover.webp', color: '#24292e' }
 ---
 
 <blockquote style="border-left: 4px solid #4CAF50; background-color: #f0fff0; padding: 12px 16px; margin: 16px 0;">

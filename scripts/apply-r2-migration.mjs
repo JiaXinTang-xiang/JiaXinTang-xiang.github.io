@@ -15,6 +15,14 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
+function escapeHtmlAttribute(value) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+}
+
 async function collectMarkdown(directory) {
   const entries = await readdir(directory, { withFileTypes: true })
   const files = []
@@ -106,12 +114,19 @@ for (const markdownPath of markdownFiles) {
     'https://picr2.jiaxin404.top/'
   )
 
+  // Astro optimizes remote Markdown images into local /_astro files. Use a
+  // normal HTML image for R2 URLs so browsers request the image host directly.
   next = next.replace(
-    /heroImage:\s*\{([^}\n]*src:\s*['"]https:\/\/picr2\.jiaxin404\.top\/[^}\n]*)(\})/g,
-    (match, body, close) =>
-      /\binferSize\s*:/.test(body)
-        ? match
-        : `heroImage: {${body.trimEnd()}, inferSize: true ${close}`
+    /!\[([^\]]*)\]\((https:\/\/picr2\.jiaxin404\.top\/[^)\s]+)\)/g,
+    (_match, alt, src) =>
+      `<img src="${src}" alt="${escapeHtmlAttribute(alt)}" loading="lazy" decoding="async" />`
+  )
+
+  // R2 hero images are rendered as normal <img> elements and no longer need
+  // Astro to fetch their dimensions during the build.
+  next = next.replace(
+    /(heroImage:\s*\{[^}\n]*src:\s*['"]https:\/\/picr2\.jiaxin404\.top\/[^}\n]*),\s*inferSize:\s*true(\s*\})/g,
+    '$1$2'
   )
 
   if (next !== original) {

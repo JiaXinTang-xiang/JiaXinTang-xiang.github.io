@@ -10,7 +10,7 @@ tags:
 language: 'Chinese'
 draft: false
 password: '1234'
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/password/password-cover.webp', color: '#24292e', inferSize: true }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/password/password-cover.webp', color: '#24292e' }
 ---
 
 ## 前言

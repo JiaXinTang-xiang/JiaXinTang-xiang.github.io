@@ -11,7 +11,7 @@ tags:
   - 个人成长
 language: 'Chinese'
 draft: false
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-blog/about-my-blog-cover.webp', color: '#4A90E2', inferSize: true }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-blog/about-my-blog-cover.webp', color: '#4A90E2' }
 ---
 
 

@@ -15,6 +15,9 @@ const { post, detailed = false, class: className } = Astro.props
 const { id, data } = post
 const { remarkPluginFrontmatter } = await render(post)
 const postDate = data.updatedDate ?? data.publishDate
+const heroImageSrc =
+  typeof data.heroImage?.src === 'string' ? data.heroImage.src : data.heroImage?.src?.src
+const isRemoteHeroImage = heroImageSrc?.startsWith('http://') || heroImageSrc?.startsWith('https://')
 ---
 
 <li
@@ -35,12 +38,24 @@ const postDate = data.updatedDate ?? data.publishDate
   >
     {
       detailed && data.heroImage && (
-        <Image
-          alt={data.heroImage.alt || data.title}
-          class='cover-image absolute end-0 top-0 z-0 h-2/3 w-full rounded-2xl object-cover opacity-50 transition-opacity duration-300 group-hover:opacity-70 md:h-full md:w-3/5'
-          loading='eager'
-          {...data.heroImage}
-        />
+        isRemoteHeroImage ? (
+          <img
+            src={heroImageSrc}
+            alt={data.heroImage.alt || data.title}
+            class='cover-image absolute end-0 top-0 z-0 h-2/3 w-full rounded-2xl object-cover opacity-50 transition-opacity duration-300 group-hover:opacity-70 md:h-full md:w-3/5'
+            loading='lazy'
+            decoding='async'
+            width={data.heroImage.width}
+            height={data.heroImage.height}
+          />
+        ) : (
+          <Image
+            alt={data.heroImage.alt || data.title}
+            class='cover-image absolute end-0 top-0 z-0 h-2/3 w-full rounded-2xl object-cover opacity-50 transition-opacity duration-300 group-hover:opacity-70 md:h-full md:w-3/5'
+            loading='eager'
+            {...data.heroImage}
+          />
+        )
       )
     }
     <div

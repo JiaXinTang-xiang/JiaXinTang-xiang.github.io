@@ -11,7 +11,7 @@ tags:
 language: 'Chinese'
 draft: false                                                          # 是否为草稿
 slug: 'vision/yolo-uv-setup'                                          # 文章的 URL 路径。
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/vision/yolo-uv-setup/yolo-uv-setup-cover.webp', color: '#24292e', inferSize: true }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/vision/yolo-uv-setup/yolo-uv-setup-cover.webp', color: '#24292e' }
 ---
 
 ## 前言

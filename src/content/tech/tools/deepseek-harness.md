@@ -9,7 +9,7 @@ tags:
   - 插件
 language: 'Chinese'
 draft: false
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/tools/deepseek-harness/deepseek-harness-cover.webp', color: '#4d6bfe', inferSize: true }
+heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/tools/deepseek-harness/deepseek-harness-cover.webp', color: '#4d6bfe' }
 ---
 
 <blockquote style="border-left: 4px solid #4d6bfe; background-color: #f0f4ff; padding: 12px 16px; margin: 16px 0;">
@@ -136,7 +136,7 @@ dsh --profile web --dump-config
 
 注册后这是**新增插件包**，需要**重启 dsh** 才会加载；之后皮肤之间切换是热加载，不用重启。刷新页面即可看到皮肤。
 
-![alt text](https://picr2.jiaxin404.top/posts/tech/tools/deepseek-harness/deepseek-harness-theme.webp)
+<img src="https://picr2.jiaxin404.top/posts/tech/tools/deepseek-harness/deepseek-harness-theme.webp" alt="DeepSeek Harness 主题界面" loading="lazy" decoding="async" />
 
 也可以丢个链接直接让DeepSeek Harness帮你安装，省事很多。
 
@@ -164,4 +164,3 @@ dsh --profile web --dump-config
 ## 小结
 
 DeepSeek Harness 的「万物皆插件」设计让它很好扩展，一条命令起服务、浏览器里配好模型就能干活；配上鲸鱼娘皮肤，体验又上了一个台阶。目前还在 preview 阶段，适合尝鲜和折腾，正式用还是留意版本更新。
-
