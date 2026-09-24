@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto'
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import sharp from 'sharp'
@@ -106,10 +105,8 @@ for (const sourcePath of sourceFiles) {
     .rotate()
     .webp({ quality: 82, effort: 5 })
     .toBuffer()
-  const hash = createHash('sha256').update(outputBuffer).digest('hex').slice(0, 8)
   const targetName = `${semanticName}.webp`
-  const finalName = `${semanticName}-${hash}.webp`
-  const objectKey = `posts/${targetDirectory}/${finalName}`
+  const objectKey = `posts/${targetDirectory}/${targetName}`
   const uploadRelativePath = `${targetDirectory}/${targetName}`
   const destinationPath = path.join(uploadRoot, ...uploadRelativePath.split('/'))
 
@@ -120,7 +117,7 @@ for (const sourcePath of sourceFiles) {
     source: `src/content/${relativePath}`,
     uploadRelativePath,
     objectKey,
-    url: `${publicBase}/${targetDirectory}/${finalName}`,
+    url: `${publicBase}/${targetDirectory}/${targetName}`,
     sourceBytes: sourceBuffer.length,
     outputBytes: outputBuffer.length,
   })
@@ -168,19 +165,20 @@ const markdown = `# R2 图片迁移包
 - WebP 体积：${(totalOutputBytes / 1024 / 1024).toFixed(2)} MB
 - R2 公共前缀：${publicBase}
 
-迁移包中的封面使用“文章 slug + cover”，图床上传时自动追加内容哈希。例如：
+封面使用“文章 slug + cover”的语义名称。例如：
 
-- 上传前：\`about-my-notes-cover.webp\`
-- 上传后：\`about-my-notes-cover-74abf210.webp\`
-- 上传前：\`2026-04-cover.webp\`
-- 上传后：\`2026-04-cover-aa3abf06.webp\`
+- \`about-my-notes-cover.webp\`
+- \`camera-calibration-cover.webp\`
+- \`2026-04-cover.webp\`
+
+以后替换图片时不要覆盖旧文件，改用 \`-v2\`、\`-v3\`，例如 \`about-my-notes-cover-v2.webp\`。
 
 ## 上传方法
 
 1. 打开新版 Lightframe 上传页面。
 2. 目标目录填写 \`posts\`。
-3. 命名方式选择“原名 + 内容短哈希（推荐）”。
-4. 关闭“WebP 压缩”（迁移包已经转换为 WebP；关闭可避免二次压缩改变哈希）。
+3. 命名方式选择“保留语义原名（推荐）”。
+4. 关闭“WebP 压缩”（迁移包已经转换为 WebP，避免重复有损压缩）。
 5. 点击“选择文件夹”，选择 \`_r2-migration/upload\`。
 6. 检查待上传路径后点击“开始上传”。
 
