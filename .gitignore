@@ -48,3 +48,6 @@ bunfig.toml
 
 ### 图片压缩等一次性脚本的本地备份（原图已在 git 历史中） ###
 _img-backup/
+
+# 本地生成的 R2 批量迁移包（可由 scripts/prepare-r2-migration.mjs 重建）
+_r2-migration/
