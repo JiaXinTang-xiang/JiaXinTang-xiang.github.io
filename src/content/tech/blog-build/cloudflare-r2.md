@@ -53,7 +53,6 @@ Astro 构建时下载并优化图片
 
  Github 上有不少的使用 CF 的 R2 搭建图床的项目，用于我是看[axi的教程](https://axi404.top/blog/r2-image-host)简洁可控,由于时间比较紧，就直接fork下来，先部署完成，后续有时间再在基础上优化。
 
-| ------ | ------ | ------ |
 | 我的项目仓库 | [JiaXinTang-xiang/jiaxin_picr2](https://github.com/JiaXinTang-xiang/jiaxin_picr2) | 对原作者图床进行vibecoding修改和完善 |
 | 源作者r2参考项目 | [Axi404/astro-r2](https://github.com/Axi404/astro-r2) | 感谢源作者的开源 |
 
@@ -152,8 +151,6 @@ picr2.jiaxin404.top  → Cloudflare R2 图片文件
 
 ## 七、接入 Astro 博客
 
-### 允许 Astro 读取 R2 图片
-
 为了让 Astro 在构建时处理远程图片，需要在 `astro.config.ts` 中允许图片域名：
 
 ```typescript
@@ -167,7 +164,6 @@ image: {
   ]
 }
 ```
-### 文章封面
 
 远程封面在 Frontmatter 中这样填写：
 
