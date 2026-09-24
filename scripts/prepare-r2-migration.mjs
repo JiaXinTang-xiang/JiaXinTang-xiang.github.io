@@ -58,13 +58,14 @@ function getTargetDirectory(relativePath) {
   return normalizeSlug(path.posix.dirname(relativePath))
 }
 
-function getSemanticName(relativePath) {
+function getSemanticName(relativePath, targetDirectory) {
   const mapped = semanticNames.get(relativePath)
   if (mapped) return mapped
 
   const stem = path.posix.basename(relativePath, path.posix.extname(relativePath))
   if (stem === 'cover' || /^\d{2}-\d{2}$/.test(stem) || stem === 'day1') {
-    return 'cover'
+    const articleSlug = targetDirectory.split('/').pop()
+    return `${articleSlug}-cover`
   }
 
   return normalizeSlug(stem)
@@ -99,7 +100,7 @@ const records = []
 for (const sourcePath of sourceFiles) {
   const relativePath = toPosix(path.relative(contentRoot, sourcePath))
   const targetDirectory = getTargetDirectory(relativePath)
-  const semanticName = getSemanticName(relativePath)
+  const semanticName = getSemanticName(relativePath, targetDirectory)
   const sourceBuffer = await readFile(sourcePath)
   const outputBuffer = await sharp(sourceBuffer)
     .rotate()
@@ -165,6 +166,12 @@ const markdown = `# R2 图片迁移包
 - 原始体积：${(totalSourceBytes / 1024 / 1024).toFixed(2)} MB
 - WebP 体积：${(totalOutputBytes / 1024 / 1024).toFixed(2)} MB
 - R2 公共前缀：${publicBase}
+
+封面统一使用“文章 slug + cover + 内容哈希”，例如：
+
+- \`about-my-notes-cover-74abf210.webp\`
+- \`camera-calibration-cover-2725cefd.webp\`
+- \`2026-04-cover-aa3abf06.webp\`
 
 ## 上传方法
 
