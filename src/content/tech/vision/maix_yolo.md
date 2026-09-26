@@ -10,6 +10,7 @@ tags:
   - 模型部署
 language: 'Chinese'
 draft: false
+rss: true
 slug: 'vision/maix-yolo'
 heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/vision/maix-yolo/maix-yolo-cover.webp', color: '#4A90E2', inferSize: true }
 ---

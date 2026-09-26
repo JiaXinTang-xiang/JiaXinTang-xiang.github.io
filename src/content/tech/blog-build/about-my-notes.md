@@ -12,6 +12,7 @@ tags:
   - 域名
 language: 'Chinese'
 draft: false
+rss: true
 heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-notes/about-my-notes-cover.webp', color: '#4A90E2', inferSize: true }
 ---
 

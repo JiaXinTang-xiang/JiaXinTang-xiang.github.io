@@ -9,6 +9,7 @@ tags:
   - 图床
 language: 'Chinese'
 draft: false
+rss: true
 heroImage: { src: './images/cloudflare-r2/cloudflare-r2-cover.jpg', color: '#f48120' }
 ---
 

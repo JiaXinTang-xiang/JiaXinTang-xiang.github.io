@@ -9,6 +9,7 @@ tags:
   - 计算机视觉
 language: 'Chinese'
 draft: false
+rss: true
 slug: 'vision/camera-calibration'
 heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/vision/camera-calibration/camera-calibration-cover.webp', color: '#1a1a2e', inferSize: true }
 ---

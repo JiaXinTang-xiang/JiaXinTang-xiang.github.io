@@ -37,6 +37,8 @@ const blog = defineCollection({
       tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
       language: z.string().optional(),
       draft: z.boolean().default(false),
+      // Publish this article in the main RSS feed.
+      rss: z.boolean().default(false),
       // Special fields
       comment: z.boolean().default(true),
       password: z.string().optional(),
@@ -87,6 +89,8 @@ const tech = defineCollection({
       tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
       language: z.string().optional(),
       draft: z.boolean().default(false),
+      // Publish this article in the main RSS feed.
+      rss: z.boolean().default(false),
       // Special fields
       comment: z.boolean().default(true),
       password: z.string().optional(),
@@ -120,6 +124,8 @@ const daily = defineCollection({
       tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
       language: z.string().optional(),
       draft: z.boolean().default(false),
+      // Publish this article in the main RSS feed.
+      rss: z.boolean().default(false),
       // Special fields
       comment: z.boolean().default(true),
       password: z.string().optional(),

@@ -8,6 +8,7 @@ tags:
   - 技术分享
 language: 'Chinese'
 draft: false
+rss: true
 slug: 'blog-build/about-me-git'
 heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/about-me-git/about-me-git-cover.webp', color: '#24292e', inferSize: true }
 ---

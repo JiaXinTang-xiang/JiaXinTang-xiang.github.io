@@ -10,6 +10,7 @@ tags:
   - Astro
 language: 'Chinese'
 draft: false
+rss: true
 slug: 'blog-build/live2d-watchgirl'
 heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/live2d-watchgirl/live2d-watchgirl-cover.webp', color: '#96bede', inferSize: true }
 ---
