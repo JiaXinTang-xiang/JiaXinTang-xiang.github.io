@@ -102,7 +102,8 @@ export const theme: ThemeUserConfig = {
         link: '/anime/',
         submenu: [
           { title: '追番', link: '/anime/' },
-          { title: '动态', link: '/moments/' }
+          { title: '动态', link: '/moments/' },
+          { title: '画廊', link: 'https://r2.jiaxin404.top/gallery' }
         ]
       }
     ]

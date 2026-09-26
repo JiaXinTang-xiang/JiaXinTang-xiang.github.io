@@ -47,6 +47,10 @@ heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-no
 4. **长得好看** — 默认主题干净
 
 
+## 什么是 VitePress#
+VitePress 是一个基于 Vite 的静态网页生成器，它使用 Vue 作为其核心，并使用 Markdown 作为其内容格式。VitePress 提供一个简单而高效的方式来创建和维护静态网站，同时提供丰富的插件和主题来满足不同用户的需求，使得创作者无需关注于网站的构建，只需要专注于内容的创作。
+
+
 ## VitePress搭建过程
 
 ### 初始化项目
