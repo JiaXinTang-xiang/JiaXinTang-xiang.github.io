@@ -62,12 +62,10 @@ export default defineConfig({
     service: {
       entrypoint: 'astro/assets/services/sharp'
     },
-    // Allow Astro to optimize the GitHub chart and R2-hosted article images.
-    domains: ['ghchart.rshah.org', 'picr2.jiaxin404.top'],
-    remotePatterns: [
-      { protocol: 'https', hostname: 'ghchart.rshah.org' },
-      { protocol: 'https', hostname: 'picr2.jiaxin404.top' }
-    ]
+    // R2 article images are rendered as normal remote <img> elements so a
+    // temporary R2 outage cannot make the static build fail.
+    domains: ['ghchart.rshah.org'],
+    remotePatterns: [{ protocol: 'https', hostname: 'ghchart.rshah.org' }]
   },
 
   // [Markdown]

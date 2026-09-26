@@ -18,28 +18,32 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
   month: 'short'
 }
 
-/*
- * 直接使用 R2 原图的备用方案（当前关闭）：
- *
- * const heroImageSrc =
- *   typeof heroImage?.src === 'string' ? heroImage.src : heroImage?.src?.src
- * const isRemoteHeroImage =
- *   heroImageSrc?.startsWith('http://') || heroImageSrc?.startsWith('https://')
- *
- * 如需切回直连 R2，可用普通 <img src={heroImageSrc} ... /> 替换下面的 <Image />。
- */
+const heroImageSrc =
+  typeof heroImage?.src === 'string' ? heroImage.src : heroImage?.src?.src
+const isRemoteHeroImage =
+  heroImageSrc?.startsWith('http://') || heroImageSrc?.startsWith('https://')
 ---
 
 {
   heroImage && (
     <div class='hero-image relative mb-6'>
-      <Image
-        alt={heroImage.alt || title}
-        class='cover-image relative z-10 h-auto w-full max-w-[65ch] rounded-2xl object-contain'
-        fetchpriority='high'
-        loading='eager'
-        {...heroImage}
-      />
+      {isRemoteHeroImage ? (
+        <img
+          src={heroImageSrc}
+          alt={heroImage.alt || title}
+          class='cover-image relative z-10 h-auto w-full max-w-[65ch] rounded-2xl object-contain'
+          fetchpriority='high'
+          loading='eager'
+        />
+      ) : (
+        <Image
+          alt={heroImage.alt || title}
+          class='cover-image relative z-10 h-auto w-full max-w-[65ch] rounded-2xl object-contain'
+          fetchpriority='high'
+          loading='eager'
+          {...heroImage}
+        />
+      )}
     </div>
   )
 }
