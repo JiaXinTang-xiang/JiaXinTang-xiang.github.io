@@ -38,6 +38,25 @@ const latestPosts: HomePost[] = sortMDByDate(posts)
   .slice(0, 5) as HomePost[]
 const fixedPost: HomePost | undefined = posts.find((post) => post.id === fixedPostId)
 
+const siteStartDate = new Date('2025-03-31T00:00:00')
+const publishedPosts = posts.filter((post) => post.data.publishDate <= now)
+const daysOnline = Math.max(
+  1,
+  Math.floor((now.getTime() - siteStartDate.getTime()) / (1000 * 60 * 60 * 24))
+)
+const lastUpdated = publishedPosts.reduce<Date | null>((latest, post) => {
+  const date = post.data.updatedDate ?? post.data.publishDate
+  return !latest || date > latest ? date : latest
+}, null)
+// `words` is added by the remark plugin at build time and is not part of the
+// content collection schema, so read it from the generated entry data safely.
+const totalWords = publishedPosts.reduce(
+  (total, post) => total + ((post.data as { words?: number }).words ?? 0),
+  0
+)
+const formatCompactNumber = (value: number) =>
+  value >= 1000 ? `${Math.round(value / 1000)}k` : value.toString()
+
 const imagePath = config.logo.src
 const images = import.meta.glob<{ default: ImageMetadata }>(
   '/src/assets/*.{jpeg,jpg,png,gif,avif,webp}'
@@ -199,19 +218,19 @@ if (!images[imagePath])
         <Section title='Statistics' i18nKey='home.statistics'>
           <div class='grid grid-cols-2 gap-4 sm:grid-cols-4'>
             <div class='rounded-lg border p-4 text-center'>
-              <div class='text-2xl font-bold text-primary'>459</div>
+              <div class='text-2xl font-bold text-primary'>{daysOnline}</div>
               <div class='text-sm text-muted-foreground'>Days Online</div>
             </div>
             <div class='rounded-lg border p-4 text-center'>
-              <div class='text-2xl font-bold text-primary'>2026</div>
+              <div class='text-2xl font-bold text-primary'>{lastUpdated?.getFullYear() ?? now.getFullYear()}</div>
               <div class='text-sm text-muted-foreground'>Last Updated</div>
             </div>
             <div class='rounded-lg border p-4 text-center'>
-              <div class='text-2xl font-bold text-primary'>173k</div>
+              <div class='text-2xl font-bold text-primary'>{formatCompactNumber(totalWords)}</div>
               <div class='text-sm text-muted-foreground'>Total Words</div>
             </div>
             <div class='rounded-lg border p-4 text-center'>
-              <div class='text-2xl font-bold text-primary'>23</div>
+              <div class='text-2xl font-bold text-primary'>{publishedPosts.length}</div>
               <div class='text-sm text-muted-foreground'>Total Posts</div>
             </div>
           </div>
@@ -267,7 +286,5 @@ if (!images[imagePath])
     </section>
   </main></PageLayout
 >
-
-
 
 
