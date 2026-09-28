@@ -136,8 +136,8 @@ TIDB_USER=你的TiDB User
 TIDB_PASSWORD=你的TiDB Password
 ```
 
-5. 点 **Deploy**，等待部署完成
-6. 部署完成后，访问 `https://你的服务地址/ui/` 注册第一个账号（**第一个注册的自动成为管理员**，务必在部署后直接先行登录）
+1. 点 **Deploy**，等待部署完成
+2. 部署完成后，访问 `https://你的服务地址/ui/` 注册第一个账号（**第一个注册的自动成为管理员**，务必在部署后直接先行登录）
 
 ## 第三步：在 Astro 中集成
 
@@ -261,7 +261,7 @@ AUTHOR_EMAIL=你的QQ邮箱@qq.com
 
 > **注意**：`SMTP_PASS` 不是 QQ 邮箱密码，需要在 QQ 邮箱 → 设置 → 账户 → 开启 SMTP 服务后生成的**授权码**。
 
-添加环境变量后，重新部署 Waline 项目即可。[我的管理界面 ](https://waline-jiaxin.vercel.app/ui/)
+添加环境变量后，重新部署 Waline 项目即可。[我的管理界面](https://waline-jiaxin.vercel.app/ui/)
 
 ## 后记
 
