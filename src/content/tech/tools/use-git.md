@@ -6,7 +6,7 @@ slug: 'tools/use-git'
 tags: ['git', '学习']
 draft: false
 rss: true
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/tools/use-git/use-git-cover.webp', color: '#1b2229', inferSize: true }
+heroImage: { src: './images/use-git/cover.jpg', color: '#1b2229' }
 ---
 
 

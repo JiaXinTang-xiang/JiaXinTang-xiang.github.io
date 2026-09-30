@@ -12,7 +12,7 @@ tags:
 language: 'Chinese'
 draft: false
 rss: true
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/about-my-blog/about-my-blog-cover.webp', color: '#4A90E2', inferSize: true }
+heroImage: { src: './images/about-my-blog/cover.jpg', color: '#4A90E2' }
 ---
 
 

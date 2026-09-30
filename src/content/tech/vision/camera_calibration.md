@@ -11,7 +11,7 @@ language: 'Chinese'
 draft: false
 rss: true
 slug: 'vision/camera-calibration'
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/vision/camera-calibration/camera-calibration-cover.webp', color: '#1a1a2e', inferSize: true }
+heroImage: { src: './images/camera_calibration/cover.jpg', color: '#1a1a2e' }
 ---
 
 

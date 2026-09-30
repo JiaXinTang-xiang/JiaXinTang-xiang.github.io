@@ -9,7 +9,7 @@ tags:
   - 插件
 language: 'Chinese'
 draft: false
-heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/tools/deepseek-harness/deepseek-harness-cover.webp', color: '#4d6bfe', inferSize: true }
+heroImage: { src: './images/deepseek-harness/cover.jpg', color: '#4d6bfe' }
 ---
 
 <blockquote style="border-left: 4px solid #4d6bfe; background-color: #f0f4ff; padding: 12px 16px; margin: 16px 0;">
