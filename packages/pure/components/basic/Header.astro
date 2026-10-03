@@ -2,13 +2,52 @@
 import config from 'virtual:config'
 
 import { Icon } from '../user'
+import { Icons } from '../../libs/icons'
+
+// 导航标题 → i18n key（配合 LanguageToggle 实现导航中英文切换）
+const navKeyMap: Record<string, string> = {
+  Blog: 'nav.blog',
+  Tech: 'nav.blog.tech',
+  Daily: 'nav.blog.daily',
+  Monthly: 'nav.blog.monthly',
+  Notes: 'nav.blog.notes',
+  Wiki: 'nav.blog.wiki',
+  Projects: 'nav.projects',
+  Links: 'nav.links',
+  About: 'nav.about',
+  Update: 'nav.update',
+  Archives: 'nav.update',
+  Travel: 'nav.travellings',
+  其他: 'nav.other',
+  追番: 'nav.anime',
+  动态: 'nav.moments',
+  画廊: 'nav.gallery'
+}
+
+const navIconMap: Record<string, keyof typeof Icons> = {
+  Blog: 'document',
+  Projects: 'package',
+  Links: 'link',
+  About: 'info',
+  Archives: 'calendar',
+  Travel: 'earth',
+  其他: 'list'
+}
+
+const submenuIconMap: Record<string, { src?: string; emoji?: string }> = {
+  开往: { emoji: '🚇' },
+  空间穿梭: { src: 'https://www.blogsclub.org/images/shuttle_6.png' },
+  异次元: { src: 'https://travel.moe/images/icon/icon64.png' },
+  传送门: { src: '/images/webteleporter.ico' },
+  笔墨迹: { src: 'https://photo.xiangming.site/img/blogscn_icon.png' }
+}
 ---
 
 <header-component
-  class='group sticky top-4 z-50 max-md:z-30 mb-12 flex items-center justify-between rounded-xl border border-transparent max-sm:py-1 sm:rounded-2xl'
+  class='group sticky top-4 z-50 max-md:z-30 mb-12 flex items-center justify-between rounded-xl border border-transparent max-lg:py-1 lg:rounded-2xl'
 >
   <a
-    class='z-30 text-xl font-medium group-[.not-top]:ms-2 sm:group-[.not-top]:ms-3'
+    class='z-30 text-xl font-medium group-[.not-top]:ms-2 lg:group-[.not-top]:ms-3'
     style='transition:margin-inline 0.3s'
     href='/'
     aria-label='Brand'>{config.title}</a
@@ -18,17 +57,19 @@ import { Icon } from '../user'
     {/* Menu links */}
     <div
       id='headerExpandContent'
-      class='end-0 start-0 top-12 grid border border-transparent group-[.not-top]:rounded-xl group-[.expanded]:opacity-100 dark:group-[.expanded.not-top]:bg-muted max-sm:absolute max-sm:opacity-0 max-sm:group-[.not-top]:border-border max-sm:group-[.expanded.not-top]:bg-background max-sm:group-[.not-top]:px-4 max-sm:group-[.not-top]:py-2 sm:grid-rows-1'
+      class='end-0 start-0 top-12 grid border border-transparent group-[.not-top]:rounded-xl group-[.expanded]:opacity-100 dark:group-[.expanded.not-top]:bg-muted max-lg:absolute max-lg:opacity-0 max-lg:group-[.not-top]:border-border max-lg:group-[.expanded.not-top]:bg-background max-lg:group-[.not-top]:px-4 max-lg:group-[.not-top]:py-2 lg:grid-rows-1'
     >
-      <div class='flex flex-col items-center justify-center sm:flex-row'>
+      <div class='flex flex-col items-center justify-center lg:flex-row'>
         {
           config.header.menu.map((item) => (
             <div class="relative">
               {item.submenu && item.submenu.length > 0 ? (
                 <div class="relative group/submenu">
                   <button
-                    class="w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3 flex items-center justify-end gap-1"
+                    class="w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary lg:w-fit lg:px-3 flex items-center justify-end gap-1"
+                    data-i18n-nav={navKeyMap[item.title]}
                   >
+                    {navIconMap[item.title] && <Icon name={navIconMap[item.title]} class='size-4' />}
                     {item.title}
                     <svg class="w-3 h-3 transition-transform group-hover/submenu:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -38,8 +79,22 @@ import { Icon } from '../user'
                     {item.submenu.map((subitem) => (
                       <a
                         href={subitem.link}
-                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors"
+                        class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors"
+                        data-i18n-nav={navKeyMap[subitem.title]}
                       >
+                        {submenuIconMap[subitem.title]?.emoji && (
+                          <span class="inline-flex size-4 shrink-0 items-center justify-center text-sm leading-none" aria-hidden='true'>{submenuIconMap[subitem.title].emoji}</span>
+                        )}
+                        {submenuIconMap[subitem.title]?.src && (
+                          <img
+                            src={submenuIconMap[subitem.title].src}
+                            alt=''
+                            width='16'
+                            height='16'
+                            loading='lazy'
+                            class='size-4 object-contain'
+                          />
+                        )}
                         {subitem.title}
                       </a>
                     ))}
@@ -48,16 +103,18 @@ import { Icon } from '../user'
               ) : (
                 <a
                   href={item.link}
-                  class="w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3"
+                  class="w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary lg:w-fit lg:px-3"
+                  data-i18n-nav={navKeyMap[item.title]}
                 >
+                  {navIconMap[item.title] && <Icon name={navIconMap[item.title]} class='mr-1 inline-block size-4 align-[-0.15em]' />}
                   {item.title}
                 </a>
               )}
             </div>
           ))
         }
-        <div class='flex w-full grow flex-row justify-end gap-x-3 sm:w-fit sm:gap-x-5'>
-          <a class='px-1 py-2 transition-none sm:px-2' href='/search' title='Search'>
+        <div class='flex w-full grow flex-row justify-end gap-x-3 lg:w-fit lg:gap-x-5'>
+          <a class='px-1 py-2 transition-none lg:px-2' href='/search' title='Search'>
             <span class='sr-only'>Search</span>
             <Icon name='search' class='size-5' />
           </a>
@@ -69,7 +126,7 @@ import { Icon } from '../user'
     <div class='z-30 flex gap-x-4 group-[.not-top]:gap-x-2' style='transition:gap 0.3s'>
       <button
         id='toggleDarkMode'
-        class='group/dark box-content size-5 rounded-md border p-1.5 transition-colors hover:bg-border sm:group-[.not-top]:rounded-xl'
+        class='group/dark box-content size-5 rounded-md border p-1.5 transition-colors hover:bg-border lg:group-[.not-top]:rounded-xl'
       >
         <span class='sr-only'>Dark Theme</span>
         <Icon class='system size-5 group-hover/dark:text-primary' name='computer' />
@@ -78,7 +135,7 @@ import { Icon } from '../user'
       </button>
       <button
         id='toggleMenu'
-        class='rounded-md border p-1.5 transition-colors hover:bg-border sm:hidden sm:group-[.not-top]:rounded-xl'
+        class='rounded-md border p-1.5 transition-colors hover:bg-border lg:hidden lg:group-[.not-top]:rounded-xl'
       >
         <span class='sr-only'>Menu</span>
         <Icon class='size-5' name='menu' />
@@ -159,7 +216,7 @@ import { Icon } from '../user'
   }
   @media (min-width: 800px) {
     header-component.not-top {
-      margin-inline: 8%;
+      margin-inline: 1%;
     }
   }
   :global(.dark) header-component.not-top {
@@ -167,7 +224,7 @@ import { Icon } from '../user'
   }
 
   /* header menu */
-  @media (max-width: 640px) {
+  @media (max-width: 1023px) {
     #headerExpandContent {
       grid-template-rows: 0fr;
       transition:
@@ -227,7 +284,8 @@ import { Icon } from '../user'
     z-index: 50;
   }
 
-  .group\/submenu:hover .dropdown-menu {
+  .group\/submenu:hover .dropdown-menu,
+  .group\/submenu:focus-within .dropdown-menu {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);

@@ -1,0 +1,616 @@
+---
+import { live2dConfig } from '@/live2d-config'
+---
+
+<div id='ai-chat' data-open='false' aria-hidden='true'>
+  <header id='ai-chat-head'>
+    <div id='ai-chat-identity'>
+      <img src={live2dConfig.chatAvatar} alt='' width='34' height='34' />
+      <div>
+        <strong id='ai-chat-title'>和嘉心糖聊聊</strong>
+        <span>博客看板娘 · AI 助手</span>
+      </div>
+    </div>
+    <div id='ai-chat-actions'>
+      <button
+        type='button'
+        id='ai-chat-season'
+        aria-label='切换看板娘季节版本'
+        title='切换到夏日版'
+      >
+        <span id='ai-chat-season-icon' aria-hidden='true'>🍂</span>
+        <span id='ai-chat-season-label'>秋季版</span>
+      </button>
+      <button type='button' id='ai-chat-clear' aria-label='清空对话' title='清空对话'>⟲</button>
+      <button type='button' id='ai-chat-close' aria-label='收起对话' title='收起'>✕</button>
+    </div>
+  </header>
+  <div id='ai-chat-context' hidden>
+    <span aria-hidden='true'>📖</span>
+    <span id='ai-chat-context-text'></span>
+  </div>
+  <div id='ai-chat-log' role='log' aria-live='polite' aria-label='对话记录'></div>
+  <form id='ai-chat-form'>
+    <textarea
+      id='ai-chat-input'
+      rows='1'
+      maxlength='600'
+      autocomplete='off'
+      placeholder='说点什么…（Enter 发送，Shift+Enter 换行）'
+      aria-label='输入消息'></textarea>
+    <button type='submit' id='ai-chat-send' aria-label='发送'>发送</button>
+  </form>
+  <p id='ai-chat-notice'>
+    对话和当前文章摘要会发送给第三方 AI 服务，<a href='/terms/privacy-policy/'>详见隐私政策</a>
+  </p>
+</div>
+
+<script is:inline define:vars={{ config: live2dConfig }}>
+  ;(() => {
+    const panel = document.getElementById('ai-chat')
+    const log = document.getElementById('ai-chat-log')
+    const form = document.getElementById('ai-chat-form')
+    const input = document.getElementById('ai-chat-input')
+    const sendButton = document.getElementById('ai-chat-send')
+    const contextBanner = document.getElementById('ai-chat-context')
+    const contextText = document.getElementById('ai-chat-context-text')
+    const seasonToggle = document.getElementById('ai-chat-season')
+    const seasonLabel = document.getElementById('ai-chat-season-label')
+    const seasonIcon = document.getElementById('ai-chat-season-icon')
+
+    if (!panel || !log || !form || !input || !sendButton) return
+
+    const GREETING = config.messages.greeting
+    const REACT_EXPRESSIONS = config.expressions.available
+    const REACT_MOTIONS = config.motions
+
+    // 只保留最近若干条，服务端还会再截一次
+    const HISTORY_LIMIT = config.chat.historyLimit
+    // 和 src/ai.config.ts 的 pageContextLimit 保持一致
+    const PAGE_TEXT_LIMIT = config.chat.pageTextLimit
+
+    const history = []
+    let sending = false
+    let greeted = false
+
+    const pick = (list) => list[Math.floor(Math.random() * list.length)]
+
+    const seasonOptions = config.seasons?.options || {}
+    const seasonStorageKey = config.seasons?.storageKey || 'jiaxintang-live2d-season'
+    const seasonNames = Object.keys(seasonOptions)
+    const getSeason = () => {
+      let saved = null
+      try {
+        saved = localStorage.getItem(seasonStorageKey)
+      } catch {}
+      return saved && seasonNames.includes(saved) ? saved : config.seasons.default
+    }
+    const activeSeason = getSeason()
+    const nextSeason = seasonNames.find((season) => season !== activeSeason) || activeSeason
+    const currentSeason = seasonOptions[activeSeason]
+    const nextSeasonConfig = seasonOptions[nextSeason]
+    if (seasonLabel) seasonLabel.textContent = currentSeason.label
+    if (seasonIcon) seasonIcon.textContent = activeSeason === 'autumn' ? '🍂' : '☀️'
+    if (seasonToggle) {
+      seasonToggle.title = `切换到${nextSeasonConfig.label}`
+      seasonToggle.setAttribute(
+        'aria-label',
+        `当前${currentSeason.label}，切换到${nextSeasonConfig.label}`
+      )
+      seasonToggle.addEventListener('click', () => {
+        try {
+          localStorage.setItem(seasonStorageKey, nextSeason)
+        } catch {}
+        window.location.reload()
+      })
+    }
+
+    // 让动作跟着对话走：把表情/动作丢给 Live2DWidget 去执行
+    const react = (expression, motion, message) => {
+      document.getElementById('live2d-widget')?.dispatchEvent(
+        new CustomEvent('live2d:react', {
+          bubbles: true,
+          detail: { expression, motion, message }
+        })
+      )
+    }
+
+    // 按回复语气挑反应，让模型的表现和回答内容更一致。
+    const replyReaction = (text) => {
+      const tail = text.slice(-24)
+      if (/[?？]/.test(tail)) return ['惊讶', 'Shake']
+      if (/(抱歉|难过|遗憾|失败|出错|不能)/.test(text)) return ['半闭眼', 'Shake']
+      if (/(等等|注意|小心|竟然|原来|没想到)/.test(text)) return ['惊讶', 'Blink']
+      if (/(谢谢|哈哈|喜欢|开心|好呀|可以|当然|～)/.test(text)) return ['微笑', 'Nod']
+      return [pick(REACT_EXPRESSIONS), pick(REACT_MOTIONS)]
+    }
+
+    const replyPreview = (text) => {
+      const compact = text.replace(/\s+/g, ' ').trim()
+      return compact.length > 54 ? `${compact.slice(0, 54)}…` : compact
+    }
+
+    // 每个浏览器生成一个固定 ID，服务端用它配合 IP 做额度校验
+    const deviceId = () => {
+      const KEY = 'jiaxintang-device-id'
+      let id = null
+      try {
+        id = localStorage.getItem(KEY)
+        if (!id) {
+          id = `dev_${Math.random().toString(36).slice(2, 12)}${Date.now().toString(36)}`
+          localStorage.setItem(KEY, id)
+        }
+      } catch {
+        id = 'no-storage'
+      }
+      return id
+    }
+
+    // 一律用 textContent / createTextNode：AI 的回复来自外部，不能当 HTML 插进来
+    const bubble = (role, text) => {
+      const item = document.createElement('div')
+      item.className = `ai-chat-bubble ai-chat-${role}`
+      item.textContent = text
+      log.appendChild(item)
+      log.scrollTop = log.scrollHeight
+      return item
+    }
+
+    // 等待回复时的三个跳动小点
+    const typingBubble = () => {
+      const item = document.createElement('div')
+      item.className = 'ai-chat-bubble ai-chat-assistant'
+      const dots = document.createElement('div')
+      dots.className = 'ai-chat-dots'
+      for (let i = 0; i < 3; i += 1) dots.appendChild(document.createElement('span'))
+      item.appendChild(dots)
+      log.appendChild(item)
+      log.scrollTop = log.scrollHeight
+      return item
+    }
+
+    const canSend = () => !sending && input.value.trim().length > 0
+
+    const syncSendButton = () => {
+      sendButton.disabled = !canSend()
+      sendButton.textContent = sending ? '…' : '发送'
+    }
+
+    const autoGrow = () => {
+      input.style.height = 'auto'
+      const next = Math.min(input.scrollHeight, 96)
+      input.style.height = `${next}px`
+      input.style.overflowY = input.scrollHeight > 96 ? 'auto' : 'hidden'
+    }
+
+    const openPanel = () => {
+      panel.dataset.open = 'true'
+      panel.setAttribute('aria-hidden', 'false')
+      window.setTimeout(() => input.focus(), 180)
+    }
+
+    const closePanel = () => {
+      panel.dataset.open = 'false'
+      panel.setAttribute('aria-hidden', 'true')
+    }
+
+    const ensureGreeting = () => {
+      if (greeted) return
+      greeted = true
+      bubble('assistant', GREETING)
+    }
+
+    const clearConversation = () => {
+      history.length = 0
+      log.replaceChildren()
+      greeted = false
+      ensureGreeting()
+    }
+
+    // 抓访客正在看的文章正文，让 AI 知道上下文。
+    // 只传原文，框住它的说明由服务端拼，避免前端伪造系统指令。
+    //
+    // innerText 会触发浏览器的布局计算，长文章上不便宜，而一页里正文不会变，
+    // 所以只抓一次缓存起来（本站是整页刷新，没有 SPA 路由，不用担心缓存过期）。
+    let cachedPageText = null
+
+    const pageContext = () => {
+      if (cachedPageText === null) {
+        const node = document.getElementById('content')
+        cachedPageText = node ? (node.innerText || '').trim().slice(0, PAGE_TEXT_LIMIT) : ''
+      }
+      return { pageTitle: document.title, pageText: cachedPageText }
+    }
+
+    const syncContextBanner = () => {
+      const context = pageContext()
+      if (!contextBanner || !contextText || !context.pageText) return
+      const title = context.pageTitle.replace(/\s*[|｜·-]\s*[^|｜]+$/, '').trim()
+      contextText.textContent = `正在阅读《${title || '当前页面'}》，可以直接问我这页的内容`
+      contextBanner.hidden = false
+    }
+
+    const send = async (text) => {
+      history.push({ role: 'user', content: text })
+      if (history.length > HISTORY_LIMIT) history.splice(0, history.length - HISTORY_LIMIT)
+      bubble('user', text)
+
+      sending = true
+      syncSendButton()
+      const pending = typingBubble()
+      // 思考中的样子
+      react('半闭眼')
+
+      try {
+        // 站点是 trailingSlash: 'always'，带斜杠能直接命中路由，省一次 308 跳转
+        const response = await fetch('/api/chat/', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', 'x-device-id': deviceId() },
+          body: JSON.stringify({ messages: history, ...pageContext() })
+        })
+        const data = await response.json().catch(() => null)
+
+        if (!response.ok || typeof data?.reply !== 'string') {
+          pending.remove()
+          bubble('error', data?.error || '我这边出了点问题，稍后再试试吧。')
+          react('嫌弃眼')
+          return
+        }
+
+        pending.replaceChildren(document.createTextNode(data.reply))
+        history.push({ role: 'assistant', content: data.reply })
+        if (history.length > HISTORY_LIMIT) history.splice(0, history.length - HISTORY_LIMIT)
+        log.scrollTop = log.scrollHeight
+        const [expression, motion] = replyReaction(data.reply)
+        react(expression, motion, replyPreview(data.reply))
+      } catch (error) {
+        console.error('[ai-chat] 请求失败', error)
+        pending.remove()
+        bubble('error', '网络好像不太顺，稍后再试试吧。')
+        react('嫌弃眼')
+      } finally {
+        sending = false
+        syncSendButton()
+        if (panel.dataset.open === 'true') input.focus()
+      }
+    }
+
+    // 点一下看板娘：模型先播放动作并显示短气泡，再打开完整聊天面板。
+    document.addEventListener('live2d:tap', () => {
+      ensureGreeting()
+      openPanel()
+    })
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && panel.dataset.open === 'true') closePanel()
+    })
+
+    document.getElementById('ai-chat-close')?.addEventListener('click', closePanel)
+    document.getElementById('ai-chat-clear')?.addEventListener('click', clearConversation)
+
+    input.addEventListener('input', () => {
+      autoGrow()
+      syncSendButton()
+    })
+
+    input.addEventListener('keydown', (event) => {
+      // Enter 发送，Shift+Enter 换行
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault()
+        form.requestSubmit()
+      }
+    })
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault()
+      if (!canSend()) return
+      const text = input.value.trim()
+      input.value = ''
+      autoGrow()
+      syncSendButton()
+      send(text)
+    })
+
+    syncSendButton()
+    syncContextBanner()
+  })()
+</script>
+
+<style is:global>
+  #ai-chat {
+    position: fixed;
+    bottom: 14px;
+    left: 288px;
+    z-index: 41;
+    display: flex;
+    flex-direction: column;
+    width: 340px;
+    height: 420px;
+    max-height: 72vh;
+    overflow: hidden;
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) + 4px);
+    background: hsl(var(--background) / 95%);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
+    color: hsl(var(--foreground));
+    font-size: 13px;
+    line-height: 1.55;
+    transform-origin: bottom left;
+    transition:
+      opacity 0.28s ease,
+      transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0.28s;
+    backdrop-filter: blur(10px);
+  }
+
+  #ai-chat[data-open='false'] {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-18px, 18px) scale(0.88);
+  }
+
+  #ai-chat[data-open='true'] {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(0, 0) scale(1);
+  }
+
+  #ai-chat-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px;
+    border-bottom: 1px solid hsl(var(--border));
+    background: hsl(var(--muted) / 60%);
+    font-weight: 600;
+  }
+
+  #ai-chat-identity {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 9px;
+  }
+
+  #ai-chat-identity img {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border: 1px solid hsl(var(--border));
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: 50% 18%;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+  }
+
+  #ai-chat-identity div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+
+  #ai-chat-identity strong {
+    font-size: 13px;
+  }
+
+  #ai-chat-identity span {
+    color: hsl(var(--muted-foreground));
+    font-size: 10px;
+    font-weight: 400;
+  }
+
+  #ai-chat-context {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 11px;
+    border-bottom: 1px solid hsl(var(--border));
+    background: hsl(var(--primary) / 8%);
+    color: hsl(var(--muted-foreground));
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  #ai-chat-context[hidden] {
+    display: none;
+  }
+
+  #ai-chat-actions {
+    display: flex;
+    gap: 2px;
+  }
+
+  #ai-chat-actions button {
+    border: 0;
+    background: transparent;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 4px 7px;
+    border-radius: 6px;
+  }
+
+  #ai-chat-season {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+  }
+
+  #ai-chat-season-icon {
+    font-size: 14px;
+  }
+
+  #ai-chat-actions button:hover {
+    background: hsl(var(--muted));
+    color: hsl(var(--foreground));
+  }
+
+  #ai-chat-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overscroll-behavior: contain;
+  }
+
+  .ai-chat-bubble {
+    max-width: 86%;
+    padding: 7px 10px;
+    border-radius: 12px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    animation: ai-chat-in 0.22s ease;
+  }
+
+  @keyframes ai-chat-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .ai-chat-user {
+    align-self: flex-end;
+    background: hsl(var(--primary) / 18%);
+    border: 1px solid hsl(var(--primary) / 30%);
+  }
+
+  .ai-chat-assistant {
+    align-self: flex-start;
+    background: hsl(var(--muted));
+  }
+
+  .ai-chat-error {
+    align-self: flex-start;
+    background: hsl(0 80% 60% / 12%);
+    border: 1px solid hsl(0 80% 60% / 30%);
+    color: hsl(0 70% 45%);
+    font-size: 12px;
+  }
+
+  /* 等待回复的三个小点 */
+  .ai-chat-dots {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 3px;
+  }
+
+  .ai-chat-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: hsl(var(--muted-foreground));
+    animation: ai-chat-typing 1.4s infinite ease-in-out both;
+  }
+
+  .ai-chat-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+  }
+  .ai-chat-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+  }
+
+  @keyframes ai-chat-typing {
+    0%,
+    80%,
+    100% {
+      transform: scale(0.4);
+      opacity: 0.5;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  #ai-chat-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    padding: 9px 10px;
+    border-top: 1px solid hsl(var(--border));
+    background: hsl(var(--muted) / 40%);
+  }
+
+  #ai-chat-notice {
+    margin: 0;
+    padding: 0 10px 8px;
+    background: hsl(var(--muted) / 40%);
+    color: hsl(var(--muted-foreground));
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  #ai-chat-notice a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  #ai-chat-input {
+    flex: 1;
+    min-width: 0;
+    padding: 7px 10px;
+    border: 1px solid hsl(var(--input));
+    border-radius: 8px;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font: inherit;
+    resize: none;
+    overflow-y: hidden;
+    max-height: 96px;
+  }
+
+  #ai-chat-input:focus {
+    outline: 2px solid hsl(var(--ring) / 25%);
+    outline-offset: 0;
+  }
+
+  #ai-chat-send {
+    flex: none;
+    padding: 8px 14px;
+    border: 0;
+    border-radius: 8px;
+    background: hsl(var(--primary) / 90%);
+    color: hsl(var(--background));
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+  }
+
+  #ai-chat-send:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 767px) {
+    #ai-chat {
+      left: 8px;
+      right: 8px;
+      bottom: calc(74px + env(safe-area-inset-bottom));
+      width: auto;
+      height: min(430px, calc(100dvh - 100px));
+      max-height: 72vh;
+      transform-origin: bottom left;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #ai-chat,
+    .ai-chat-bubble {
+      transition: none;
+      animation: none;
+    }
+  }
+</style>

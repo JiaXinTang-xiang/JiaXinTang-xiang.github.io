@@ -1,14 +1,17 @@
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
 import vercel from '@astrojs/vercel'
 import AstroPureIntegration from 'astro-pure'
-import { defineConfig, fontProviders } from 'astro/config'
+import { defineConfig, envField, fontProviders } from 'astro/config'
 import rehypeKatex from 'rehype-katex'
 import remarkMath from 'remark-math'
 
 // Local integrations
 import rehypeAutolinkHeadings from './src/plugins/rehype-auto-link-headings.ts'
 import rehypeFigure from './src/plugins/rehype-figure.ts'
-// Shiki
+// Post meta (reading time & excerpt)
+import { remarkExcerpt, remarkReadingTime } from './src/plugins/remark-post-meta.ts'
+// Mermaid diagrams
+import { remarkMermaid } from './src/plugins/remark-mermaid.ts'// Shiki
 import {
   addCollapse,
   addCopyButton,
@@ -36,6 +39,19 @@ export default defineConfig({
   // https://docs.astro.build/en/guides/deploy/
   adapter: vercel(),
   output: 'static',
+
+  // [Env]
+  // 看板娘 AI 对话的环境变量。context:'server' + access:'secret' = 只在服务端可见，
+  // 不会被打包进前端产物。声明成 optional 是为了缺变量时不让构建直接挂掉，
+  // 改由 src/pages/api/chat.ts 在运行时返回一句能看懂的报错。
+  // 本地读 .env，线上读 Vercel 项目设置里的同名环境变量。
+  env: {
+    schema: {
+      AI_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
+      AI_MODEL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      AI_BASE_URL: envField.string({ context: 'server', access: 'secret', optional: true })
+    }
+  },
   // Local (standalone)
   // adapter: node({ mode: 'standalone' }),
   // output: 'server',
@@ -46,16 +62,16 @@ export default defineConfig({
     service: {
       entrypoint: 'astro/assets/services/sharp'
     },
-    // Allow remote images for GitHub chart
+    // R2 article images are rendered as normal remote <img> elements so a
+    // temporary R2 outage cannot make the static build fail.
     domains: ['ghchart.rshah.org'],
-    remotePatterns: [
-      { protocol: 'https', hostname: 'ghchart.rshah.org' }
-    ]
+    remotePatterns: [{ protocol: 'https', hostname: 'ghchart.rshah.org' }]
   },
 
   // [Markdown]
   markdown: {
-    remarkPlugins: [remarkMath],
+    // remarkMermaid 把 ```mermaid 代码块换成 .mermaid 容器（必须早于 Shiki）
+    remarkPlugins: [remarkMath, remarkReadingTime, remarkExcerpt, remarkMermaid],
     rehypePlugins: [
       [rehypeKatex, {}],
       rehypeHeadingIds,

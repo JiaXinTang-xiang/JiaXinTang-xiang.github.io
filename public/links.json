@@ -34,6 +34,18 @@
           "intro": "你应当选择你真正热爱的",
           "link": "https://www.juniortree.com/",
           "avatar": "https://s3.juniortree.com/pic/static/avatar.webp"
+        },
+        {
+          "name": "科技酱的技术文档",
+          "intro": "同一个世界，同一个互联网！",
+          "link": "https://docs.asoe.cn",
+          "avatar": "https://pic1.imgdb.cn/i/0348YILT8zwI1hiLW4etko.png"
+        },
+        {
+          "name": "lumivers",
+          "intro": "Blog",
+          "link": "https://lumivers.pages.dev",
+          "avatar": "https://lumivers.pages.dev/avatar.jpg"
         }
       ]
     },
@@ -46,6 +58,18 @@
       "id_name": "special-links",
       "desc": "Other special links",
       "link_list": [
+        {
+          "name": "笔墨迹",
+          "intro": "记录生活与思考的独立博客",
+          "link": "https://blogscn.fun/",
+          "avatar": "/images/blogscn_icon.png"
+        },
+        {
+          "name": "独立博客传送门",
+          "intro": "随机访问独立博客的传送站点",
+          "link": "https://webteleporter.top",
+          "avatar": "https://webteleporter.top/favicon.ico"
+        },
         {
           "name": "Astro",
           "intro": "The web framework for content-driven websites",

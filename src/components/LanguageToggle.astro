@@ -10,11 +10,17 @@
       'nav.blog.tech': '技术',
       'nav.blog.daily': '日常',
       'nav.blog.monthly': '月记',
+      'nav.blog.notes': '笔记',
+      'nav.blog.wiki': '飞书',
       'nav.projects': '项目',
       'nav.links': '友链',
-      'nav.about': '关于',
-      'nav.update': '更新',
-      'nav.travellings': '开往',
+      'nav.about': '关于我',
+      'nav.update': '归档',
+      'nav.travellings': '旅行',
+    'nav.other': '其他',
+    'nav.anime': '追番',
+    'nav.moments': '动态',
+    'nav.gallery': '画廊',
       // 首页
       'home.author': '嘉心糖',
       'home.about': '关于',
@@ -80,11 +86,17 @@
       'nav.blog.tech': 'Tech',
       'nav.blog.daily': 'Daily',
       'nav.blog.monthly': 'Monthly',
+      'nav.blog.notes': 'Notes',
+      'nav.blog.wiki': 'Wiki',
       'nav.projects': 'Projects',
       'nav.links': 'Links',
       'nav.about': 'About',
-      'nav.update': 'Update',
+      'nav.update': 'Archives',
       'nav.travellings': 'Travelling',
+    'nav.other': 'More',
+    'nav.anime': 'Anime',
+    'nav.moments': 'Moments',
+    'nav.gallery': 'Gallery',
       // Home
       'home.author': 'Jaxon',
       'home.about': 'About',
@@ -171,9 +183,28 @@
     document.querySelectorAll('[data-i18n-nav]').forEach((el) => {
       const key = el.getAttribute('data-i18n-nav')
       if (key && t[key]) {
-        el.textContent = t[key]
+        // 保留子元素（如下拉箭头 svg），只替换文本节点
+        if (el.childElementCount > 0) {
+          const textNode = Array.from(el.childNodes).find(
+            (n) => n.nodeType === Node.TEXT_NODE && n.textContent?.trim()
+          )
+          if (textNode) {
+            textNode.textContent = t[key]
+          }
+        } else {
+          el.textContent = t[key]
+        }
       }
     })
+
+    // 2.5 翻译 Travelling 外链
+    const travLink = document.getElementById('travellings-link')
+    if (travLink) {
+      const textNode = Array.from(travLink.childNodes).find(
+        (node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim()
+      )
+      if (textNode) textNode.textContent = `${t['nav.travellings']} `
+    }
 
     // 3. 翻译包含特定文本的元素
     const textMap: Record<string, string> = {
@@ -255,21 +286,47 @@
   }
 
   function injectTravellingsLink() {
-    // 在导航菜单 Update 后面加上开往外链
+    // “旅行”下拉菜单：开往 + 空间穿梭
     const nav = document.querySelector('header-component #headerExpandContent .flex.flex-col')
     if (!nav || document.getElementById('travellings-link')) return
 
     const wrapper = document.createElement('div')
     wrapper.className = 'relative'
-    const link = document.createElement('a')
+    const submenu = document.createElement('div')
+    submenu.className = 'relative group/submenu'
+
+    const link = document.createElement('button')
     link.id = 'travellings-link'
-    link.href = 'https://www.travellings.cn/go.html'
-    link.target = '_blank'
-    link.rel = 'noopener'
-    link.title = '开往-友链接力'
-    link.className = 'w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3'
-    link.textContent = 'Travelling↗︎'
-    wrapper.appendChild(link)
+    link.type = 'button'
+    link.title = '旅行'
+    link.className = 'w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3 flex items-center justify-end gap-1'
+    link.setAttribute('data-i18n-nav', 'nav.travellings')
+    link.append(document.createTextNode(`${translations[getLang()]['nav.travellings']} `))
+    const arrow = document.createElement('span')
+    arrow.textContent = '⌄'
+    arrow.className = 'text-xs transition-transform group-hover/submenu:rotate-180'
+    link.appendChild(arrow)
+
+    const menu = document.createElement('div')
+    menu.className = 'dropdown-menu'
+    menu.setAttribute('role', 'menu')
+
+    const createMenuLink = (href, text, title) => {
+      const link = document.createElement('a')
+      link.href = href
+      link.target = '_blank'
+      link.rel = 'noopener'
+      link.title = title
+      link.className = 'block whitespace-nowrap rounded px-3 py-2 text-right text-sm hover:bg-muted hover:text-primary'
+      link.textContent = text
+      link.setAttribute('role', 'menuitem')
+      return link
+    }
+
+    menu.appendChild(createMenuLink('https://www.travellings.cn/go.html', '开往 ↗︎', '开往-友链接力'))
+    menu.appendChild(createMenuLink('https://blogs.quest', '空间穿梭 ↗︎', '空间穿梭-随机访问成员博客'))
+    submenu.append(link, menu)
+    wrapper.appendChild(submenu)
 
     // 找到 Update 链接后面插入
     const items = nav.querySelectorAll('.relative')
@@ -290,7 +347,6 @@
   // 初始化
   function init() {
     injectLanguageToggle()
-    injectTravellingsLink()
     fixExternalLinks()
     const currentLang = getLang()
     applyTranslations(currentLang)
@@ -306,7 +362,6 @@
   // 监听 Astro 页面切换事件（SPA 导航时重新应用翻译）
   document.addEventListener('astro:page-load', () => {
     injectLanguageToggle()
-    injectTravellingsLink()
     fixExternalLinks()
     const lang = getLang()
     applyTranslations(lang)

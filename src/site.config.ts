@@ -1,5 +1,22 @@
 import type { CardListData, Config, IntegrationUserConfig, ThemeUserConfig } from 'astro-pure/types'
 
+export const announcement = {
+  enable: true,
+  version: 'welcome-1',
+  content: '欢迎来到我的博客',
+  link: '',
+  linkText: '查看详情'
+}
+
+/**
+ * 每篇文章的 1200×630 社交预览图（Open Graph）。
+ * 由 src/pages/og/[...slug].png.ts 在构建时用 satori 生成，字体取自 src/assets/fonts。
+ * 文章数量变多后构建会明显变慢，可临时关闭。
+ */
+export const ogImage = {
+  enable: true
+}
+
 export const theme: ThemeUserConfig = {
   // [Basic]
   /** Title for your website. Will be used in metadata and as browser tab title. */
@@ -30,9 +47,9 @@ export const theme: ThemeUserConfig = {
     alt: 'Avatar'
   },
   //建议：保持现状
-  titleDelimiter: '•',  //网站页面标题中各部分之间的分隔符  
+  titleDelimiter: '•', //网站页面标题中各部分之间的分隔符
   prerender: true, // pagefind search is not supported with prerendering disabled
-  npmCDN: 'https://cdn.jsdelivr.net/npm',   //依赖第三方库时用的 CDN 源
+  npmCDN: 'https://cdn.jsdelivr.net/npm', //依赖第三方库时用的 CDN 源
 
   // Still in test  这是用来在 HTML 的 <head> 标签中添加自定义元数据或标签的
   head: [
@@ -53,7 +70,6 @@ export const theme: ThemeUserConfig = {
 
   /** Configure the header of your site. */
   header: {
-
     menu: [
       {
         title: 'Blog',
@@ -62,16 +78,36 @@ export const theme: ThemeUserConfig = {
           { title: 'Tech', link: '/tech' },
           { title: 'Daily', link: '/daily' },
           { title: 'Monthly', link: '/monthly' },
-          { title: 'Notes', link: 'https://notes.jiaxin404.top/' }
+          { title: 'Notes', link: 'https://notes.jiaxin404.top/' },
+          { title: 'Wiki', link: 'https://jiaxin404.feishu.cn/wiki/V1e8w3kLyiLSAYkflaIcSUJdnpg' }
         ]
       },
       { title: 'Projects', link: '/projects' },
       { title: 'Links', link: '/links' },
       { title: 'About', link: '/about' },
-      { title: 'Update', link: '/update' }
+      { title: 'Archives', link: '/archives' },
+      {
+        title: 'Travel',
+        link: '#',
+        submenu: [
+          { title: '开往', link: 'https://www.travellings.cn/go.html' },
+          { title: '空间穿梭', link: 'https://blogs.quest/' },
+          { title: '异次元', link: 'https://travel.moe/go.html' },
+          { title: '传送门', link: 'https://webteleporter.top/' },
+          { title: '笔墨迹', link: 'https://blogscn.fun/random.html' }
+        ]
+      },
+      {
+        title: '其他',
+        link: '/anime/',
+        submenu: [
+          { title: '追番', link: '/anime/' },
+          { title: '动态', link: '/moments/' },
+          { title: '画廊', link: 'https://r2.jiaxin404.top/gallery' }
+        ]
+      }
     ]
   },
-
 
   /** Configure the footer of your site. */
   footer: {
@@ -81,8 +117,8 @@ export const theme: ThemeUserConfig = {
     links: [
       // Registration link  真实的 ICP 备案信息
       {
-        title: 'Moe ICP 114514',
-        link: 'https://icp.gov.moe/?keyword=114514',
+        title: '萌ICP备20264005号',
+        link: 'https://icp.gov.moe/?keyword=20264005',
         style: 'text-sm' // Uno/TW CSS class
       },
       // Privacy Policy link  隐私政策和使用条款链接
@@ -93,23 +129,23 @@ export const theme: ThemeUserConfig = {
       }
     ],
     /** Enable displaying a “Astro & Pure theme powered” link in your site’s footer. */
-    credits: true,    //这是对主题作者的尊重
+    credits: true, //这是对主题作者的尊重
     /** Optional details about the social media accounts for this site. */
     social: {
       github: 'https://github.com/jiaxintang-xiang',
-      email: 'mailto:2174064279@qq.com',
+      email: 'mailto:2174064279@qq.com'
       // 可以添加更多社交链接
       // twitter: 'https://twitter.com/yourusername',
       // weibo: 'https://weibo.com/yourusername',
       // bilibili: 'https://space.bilibili.com/yourid'
     }
   },
-  
+
   // [Content]
   content: {
-    /** External links configuration  外部链接配置*/ 
+    /** External links configuration  外部链接配置*/
     externalLinks: {
-      content: ' ↗',   //提示用户这是外部链接（会跳转到其他网站）
+      content: ' ↗', //提示用户这是外部链接（会跳转到其他网站）
       /** Properties for the external links element */
       properties: {
         style: 'user-select:none'
@@ -118,7 +154,7 @@ export const theme: ThemeUserConfig = {
     /** Blog page size for pagination (optional) */
     blogPageSize: 8,
     // Currently support weibo, x, bluesky 社交分享按钮
-    share: ['weibo', 'x', 'bluesky']  
+    share: ['weibo', 'x', 'bluesky']
   }
 }
 
@@ -127,7 +163,7 @@ export const integ: IntegrationUserConfig = {
   // https://astro-pure.js.org/docs/integrations/links
   links: {
     // Friend logbook
-      logbook: [],  // 不注释，给空数组
+    logbook: [], // 不注释，给空数组
     // logbook: [
     //   { date: '2025-03-30', content: '开始完善个人博客，记录技术成长之路' },
     //   { date: '2025-03-29', content: '学习 Astro 框架，体验现代前端开发的魅力' },
@@ -136,12 +172,13 @@ export const integ: IntegrationUserConfig = {
     //   { date: '2025-03-26', content: '每一个项目都是成长的见证，每一篇文章都是思考的结晶' }
     // ],
     // Yourself link info
-    
+
     applyTip: [
       { name: 'Name', val: `JiaXin's Blog` },
       { name: 'Desc', val: '心有山海，静而无边' },
       { name: 'Link', val: 'https://jiaxin404.top/' },
-      { name: 'Avatar', val: 'https://jiaxin404.top/images/avatar.jpg' }
+      { name: 'Avatar', val: 'https://jiaxin404.top/images/avatar.jpg' },
+      { name: 'RSS', val: 'https://jiaxin404.top/rss.xml' }
     ],
     // Cache avatars in `public/avatars/` to improve user experience.
     cacheAvatar: false

@@ -1,0 +1,30 @@
+---
+import { type CollectionEntry, render } from 'astro:content'
+
+import { sortMDByDate } from 'astro-pure/server'
+import PostLayout from '@/layouts/ContentPost.astro'
+
+export const prerender = true
+
+export async function getStaticPaths() {
+  const { getCollection } = await import('astro:content')
+  const posts = sortMDByDate(await getCollection('tech'))
+  return posts.map((post) => ({
+    // 文章按分类分目录后，id 形如 ros/lsn10-carto，故使用 rest 参数 [...id]
+    params: { id: post.id },
+    props: { post, posts }
+  }))
+}
+
+type Props = {
+  post: CollectionEntry<'tech'>
+  posts: CollectionEntry<'tech'>[]
+}
+
+const { post, posts } = Astro.props
+const { Content, headings, remarkPluginFrontmatter } = await render(post)
+---
+
+<PostLayout {post} {posts} {headings} {remarkPluginFrontmatter}>
+  <Content />
+</PostLayout>

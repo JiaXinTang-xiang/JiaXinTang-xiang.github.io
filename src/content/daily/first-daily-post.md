@@ -5,7 +5,6 @@ publishDate: '2026-04-02'
 tags: ['生活', '思考']
 draft: false
 slug: 'first-daily-post'
-heroImage: { src: './day1.jpg', color: '#182c41' }
 ---
 
 

@@ -1,52 +1,31 @@
 ---
-import { PostPreview } from 'astro-pure/components/pages'
-import { getBlogCollection, groupCollectionsByYear, sortMDByDate } from 'astro-pure/server'
-import { Button } from 'astro-pure/user'
-import PageLayout from '@/layouts/BaseLayout.astro'
-
-export const prerender = true
-
-const allPosts = await getBlogCollection()
-const allPostsByDate = sortMDByDate(allPosts)
-const allPostsByYear = groupCollectionsByYear(allPostsByDate)
-
-const meta = {
-  description: 'A list of all the years of creating my posts',
-  title: 'Archives'
+import { getCollection, type CollectionEntry } from 'astro:content'
+import PageLayout from '@/layouts/CommonPage.astro'
+type K = 'blog' | 'tech' | 'daily' | 'monthly'
+type E = CollectionEntry<K>
+const entries = (await Promise.all((['blog', 'tech', 'daily', 'monthly'] as K[]).map((c) => getCollection(c, ({ data }) => !data.draft)))).flat() as E[]
+const grouped = new Map<string, E[]>()
+for (const e of entries) {
+  const d = e.data.updatedDate ?? e.data.publishDate
+  if (!d) continue
+  const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+  grouped.set(k, [...(grouped.get(k) ?? []), e])
 }
+const groups = [...grouped.entries()].sort(([a], [b]) => b.localeCompare(a))
+const headings = groups.map(([k]) => ({ depth: 2, slug: `archive-${k}`, text: `${k.slice(0, 4)}年${k.slice(5)}月` }))
+const path = (e: E) => `/${e.collection}/${e.id}`
 ---
-
-<PageLayout {meta}>
-  <Button title='Back' href='/blog' variant='back' />
-
-  <main class='mt-6 lg:mt-10'>
-    <div id='content-header' class='animate'>
-      <h1 class='mb-6 text-3xl font-medium'>Archives</h1>
-    </div>
-
-    {allPosts.length === 0 && <p>No posts yet.</p>}
-
-    <section id='content' class='animate' aria-label='Blog post list'>
-      {
-        allPostsByYear.map(([year, posts]) => (
-          <div class='relative mt-20'>
-            <h2
-              class='absolute -start-6 -top-16 z-0 text-9xl font-bold text-transparent opacity-12 dark:opacity-25'
-              style='-webkit-text-stroke-width:2px;-webkit-text-stroke-color:hsl(var(--foreground)/var(--un-text-opacity))'
-            >
-              <samp>{year}</samp>
-            </h2>
-            <p class='px-5 text-muted-foreground'>
-              {posts.length} post{posts.length > 1 && 's'}
-            </p>
-            <ul class='flex flex-col text-start'>
-              {posts.map((p) => (
-                <PostPreview post={p} class='border-0 bg-transparent py-2' />
-              ))}
-            </ul>
-          </div>
-        ))
-      }
-    </section>
-  </main>
+<PageLayout title='文章归档' {headings}>
+  <div class='space-y-8'>
+    {groups.map(([key, list]) => {
+      const [year, month] = key.split('-')
+      const sorted = list.sort((a, b) => (b.data.updatedDate ?? b.data.publishDate).valueOf() - (a.data.updatedDate ?? a.data.publishDate).valueOf())
+      return <section aria-labelledby={`archive-${key}`}>
+        <h2 id={`archive-${key}`} class='mb-3 text-xl font-semibold'>{year}年{month}月</h2>
+        <ul class='space-y-2 border-l pl-5'>
+          {sorted.map((e) => { const d = e.data.updatedDate ?? e.data.publishDate; return <li class='flex flex-wrap items-baseline gap-x-3'><time class='text-sm tabular-nums text-muted-foreground' datetime={d.toISOString()}>{String(d.getMonth() + 1).padStart(2, '0')}/{String(d.getDate()).padStart(2, '0')}</time><a href={path(e)} class='hover:text-primary hover:underline'>{e.data.title}</a></li> })}
+        </ul>
+      </section>
+    })}
+  </div>
 </PageLayout>

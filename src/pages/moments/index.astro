@@ -1,0 +1,72 @@
+---
+import LeisurePage from '../../layouts/LeisurePage.astro'
+import { moments } from '../../data/leisure'
+import config from '@/site-config'
+
+const entries = [...moments].sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+const formatter = new Intl.DateTimeFormat('zh-CN', {
+  timeZone: 'Asia/Shanghai', year: 'numeric', month: 'long', day: 'numeric',
+  hour: '2-digit', minute: '2-digit', hour12: false
+})
+for (const entry of entries) {
+  if (!Number.isFinite(Date.parse(entry.date))) throw new Error(`动态日期无效：${entry.date}`)
+}
+---
+
+<LeisurePage title='动态' description='不必每次都写成长文。留下一句话、一张照片，和当时的心情。' active='moments'>
+  {entries.length === 0 ? (
+    <div class='empty'>
+      <span class='empty-mark' aria-hidden='true'>“</span>
+      <h2>生活慢慢过，点滴慢慢记。</h2>
+      <p>这里还很安静，等下一次分享。</p>
+    </div>
+  ) : (
+    <ol class='timeline'>
+      {entries.map(entry => (
+        <li>
+          <article class='moment'>
+            <header>
+              <span class='avatar' aria-hidden='true'>{config.author.slice(0, 1)}</span>
+              <div><h2>{config.author}</h2><time datetime={entry.date}>{formatter.format(new Date(entry.date))}</time></div>
+            </header>
+            <p class='message'>{entry.text}</p>
+            {entry.images?.length && (
+              <div class:list={['photos', { single: entry.images.length === 1 }]}>
+                {entry.images.map(photo => (
+                  <a href={photo.src} target='_blank' rel='noopener noreferrer' aria-label={`查看大图：${photo.alt}`}>
+                    <img src={photo.src} alt={photo.alt} loading='lazy' />
+                  </a>
+                ))}
+              </div>
+            )}
+            {entry.location && <p class='location'>⌖ {entry.location}</p>}
+          </article>
+        </li>
+      ))}
+    </ol>
+  )}
+</LeisurePage>
+
+<style>
+  .empty { padding: 3rem 1.5rem 4rem; border: 1px dashed hsl(var(--border)); border-radius: 1rem; text-align: center; }
+  .empty-mark { font-family: Georgia, serif; font-size: 5rem; line-height: 1; color: hsl(var(--muted-foreground) / .4); }
+  .empty h2 { font-size: 1.1rem; font-family: 'LXGW WenKai', serif; }
+  .empty p { margin-top: .8rem; font-size: .85rem; color: hsl(var(--muted-foreground)); }
+  .timeline { list-style: none; padding-left: 1.5rem; border-left: 1px solid hsl(var(--border)); margin-left: .4rem; }
+  .timeline li { position: relative; margin-bottom: 1.5rem; }
+  .timeline li::before { content: ''; position: absolute; width: .6rem; height: .6rem; border-radius: 50%; background: hsl(var(--primary)); left: -1.82rem; top: 1.8rem; box-shadow: 0 0 0 5px hsl(var(--background)); }
+  .moment { padding: 1.5rem; border: 1px solid hsl(var(--border)); border-radius: 1rem; }
+  .moment header { display: flex; gap: .75rem; align-items: center; }
+  .avatar { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: .8rem; background: hsl(var(--muted)); color: hsl(var(--primary)); }
+  h2 { font-size: .9rem; font-weight: 600; }
+  time { font-size: .75rem; color: hsl(var(--muted-foreground)); }
+  .message { white-space: pre-wrap; overflow-wrap: anywhere; margin: 1rem 0; line-height: 1.9; }
+  .photos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
+  .photos a { overflow: hidden; border-radius: .5rem; }
+  .photos img { width: 100%; aspect-ratio: 1; object-fit: cover; transition: transform .2s; }
+  .photos a:hover img { transform: scale(1.03); }
+  .photos.single { grid-template-columns: minmax(0, 420px); }
+  .photos.single img { aspect-ratio: auto; max-height: 480px; object-fit: contain; }
+  .location { margin-top: 1rem; font-size: .75rem; color: hsl(var(--muted-foreground)); }
+  @media (max-width: 540px) { .moment { padding: 1rem; } .timeline { padding-left: 1rem; } .timeline li::before { left: -1.32rem; } }
+</style>

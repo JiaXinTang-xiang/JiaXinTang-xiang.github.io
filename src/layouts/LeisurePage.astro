@@ -1,0 +1,37 @@
+---
+import BaseLayout from './BaseLayout.astro'
+
+interface Props {
+  title: string
+  description: string
+  active: 'anime' | 'moments'
+}
+const { title, description, active } = Astro.props
+---
+
+<BaseLayout meta={{ title, description }}>
+  <main class='leisure animate'>
+    <header class='intro'>
+      <p class='eyebrow'>生活切片 / LIFE LATELY</p>
+      <h1>{title}</h1>
+      <p class='description'>{description}</p>
+      <nav class='tabs' aria-label='其他栏目'>
+        <a href='/anime/' aria-current={active === 'anime' ? 'page' : undefined}>追番</a>
+        <a href='/moments/' aria-current={active === 'moments' ? 'page' : undefined}>动态</a>
+      </nav>
+    </header>
+    <slot />
+  </main>
+</BaseLayout>
+
+<style>
+  .leisure { max-width: 860px; margin: 0 auto 5rem; }
+  .intro { margin-bottom: 2rem; }
+  .eyebrow { font-size: .7rem; letter-spacing: .18em; color: hsl(var(--muted-foreground)); }
+  h1 { margin: .8rem 0; font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 600; }
+  .description { color: hsl(var(--muted-foreground)); line-height: 1.8; }
+  .tabs { display: flex; gap: .5rem; margin-top: 1.8rem; border-bottom: 1px solid hsl(var(--border)); }
+  .tabs a { padding: .7rem 1.2rem; border-bottom: 2px solid transparent; color: hsl(var(--muted-foreground)); }
+  .tabs a[aria-current='page'] { color: hsl(var(--foreground)); border-color: hsl(var(--primary)); }
+  .tabs a:hover { color: hsl(var(--primary)); }
+</style>
