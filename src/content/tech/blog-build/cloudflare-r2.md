@@ -15,7 +15,6 @@ heroImage: { src: './images/cloudflare-r2/cloudflare-r2-cover.jpg', color: '#f48
 
 ## 前言
 
-
 随着博客文章越来越多，图片也逐渐成了一个需要单独解决的问题。最开始直接把图片放在博客仓库里确实方便，但时间久了，仓库体积会越来越大；如果使用 GitHub Raw 或第三方免费图床，又可能遇到国内访问速度、服务稳定性和隐私方面的问题。自己购买服务器当然也可以，不过还要考虑存储空间、带宽费用和后续维护。
 
 图床是一个非常必须的内容，因此，这次我选择使用 [Cloudflare R2](https://developers.cloudflare.com/r2/) 搭建自己的图床。R2 是 Cloudflare 提供的对象存储服务，兼容 S3 API，提供一定的免费额度，也可以绑定自己的域名，但是要绑定一张 Visa 卡才能使用。图片原文件存放在 R2 中，再通过一个部署在 [Vercel](https://vercel.com/) 上的管理后台完成上传、压缩、复制链接和删除等操作，非常方便。
