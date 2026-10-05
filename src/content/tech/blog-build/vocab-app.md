@@ -1,5 +1,5 @@
 ---
-title: '从网页到安卓 App'
+title: '初尝背单词手机App搭建'
 description: '记录使用 Vue 3、Supabase 与 Capacitor 搭建过程。'
 publishDate: '2026-10-03'
 slug: 'blog-build/vocab-app'
@@ -21,69 +21,72 @@ heroImage: { src: './images/vocab-app/cover.jpg', color: '#f48120' }
 
 最近在朋友的影响下，做了一个面向手机使用的 CET-4 背词应用。最初的想法很简单：把四级单词分成 45 天，每天打开做一组练习单词。
 
-但真正开始使用后，需求很快就不再是“做一个能答题的网页”了。我希望它既能在浏览器里直接打开，也能安装成 Android App；既允许游客立即使用，也能在登录后跨设备同步；还要有每日文章、错词本、真实英语发音、敲单词模式和适合手机操作的导航，后续还想做成一个小程序来使用，想法有点多，后面也是去网上找了一些类似的，发现已经做得很好了，已经没有什么可进步优化空间，但是在朋友的催促下，以及自己对于单词网页部署也有一些兴趣和好奇，还有做一个属于自己的单词库也很好的。
+但真正开始使用后，需求很快就不再是“做一个能答题的网页”了。我希望它既能在浏览器里直接打开，也能安装成 Android App；既允许游客立即使用，也能在登录后跨设备同步；还要有每日文章、错词本、真实英语发音、敲单词模式和适合手机操作的导航。后续还可以继续加入更多词书和学习模块。
 
-本文记录这次搭建的总体过程。它不是一份只介绍最终代码的教程，而是把选型、重构、失败尝试和后续计划一起保留下来，方便以后继续扩展 CET-6 或其他学习模块。
+下面记录这次搭建的总体过程。
 
 项目地址：
-
 - 在线网站：[https://en-app.jiaxin404.top/](https://en-app.jiaxin404.top/)
 - GitHub：[JiaXinTang-xiang/English-APP](https://github.com/JiaXinTang-xiang/English-APP)
 
 
-## 一、为什么是Vue
+## 一、为什么选择 Vue
 
-开始时，我让gpt做一个简单的显示单次功能,发现JavaScript页面代码已经很多，并且感觉有点乱,随着功能增加，代码很容易变成“所有事情都放在一个文件里”，不好管理，自己也很难去看懂，去网上搜索了一下发现有Vue框架，Vue的优势不只是语法更现代，而是可以把页面、组件、状态和服务分层管理。
+项目最初只是一个用 JavaScript 编写的单页练习页面。随着词书、文章、音频、登录和学习记录不断增加，页面代码逐渐变长，数据处理、界面更新和事件监听也开始混在一起，后续修改会越来越困难。
 
-例如
+Vue 提供了一套清晰的组织方式：把页面、组件、状态、路由和服务拆开管理。当前项目的主要分层如下：
+
 - 页面放在 `src/views/`；
 - 公共外壳放在 `src/layouts/`；
+- 可复用界面放在 `src/components/`；
 - 音频、存储和云同步放在 `src/services/`；
 - 学习进度与训练状态放在 `src/stores/learning.js`；
 - 路由集中放在 `src/router/index.js`。
 
-这样以后增加 CET-6、词书管理或新的训练模式时，不必再次推翻整个项目。
+这样增加新词书、新训练模式或新的统计页面时，可以在现有结构上继续扩展，而不需要把所有逻辑重新写进一个文件。
 
-## 什么是Vue
+## 二、什么是 Vue
 
-Vue是一套用于构建用户界面的‌渐进式 JavaScript 框架‌。简单说，它就是帮前端开发者更高效地做出网页和 App 界面的工具。‌
-它的核心思路是‌数据驱动‌：你只需要维护数据，Vue 会自动帮你把数据变化同步到页面上，不用再像传统开发那样手动操作 DOM 元素。这解决了页面复杂时“数据和视图同步”的维护难题。目前Vue 3是当前最新主版本，包含Teleport、Suspense、多根元素模板等新特性及非兼容变更，组合式API特性已兼容至Vue 2.7版本。
+Vue 是一套用于构建用户界面的渐进式 JavaScript 框架。它可以从一个小组件开始使用，也可以逐步扩展为包含路由、状态管理、接口请求和原生 App 的完整应用。它的核心是“数据驱动视图”：开发者维护数据和状态，Vue 负责在数据变化后更新对应的界面。与传统开发中频繁手动查询和修改 DOM 相比，这种方式更适合学习进度、答题状态、音频设置等会持续变化的页面。
 
-### 特点
-易用
+本项目使用 Vue 3 和 Composition API。Composition API 可以把同一类逻辑集中在一起，例如将训练状态、音频控制和账号同步分别封装，方便复用和测试。Vue 2.7 也提供了部分 Composition API 能力，但它仍然属于 Vue 2，不能与 Vue 3 的运行时和生态完全等同。
 
-在有HTML，CSS，JavaScript的基础上，快速上手。
-Vue.js的API参考了AngularJS、Knockout、Ractive.js、Rivets.js，但对于其他框架的参考不仅是参考，其中也包含了许多Vue.js的独特功能。
+### Vue 的几个特点
 
-灵活
+#### 易用
 
-简单小巧的核心，渐进式技术栈，足以应付任何规模的应用。
+Vue 建立在 HTML、CSS 和 JavaScript 之上，模板语法接近普通 HTML，因此可以从一个组件逐步开始学习。它吸收了早期前端框架中关于数据绑定和组件化的经验，同时保留了自己的响应式系统、单文件组件和清晰的模板语法。
 
-性能
+#### 灵活
 
-。。。
+Vue 的核心保持轻量，路由、状态管理、构建工具和原生能力可以按项目需要逐步加入。小型页面可以只使用 Vue，复杂应用则可以组合 Vue Router、Vite、Capacitor 和 Supabase。
+
+#### 性能
+
+Vue 使用响应式更新，只重新渲染发生变化的组件，而不是每次操作都刷新整个页面。Vue 3 还通过更轻量的运行时、编译优化和按需加载减少了初始资源体积。
+
+#### 组件化
+
+Vue 单文件组件可以把模板、样式和交互逻辑放在同一个组件中，同时保持组件之间的边界。例如 `StudyToolbar.vue` 负责训练控制栏，`ArticleAudioPlayer.vue` 负责文章播放，`AudioSettingsDrawer.vue` 负责声音设置。组件化让这些功能既能在不同页面复用，也能独立调整，不会牵连整个应用。
 
 
-## 路线
+## 三、技术路线与整体架构
 
-开始开发前，我收集阅读了一组关于 Vue、Vue Router、Capacitor、Android 构建、Preferences、Supabase 和 Vercel 的资料，了解功能和作用。
+开始开发前，我收集阅读了一组关于 Vue、Vue Router、Capacitor、Android 构建、Preferences、Supabase 和 Vercel 的资料，了解功能和作用，如下。
 
-
-| 分类 | 学到的内容 | 在本项目中的用途 |
+| 分类 | 内容 | 在本项目中的用途 |
 |------|------------|------------------|
 | Vue 3 | 组件、响应式状态、页面拆分 | 把大页面拆成首页、学习、文章和个人中心 |
 | Vue Router | 路由、Hash History、页面导航 | 让不同功能拥有独立页面，并兼容静态部署和 Android WebView |
 | Capacitor | Web 项目接入原生 Android | 复用 Vue 页面生成 APK |
 | Preferences | Android 端持久化数据 | 保存游客进度和音频设置 |
-| Supabase | Auth、PostgreSQL、RLS | 邮箱登录、用户数据隔离和多设备同步 |
+| Supabase | Auth、PostgreSQL、RLS | 邮箱验证码登录、用户数据隔离和多设备同步 |
 | Vercel | GitHub 自动构建和环境变量 | 部署网页版本 |
 | Cloudflare | DNS 和自定义域名 | 将独立域名指向 Vercel |
 
-因此,最终采用的技术组合Vue 3+ Vite +Capacitor Android，并且用Supabase 保存账号数据、Vercel 负责部署。
+因此，最终采用的技术组合是 Vue 3 + Vite + Capacitor Android，并使用 Supabase 保存账号数据、Vercel 部署网页版本。这一步不是某一段代码，而是先确认整体架构：前端、数据库、网页部署和 Android 打包并不是四套项目，可以围绕同一份 Vue 代码组合起来。
 
-这一步不是某一段代码，而是先确认整体架构：前端、数据库、网页部署和 Android 打包并不是四套项目，可以围绕同一份 Vue 代码组合起来。
-
-## 四、 Vue Router 重建框架
+## 四、用 Vue Router 重建应用框架
 
 重构后的应用不再只有一个页面，而是拆成了多个独立 View：
 
@@ -93,8 +96,14 @@ src/
 │   └── AppShell.vue
 ├── router/
 │   └── index.js
+├── components/
+│   ├── ArticleAudioPlayer.vue
+│   ├── AudioSettingsDrawer.vue
+│   └── StudyToolbar.vue
 ├── services/
+│   ├── articleAudio.js
 │   ├── audio.js
+│   ├── books.js
 │   ├── cloudSync.js
 │   ├── identity.js
 │   ├── storage.js
@@ -113,18 +122,23 @@ src/
     └── AuthView.vue
 ```
 
+其中，`StudyToolbar.vue` 负责电脑端顶部控制台和手机端的词书、章节、开始三项顶部栏；`AudioSettingsDrawer.vue` 集中管理发音、音标、语速、键盘音和反馈音；`ArticleAudioPlayer.vue` 与 `articleAudio.js` 单独管理文章朗读，单词真实音频使用独立的 HTML Audio，浏览器语音兜底则会避让正在播放的文章。
+
 路由使用 `createWebHashHistory()`。地址中会出现 `#`，视觉上不如普通 History 路由干净，但它对 Vercel 静态页面、PWA 和 Capacitor WebView 更稳，不需要为每个页面额外配置服务器回退规则。
 
-## 七、搭建 Supabase 数据库
+## 五、本地存储与学习状态
 
+学习进度集中在 `src/stores/learning.js`，包括单词答题记录、章节完成情况、复习计划、错词权重和本轮训练统计。`src/services/storage.js` 对存储方式做统一封装：网页端使用 `localStorage`，Android 端使用 Capacitor Preferences。这样同一套学习逻辑可以同时运行在浏览器和 Android App 中。
 
-### 为什么是  Supabase Cloud
+## 六、搭建 Supabase 数据库
 
- Supabase是一个开源的后端即服务（BaaS）平台，基于 PostgreSQL 数据库构建，被称为开源版 Firebase‌，以开源关系型数据库PostgreSQL为核心，提供数据库、认证、存储、实时订阅及无服务器函数等集成服务。最重要的是免费，开源使用。由于需要登录、数据库和多设备同步等功能，但自己暂时不想自己维护后端服务器，这个平台刚好满足我的需要。
+### 为什么选择 Supabase Cloud
+
+Supabase 是一个开源的后端即服务（BaaS）平台，基于 PostgreSQL 数据库构建，提供数据库、认证、存储、实时订阅和无服务器函数等服务。当前项目需要登录、数据库和多设备同步，但暂时不想维护自己的后端服务器，因此选择 Supabase Cloud。
 
 Supabase Cloud 已经提供：
 
-- 邮箱验证码和密码登录；
+- 邮箱验证码登录；
 - PostgreSQL 数据库；
 - JavaScript SDK；
 - Row Level Security；
@@ -154,12 +168,16 @@ VITE_SUPABASE_ANON_KEY=your-publishable-key
 
 | 表名 | 用途 |
 |------|------|
-| `profiles` | 用户资料与昵称 |
+| `profiles` | 用户资料、显示名称、昵称和性别 |
 | `word_progress` | 每个单词的正确、错误和错词状态 |
 | `day_progress` | 每天的完成时间和复习节点 |
 | `user_settings` | 发音、自动播放和键盘音效等设置 |
 
 `word_progress` 使用 `user_id + level + word` 作为联合主键。这样既能区分用户，也提前为 CET-6 等其他词书保留了 `level` 字段。
+
+目前词书目录包含 CET-4 和 CET-6：CET-4 保留 45 天词汇和每日文章，CET-6 使用 2345 个词，按 50 词左右分成 47 章。两套词书的学习进度、错词本和统计分别保存，不会互相覆盖。
+
+个人资料由 `profiles` 表保存。显示名称、昵称和性别在登录账号后同步到云端；游客模式只保存在当前设备。已有 Supabase 项目需要执行 `supabase/profile-migration.sql` 补充资料字段，音频偏好字段则由 `supabase/audio-settings-migration.sql` 补充。
 
 ### 3. 启用 RLS
 
@@ -175,39 +193,9 @@ using (auth.uid() = user_id)
 with check (auth.uid() = user_id);
 ```
 
-执行 SQL 时曾遇到：
+## 七、部署到 Vercel 与绑定域名
 
-```text
-policy "profiles own row" for table "profiles" already exists
-```
-
-这是因为相同策略已经创建过，又重复执行了 `create policy`。后来在建表脚本中先加入：
-
-```sql
-drop policy if exists "profiles own row" on public.profiles;
-```
-
-再重新创建策略，使脚本可以重复执行。需要注意，`drop policy` 属于修改数据库对象的操作，Supabase 会提示包含 destructive operations。这里删除的是旧策略并立即按相同目标重建，不是删除学习数据，但执行前仍然应该确认对象名称和作用范围。
-
-## 八、统一网页与 Android 的存储
-
-为了避免业务代码到处判断“现在是网页还是 App”，项目建立了统一的 `storage.js`：
-
-```text
-getItem / setItem / removeItem / getJson / setJson
-                    ↓
-         自动判断当前运行平台
-          ↙                    ↘
-浏览器 LocalStorage       Capacitor Preferences
-```
-
-学习状态只调用统一接口。在 Android 中第一次读取时，如果发现 Preferences 里还没有数据，还会尝试把旧的 LocalStorage 内容迁移过去。
-
-这种封装很重要。以后更换存储实现，或者给某些数据增加加密时，只需要改服务层，不必重写所有页面。
-
-## 九、部署到 Vercel 与绑定域名
-
-网页版本部署在 Vercel。流程为：
+网页版本部署在 Vercel，域名由 Cloudflare 管理。完整流程为：
 
 1. 将项目推送到 GitHub；
 2. 在 Vercel 中导入仓库；
@@ -226,7 +214,7 @@ getItem / setItem / removeItem / getJson / setJson
 部署完成后，GitHub 主分支有新提交时，Vercel 会自动重新构建和发布。这比手动上传 `dist/` 更适合持续开发。
 
 
-## 十、PWA 与 Android APK
+## 八、PWA 与 Android APK
 
 网页端保留了 PWA 能力，包括 manifest、应用图标、Service Worker、安装状态检测和“安装到手机”按钮。支持的 Android 浏览器可以把网页添加到桌面，以接近原生 App 的方式打开。
 
@@ -239,28 +227,25 @@ npm run android:apk
 
 其中 `android:sync` 会先构建网页，再把产物和原生插件同步到 Android 项目；`android:apk` 最后调用 Gradle 生成 Debug APK。
 
-当前 APK 输出位置为：
 
-```text
-android/app/build/outputs/apk/debug/app-debug.apk
-```
+## 九、本地存储、账号与同步
 
-Debug APK 可以复制到 Android 手机安装测试。正式发布前还需要生成签名的 Release APK 或 AAB，并进一步测试权限、离线存储、返回键、不同屏幕尺寸和系统版本。
+项目通过 `src/services/storage.js` 统一处理存储：网页端使用 `localStorage`，Capacitor Android 使用 `@capacitor/preferences`。游客的学习进度、当前词书、个人资料和音频偏好只保存在当前设备。
 
-## 十一、重新设计英语发音与反馈音
+登录采用 Supabase 邮箱一次性验证码。验证成功后，当前账号会同时同步 CET-4 和 CET-6 的学习数据；单词进度按词书写入 `word_progress`，章节进度写入 `day_progress`，音频偏好写入 `user_settings`，个人资料写入 `profiles`。RLS 确保用户只能读写自己的数据。
 
-音频是这次开发中反复调整最多的部分之一。
-
+账号页面提供立即同步、同步状态、最后同步时间、个人资料编辑、音频设置、学习统计、错词本和本机数据清理。清理本机数据不会删除云端记录，重新登录后仍可以恢复云端进度。
 
 ## 总结
 
-这次开发从“做一个背单词网页”开始，最后涉及了前端框架、移动端适配、本地存储、用户认证、数据库安全、云端部署、PWA、Android 构建和音频兼容。
+这次开发从“做一个背单词网页”开始，最后形成了一个包含 CET-4/CET-6 词书、敲单词训练、文章朗读、独立音频系统、游客模式、邮箱验证码登录、个人资料和云端同步的学习应用。
 
 真正有价值的不只是完成了多少功能，而是逐步形成了一套可以继续扩展的结构：Vue 负责组织应用，统一服务层隔离平台差异，Supabase 保存账号数据，Vercel 和 Cloudflare 负责网页访问，Capacitor 让同一份代码进入 Android。
 
-第一版仍有不少可以优化的地方，但框架已经不再局限于一个四级背词页面。以后加入 CET-6、新词书、新训练方式和更完整的数据分析，都可以在现有结构上继续生长。
+第一版仍有可以继续完善的地方，但框架已经不再局限于一个四级背词页面。以后加入更多词书、新训练方式和更完整的数据分析，都可以在现有结构上继续生长。
 
-## 十二、参考开源项目
+
+## 参考开源项目
 
 [TypeWords](https://typewords.cc) 和
 [qwerty-learner](https://github.com/RealKai42/qwerty-learner)。
