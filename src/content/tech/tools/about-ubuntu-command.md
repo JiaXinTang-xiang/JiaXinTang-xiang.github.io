@@ -231,6 +231,19 @@ sudo nvpmodel -m 2 # Jetson Orin Nano
 sudo jetson_clocks
 ```
 
+## Jetson电池
+
+### 下载
+```
+sudo apt-get install python3-smbus
+wget https://www.waveshare.net/w/upload/f/f9/UPS_Power_Module_C.zip
+unzip UPS_Power_Module_C.zip
+```
+### 查看电量
+```
+cd UPS_Power_Module_C
+python3 ina219.py
+```
 
 ## 软件包管理
 

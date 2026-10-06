@@ -1,5 +1,5 @@
 ---
-title: '初尝背单词手机App搭建'
+title: '初试背单词手机App搭建'
 description: '记录使用 Vue 3、Supabase 与 Capacitor 搭建过程。'
 publishDate: '2026-10-03'
 slug: 'blog-build/vocab-app'
