@@ -34,25 +34,28 @@ const footerLink1 = footerConf.links?.filter(({ pos }) => pos === 1) || []
           )
         }
         {/* Position 2 */}
-        <div>
-          {config.footer.year}
-          {config.author}
-          {
-            footerConf.links && footerConf.links.length > 0 && (
-              <>
-                &
-                <span>
-                  {footerConf.links
-                    .filter(({ pos }) => pos === 2)
-                    .map(({ title, link, style }) => (
-                      <span>
-                        <a href={link} target='_blank' class={style}>{title}</a>
-                      </span>
-                    ))}
-                </span>
-              </>
-            )
-          }
+        <div class='flex flex-col items-start gap-y-1'>
+          <div>
+            {config.footer.year}
+            {config.author}
+            {
+              footerConf.links && footerConf.links.length > 0 && (
+                <>
+                  &
+                  <span>
+                    {footerConf.links
+                      .filter(({ pos }) => pos === 2)
+                      .map(({ title, link, style }) => (
+                        <span>
+                          <a href={link} target='_blank' class={style}>{title}</a>
+                        </span>
+                      ))}
+                  </span>
+                </>
+              )
+            }
+          </div>
+          <div id='site-runtime' class='text-sm' aria-live='polite'>本站已经运行中...</div>
         </div>
         {
           footerConf.credits && (
@@ -80,6 +83,53 @@ const footerLink1 = footerConf.links?.filter(({ pos }) => pos === 1) || []
     </div>
   </div>
 </footer>
+
+<script>
+  // 从第一篇博客文章《我的第一篇博客文章》的发布日期开始计算
+  const siteStartTime = new Date('2025-03-31T00:00:00+08:00')
+  const milliseconds = {
+    second: 1000,
+    minute: 60 * 1000,
+    hour: 60 * 60 * 1000,
+    day: 24 * 60 * 60 * 1000
+  }
+
+  const getRuntime = (now: Date) => {
+    let years = now.getFullYear() - siteStartTime.getFullYear()
+    const yearCursor = new Date(siteStartTime)
+    yearCursor.setFullYear(siteStartTime.getFullYear() + years)
+    if (yearCursor > now) years -= 1
+
+    let months = (now.getFullYear() - siteStartTime.getFullYear()) * 12 + now.getMonth() - siteStartTime.getMonth() - years * 12
+    const monthCursor = new Date(siteStartTime)
+    monthCursor.setFullYear(siteStartTime.getFullYear() + years)
+    monthCursor.setMonth(siteStartTime.getMonth() + months)
+    if (monthCursor > now) months -= 1
+
+    const cursor = new Date(siteStartTime)
+    cursor.setFullYear(siteStartTime.getFullYear() + years)
+    cursor.setMonth(siteStartTime.getMonth() + months)
+
+    let remaining = Math.max(0, now.getTime() - cursor.getTime())
+    const days = Math.floor(remaining / milliseconds.day)
+    remaining -= days * milliseconds.day
+    const hours = Math.floor(remaining / milliseconds.hour)
+    remaining -= hours * milliseconds.hour
+    const minutes = Math.floor(remaining / milliseconds.minute)
+    remaining -= minutes * milliseconds.minute
+    const seconds = Math.floor(remaining / milliseconds.second)
+
+    return `${years}年${months}个月${days}天${hours}时${minutes}分${seconds}秒`
+  }
+
+  const updateSiteRuntime = () => {
+    const runtime = document.getElementById('site-runtime')
+    if (runtime) runtime.textContent = `本站已经运行${getRuntime(new Date())}`
+  }
+
+  updateSiteRuntime()
+  setInterval(updateSiteRuntime, 1000)
+</script>
 
 <style>
   footer a {
