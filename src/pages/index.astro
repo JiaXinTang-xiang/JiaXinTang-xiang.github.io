@@ -38,7 +38,7 @@ const latestPosts: HomePost[] = sortMDByDate(posts)
   .slice(0, 5) as HomePost[]
 const fixedPost: HomePost | undefined = posts.find((post) => post.id === fixedPostId)
 
-const siteStartDate = new Date('2025-03-31T00:00:00')
+const siteStartDate = new Date('2026-03-31T00:00:00+08:00')
 const publishedPosts = posts.filter((post) => post.data.publishDate <= now)
 const daysOnline = Math.max(
   1,
@@ -286,5 +286,4 @@ if (!images[imagePath])
     </section>
   </main></PageLayout
 >
-
 
