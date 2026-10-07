@@ -1,7 +1,7 @@
 ---
 title: '我的第一篇博客文章'
-publishDate: '2025-03-31'
-updatedDate: '2025-03-31'
+publishDate: '2026-03-31'
+updatedDate: '2026-03-31'
 description: '这是我的第一篇博客文章，记录技术成长和思考'
 tags:
   - 技术
