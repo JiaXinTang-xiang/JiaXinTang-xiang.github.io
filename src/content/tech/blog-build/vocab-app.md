@@ -13,7 +13,7 @@ tags:
   - 英语学习
 language: 'Chinese'
 draft: false
-rss: false
+rss: true
 heroImage: { src: './images/vocab-app/cover.jpg', color: '#f48120' }
 ---
 
@@ -84,11 +84,11 @@ Vue 单文件组件可以把模板、样式和交互逻辑放在同一个组件�
 | Vercel | GitHub 自动构建和环境变量 | 部署网页版本 |
 | Cloudflare | DNS 和自定义域名 | 将独立域名指向 Vercel |
 
-因此，最终采用的技术组合是 Vue 3 + Vite + Capacitor Android，并使用 Supabase 保存账号数据、Vercel 部署网页版本。这一步不是某一段代码，而是先确认整体架构：前端、数据库、网页部署和 Android 打包并不是四套项目，可以围绕同一份 Vue 代码组合起来。
+因此，最终采用的技术组合是 Vue 3 + Vite + Capacitor Android，并使用 Supabase 保存账号数据、Vercel 部署网页版本。这一步确认整体架构：前端、数据库、网页部署和 Android 打包一起，可以围绕同一份 Vue 代码组合起来。
 
 ## 四、用 Vue Router 重建应用框架
 
-重构后的应用不再只有一个页面，而是拆成了多个独立 View：
+重构后的应用拆成了多个独立 View,可见：
 
 ```text
 src/
@@ -134,7 +134,7 @@ src/
 
 ### 为什么选择 Supabase Cloud
 
-Supabase 是一个开源的后端即服务（BaaS）平台，基于 PostgreSQL 数据库构建，提供数据库、认证、存储、实时订阅和无服务器函数等服务。当前项目需要登录、数据库和多设备同步，但暂时不想维护自己的后端服务器，因此选择 Supabase Cloud。
+[Supabase](https://supabase.com/) 是一个开源的后端即服务（BaaS）平台，基于 PostgreSQL 数据库构建，提供数据库、认证、存储、实时订阅和无服务器函数等服务。当前项目需要登录、数据库和多设备同步，但暂时不想维护自己的后端服务器，因此选择 Supabase Cloud。
 
 Supabase Cloud 已经提供：
 
@@ -148,7 +148,14 @@ Supabase Cloud 已经提供：
 
 ### 1. 创建项目
 
-在 Supabase Dashboard 创建 Cloud 项目，区域选择离主要用户较近的新加坡。创建完成后，在 API 设置中获取：
+1. 打开 Supabase 控制台，创建项目。
+![alt text](images/vocab-app/image.png)
+
+2. 进入 SQL Editor。
+把 [schema.sql]的内容复制进去执行，然后run
+![alt text](images/vocab-app/image2.png)
+
+3. 在 Supabase Dashboard 创建 Cloud 项目，区域选择离主要用户较近的新加坡。创建完成后，在 API 设置中获取：
 
 - Project URL；
 - Publishable key，也就是可以在启用 RLS 后用于浏览器的公开密钥。
@@ -195,7 +202,7 @@ with check (auth.uid() = user_id);
 
 ## 七、部署到 Vercel 与绑定域名
 
-网页版本部署在 Vercel，域名由 Cloudflare 管理。完整流程为：
+之前文档有过类似的教程这里不再重复。网页版本部署在 [Vercel](https://vercel.com/)，域名由 Cloudflare 管理。完整流程为：
 
 1. 将项目推送到 GitHub；
 2. 在 Vercel 中导入仓库；
@@ -204,15 +211,6 @@ with check (auth.uid() = user_id);
 5. 触发部署；
 6. 在 Cloudflare 中配置 DNS；
 7. 将 `en-app.jiaxin404.top` 绑定到 Vercel 项目。
-
-环境变量中：
-
-- Project URL 属于普通配置，可以选择 Config；
-- Publishable key 虽然允许出现在浏览器中，仍可以在 Vercel 中按团队管理习惯保存；
-- Secret key 绝不能配置给这个纯前端项目。
-
-部署完成后，GitHub 主分支有新提交时，Vercel 会自动重新构建和发布。这比手动上传 `dist/` 更适合持续开发。
-
 
 ## 八、PWA 与 Android APK
 
@@ -238,11 +236,7 @@ npm run android:apk
 
 ## 总结
 
-这次开发从“做一个背单词网页”开始，最后形成了一个包含 CET-4/CET-6 词书、敲单词训练、文章朗读、独立音频系统、游客模式、邮箱验证码登录、个人资料和云端同步的学习应用。
-
-真正有价值的不只是完成了多少功能，而是逐步形成了一套可以继续扩展的结构：Vue 负责组织应用，统一服务层隔离平台差异，Supabase 保存账号数据，Vercel 和 Cloudflare 负责网页访问，Capacitor 让同一份代码进入 Android。
-
-第一版仍有可以继续完善的地方，但框架已经不再局限于一个四级背词页面。以后加入更多词书、新训练方式和更完整的数据分析，都可以在现有结构上继续生长。
+第一版目前搭好了，但仍有可以继续完善的地方。框架已经搭好了，以后加入更多词书、新训练方式和更完整的数据分析，可以在现有结构上扩展即可。
 
 
 ## 参考开源项目
