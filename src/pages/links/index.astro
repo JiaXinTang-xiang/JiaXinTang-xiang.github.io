@@ -23,8 +23,8 @@ const oneMonthAgo = new Date()
 oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
 const friendActivity = allFriendActivity.filter((article) => new Date(article.publishedAt) >= oneMonthAgo)
 const activeFriendFeeds = friendFeedSources.filter((source) => source.status === 'ok').length
-const initialVisibleItems = 5
-const loadMoreItems = 5
+const initialVisibleItems = 8
+const loadMoreItems = 6
 ---
 
 <PageLayout title='Links' {headings} comment>
@@ -179,33 +179,42 @@ const loadMoreItems = 5
 
 </PageLayout>
 
-<script>
-  const loadMoreButton = document.querySelector<HTMLButtonElement>('[data-friends-load-more]')
-  const loadMoreSentinel = document.querySelector<HTMLElement>('[data-friends-load-sentinel]')
-  const activityItems = Array.from(document.querySelectorAll<HTMLElement>('[data-friends-activity-item]'))
+<script is:inline>
+  (() => {
+    const initFriendsActivity = () => {
+      const loadMoreButton = document.querySelector('[data-friends-load-more]')
+      const loadMoreSentinel = document.querySelector('[data-friends-load-sentinel]')
+      const activityItems = Array.from(document.querySelectorAll('[data-friends-activity-item]'))
 
-  const revealMoreItems = () => {
-    if (!loadMoreButton) return
-    const step = Number(loadMoreButton.dataset.step) || 5
-    const hiddenItems = activityItems.filter((item) => item.hidden)
+      if (!loadMoreButton || loadMoreButton.dataset.bound === 'true') return
+      loadMoreButton.dataset.bound = 'true'
 
-    hiddenItems.slice(0, step).forEach((item) => {
-      item.hidden = false
-    })
+      const revealMoreItems = () => {
+        const step = Number(loadMoreButton.dataset.step) || 6
+        const hiddenItems = activityItems.filter((item) => item.hidden)
 
-    if (!activityItems.some((item) => item.hidden)) {
-      loadMoreButton.hidden = true
-      loadMoreObserver?.disconnect()
+        hiddenItems.slice(0, step).forEach((item) => {
+          item.hidden = false
+        })
+
+        if (!activityItems.some((item) => item.hidden)) {
+          loadMoreButton.hidden = true
+          loadMoreObserver?.disconnect()
+        }
+      }
+
+      loadMoreButton.addEventListener('click', revealMoreItems)
+
+      const loadMoreObserver = loadMoreSentinel && 'IntersectionObserver' in window
+        ? new IntersectionObserver((entries) => {
+            if (entries.some((entry) => entry.isIntersecting)) revealMoreItems()
+          }, { rootMargin: '240px' })
+        : undefined
+
+      if (loadMoreSentinel) loadMoreObserver?.observe(loadMoreSentinel)
     }
-  }
 
-  loadMoreButton?.addEventListener('click', revealMoreItems)
-
-  const loadMoreObserver = loadMoreSentinel && 'IntersectionObserver' in window
-    ? new IntersectionObserver((entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) revealMoreItems()
-      }, { rootMargin: '240px' })
-    : undefined
-
-  if (loadMoreSentinel) loadMoreObserver?.observe(loadMoreSentinel)
+    initFriendsActivity()
+    document.addEventListener('astro:page-load', initFriendsActivity)
+  })()
 </script>
