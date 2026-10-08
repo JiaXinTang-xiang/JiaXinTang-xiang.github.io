@@ -23,8 +23,8 @@ const oneMonthAgo = new Date()
 oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
 const friendActivity = allFriendActivity.filter((article) => new Date(article.publishedAt) >= oneMonthAgo)
 const activeFriendFeeds = friendFeedSources.filter((source) => source.status === 'ok').length
-const initialVisibleItems = 5
-const loadMoreItems = 2
+const initialVisibleItems = 8
+const loadMoreItems = 6
 ---
 
 <PageLayout title='Links' {headings} comment>
@@ -98,7 +98,7 @@ const loadMoreItems = 2
       friendActivity.length > 0 ? (
         <>
           <div class='mb-4 text-sm text-muted-foreground'>
-            已汇总 {activeFriendFeeds} 个友链博客，共 {friendActivity.length} 篇最近文章。
+            已汇总 {activeFriendFeeds} 个友链博客，点击“加载更多”查看最近一个月的文章。
           </div>
           <div class='grid gap-4 md:grid-cols-2' data-friends-activity-list>
             {friendActivity.map((article, index) => (
@@ -147,7 +147,6 @@ const loadMoreItems = 2
               >
                 加载更多
               </button>
-              <div data-friends-load-sentinel aria-hidden='true' class='h-1' />
             </>
           )}
         </>
@@ -183,7 +182,6 @@ const loadMoreItems = 2
   (() => {
     const initFriendsActivity = () => {
       const loadMoreButton = document.querySelector('[data-friends-load-more]')
-      const loadMoreSentinel = document.querySelector('[data-friends-load-sentinel]')
       const activityItems = Array.from(document.querySelectorAll('[data-friends-activity-item]'))
 
       if (!loadMoreButton || loadMoreButton.dataset.bound === 'true') return
@@ -199,19 +197,10 @@ const loadMoreItems = 2
 
         if (!activityItems.some((item) => item.hidden)) {
           loadMoreButton.hidden = true
-          loadMoreObserver?.disconnect()
         }
       }
 
       loadMoreButton.addEventListener('click', revealMoreItems)
-
-      const loadMoreObserver = loadMoreSentinel && 'IntersectionObserver' in window
-        ? new IntersectionObserver((entries) => {
-            if (entries.some((entry) => entry.isIntersecting)) revealMoreItems()
-          }, { rootMargin: '240px' })
-        : undefined
-
-      if (loadMoreSentinel) loadMoreObserver?.observe(loadMoreSentinel)
     }
 
     initFriendsActivity()
