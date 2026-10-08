@@ -23,7 +23,7 @@ const oneMonthAgo = new Date()
 oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
 const friendActivity = allFriendActivity.filter((article) => new Date(article.publishedAt) >= oneMonthAgo)
 const activeFriendFeeds = friendFeedSources.filter((source) => source.status === 'ok').length
-const initialVisibleItems = 9
+const initialVisibleItems = 5
 const loadMoreItems = 5
 ---
 
