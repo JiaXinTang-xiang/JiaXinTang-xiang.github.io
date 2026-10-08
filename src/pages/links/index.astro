@@ -5,6 +5,7 @@ import links from 'public/links.json'
 import config from 'virtual:config'
 import PageLayout from '@/layouts/CommonPage.astro'
 import FriendList from '@/components/links/FriendList.astro'
+import { collectFriendsActivity } from '@/utils/friends-feed'
 
 const headings = [
   { depth: 2, slug: 'common-links', text: 'Common Links' },
@@ -15,9 +16,69 @@ const headings = [
 const { friends } = links
 const linksConf = config.integ.links
 const linkEditPage = 'https://github.com/jiaxintang-xiang/JIABlog/blob/main/public/links.json'
+const friendSites = friends.flatMap((group) => group.link_list)
+const { items: friendActivity, sources: friendFeedSources } = await collectFriendsActivity(friendSites)
+const activeFriendFeeds = friendFeedSources.filter((source) => source.status === 'ok').length
 ---
 
 <PageLayout title='Links' {headings} comment>
+  <section class='mb-10' aria-labelledby='friends-activity'>
+    <div class='mb-5'>
+      <h2 id='friends-activity' class='mb-1'>朋友动态</h2>
+      <p class='m-0 text-muted-foreground'>最新动态 · 看看朋友们都在写什么</p>
+    </div>
+
+    {
+      friendActivity.length > 0 ? (
+        <>
+          <div class='mb-4 text-sm text-muted-foreground'>
+            已汇总 {activeFriendFeeds} 个友链博客，共 {friendActivity.length} 篇最近文章。
+          </div>
+          <div class='grid gap-4 md:grid-cols-2'>
+            {friendActivity.map((article) => (
+              <article class='flex h-full flex-col rounded-xl border bg-background p-4 transition-colors hover:bg-muted'>
+                <div class='mb-3 flex items-center gap-2 text-xs text-muted-foreground'>
+                  <img
+                    src={article.avatar}
+                    alt=''
+                    width='24'
+                    height='24'
+                    loading='lazy'
+                    class='size-6 rounded-full object-cover'
+                  />
+                  <span>{article.sourceName}</span>
+                  <span aria-hidden='true'>·</span>
+                  <time datetime={article.publishedAt}>
+                    {new Date(article.publishedAt).toLocaleDateString('zh-CN')}
+                  </time>
+                </div>
+                <a
+                  href={article.link}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  class='text-base font-medium text-foreground no-underline hover:text-primary'
+                >
+                  {article.title}
+                </a>
+                {article.description && (
+                  <p class='mt-2 line-clamp-2 text-sm text-muted-foreground'>{article.description}</p>
+                )}
+              </article>
+            ))}
+          </div>
+        </>
+      ) : (
+        <p class='rounded-xl border border-dashed p-5 text-sm text-muted-foreground'>
+          暂时没有抓取到友链文章，请稍后再试。
+        </p>
+      )
+    }
+
+    <p class='mt-4 rounded-xl bg-muted/50 p-4 text-sm text-muted-foreground'>
+      💡 在友链但是没有找到你的文章？请为你的博客添加 RSS 吧~
+    </p>
+  </section>
+
   <p>They're sorted randomly.</p>
   <h2 id='common-links' data-i18n='links.common'>Common Links</h2>
   <FriendList list={friends[0]} />
