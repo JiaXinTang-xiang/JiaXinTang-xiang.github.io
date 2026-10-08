@@ -23,8 +23,8 @@ const oneMonthAgo = new Date()
 oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
 const friendActivity = allFriendActivity.filter((article) => new Date(article.publishedAt) >= oneMonthAgo)
 const activeFriendFeeds = friendFeedSources.filter((source) => source.status === 'ok').length
-const initialVisibleItems = 8
-const loadMoreItems = 6
+const initialVisibleItems = 5
+const loadMoreItems = 2
 ---
 
 <PageLayout title='Links' {headings} comment>
