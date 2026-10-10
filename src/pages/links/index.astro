@@ -88,7 +88,7 @@ const loadMoreItems = 6
   </ul>
 </div>
 
-  <section class='mt-10' aria-labelledby='friends-activity'>
+  <section class='mt-10' aria-labelledby='friends-activity' data-friends-activity-section>
     <div class='mb-5'>
       <h2 id='friends-activity' class='mb-1'>朋友动态</h2>
       <p class='m-0 text-muted-foreground'>最新动态 · 看看朋友们都在写什么</p>
@@ -105,7 +105,7 @@ const loadMoreItems = 6
               <article
                 class='flex h-full flex-col rounded-xl border bg-background p-4 transition-colors hover:bg-muted'
                 data-friends-activity-item
-                hidden={index >= initialVisibleItems}
+                style={index >= initialVisibleItems ? 'display: none' : undefined}
               >
                 <div class='mb-3 flex items-center gap-2 text-xs text-muted-foreground'>
                   <img
@@ -144,6 +144,7 @@ const loadMoreItems = 6
                 data-friends-load-more
                 data-step={loadMoreItems}
                 data-total={friendActivity.length}
+                onclick='window.loadMoreFriendsActivity(this)'
               >
                 加载更多
               </button>
@@ -179,31 +180,20 @@ const loadMoreItems = 6
 </PageLayout>
 
 <script is:inline>
-  (() => {
-    const initFriendsActivity = () => {
-      const loadMoreButton = document.querySelector('[data-friends-load-more]')
-      const activityItems = Array.from(document.querySelectorAll('[data-friends-activity-item]'))
+  window.loadMoreFriendsActivity = (button) => {
+    const section = button.closest('[data-friends-activity-section]')
+    if (!section) return
 
-      if (!loadMoreButton || loadMoreButton.dataset.bound === 'true') return
-      loadMoreButton.dataset.bound = 'true'
+    const step = Number(button.dataset.step) || 6
+    const hiddenItems = Array.from(section.querySelectorAll('[data-friends-activity-item]'))
+      .filter((item) => item.style.display === 'none')
 
-      const revealMoreItems = () => {
-        const step = Number(loadMoreButton.dataset.step) || 6
-        const hiddenItems = activityItems.filter((item) => item.hidden)
+    hiddenItems.slice(0, step).forEach((item) => {
+      item.style.display = ''
+    })
 
-        hiddenItems.slice(0, step).forEach((item) => {
-          item.hidden = false
-        })
-
-        if (!activityItems.some((item) => item.hidden)) {
-          loadMoreButton.hidden = true
-        }
-      }
-
-      loadMoreButton.addEventListener('click', revealMoreItems)
+    if (!section.querySelector('[data-friends-activity-item][style*="display: none"]')) {
+      button.style.display = 'none'
     }
-
-    initFriendsActivity()
-    document.addEventListener('astro:page-load', initFriendsActivity)
-  })()
+  }
 </script>
