@@ -1,14 +1,14 @@
 ---
 title: 'Markdown 写作与高级样式实用教程'
 description: '从基础语法到图片尺寸、对齐、多图网格、表格、提示框、折叠内容和任务列表，整理一套可以直接复制的 Markdown 写作模板。'
-publishDate: '2026-10-16'
+publishDate: '2026-10-17'
 tags:
   - Markdown
   - 博客
   - 写作技巧
 language: 'Chinese'
-draft: false
-rss: true
+draft: true
+rss: false
 slug: 'tools/markdown-image-layout'
 heroImage: { src: './images/markdown-image-layout/demo-cover.jpg', color: '#24292e' }
 ---
@@ -234,23 +234,29 @@ config_before.png
 
 ### 1. Markdown 扩展写法：`=200x`
 
-部分编辑器支持在图片路径后添加尺寸参数，等号前需要有一个空格：
+本站支持在图片路径末尾加尺寸参数来快速调整大小，等号前需要有一个空格：
 
 ```markdown
 ![示例图片](images/example.png =200x)
 ![示例图片](images/example.png =200x300)
 ![示例图片](images/example.png =x300)
+![示例图片](images/example.png =300px)
 ```
 
-一般可以理解为：
+含义如下：
 
 | 写法 | 含义 |
 | --- | --- |
-| `=200x` | 宽度为 200，高度按比例缩放 |
-| `=200x300` | 宽度 200，高度 300 |
-| `=x300` | 高度为 300，宽度按比例缩放 |
+| `=200x` | 宽度为 200px，高度按比例缩放 |
+| `=200x300` | 宽度 200px，高度 300px |
+| `=x300` | 高度上限为 300px，宽度按比例缩放；窄屏时整体缩小 |
+| `=300px` | 本站的高度简写，与 `=x300` 相同 |
 
-这不是标准 Markdown。不同渲染器可能把它当作普通文字，或者完全不处理。当前博客使用的 Markdown 解析器不会把这类参数转换成图片尺寸，所以本站文章不要依赖它。
+例如只指定高度 120px，宽度会自动按原比例缩小：
+
+![封面缩到 120px 高](images/markdown-image-layout/demo-cover.jpg =x120)
+
+> 这是本站通过自定义解析器支持的扩展语法，不是标准 Markdown。GitHub、Typora 等平台可能不会生效，写跨平台文章时建议改用下面的 HTML 写法。
 
 ### 2. HTML 设置固定宽度
 
@@ -402,33 +408,43 @@ HTML 是控制图片大小更稳定的方式：
 
 适合发布到多个平台、做前后对比和展示操作步骤。图片比例差异很大时，不要为了并列而强行压缩。
 
-### 2. CSS Grid：本站推荐的多图模板
+### 2. 两图、三图：整排等高
 
-本站提供了固定的网格样式，可以直接复制：
+本站保留 `markdown-image-grid` 这套 class 名，内部使用 Flex 布局。图片宽度按原比例计算，不占等宽格子、不裁剪，也不在图片内部填充空白。只修改外层的 `--img-h`，就能调整整组图片高度。
 
 ```html
-<div class="markdown-image-grid markdown-image-grid--2">
+<div class="markdown-image-grid markdown-image-grid--2" style="--img-h: 220px;">
   <img class="zoomable" src="images/article/step-01.png" alt="步骤一" />
   <img class="zoomable" src="images/article/step-02.png" alt="步骤二" />
 </div>
 ```
 
-三列：
+三图一排：
 
 ```html
-<div class="markdown-image-grid markdown-image-grid--3">
+<div class="markdown-image-grid markdown-image-grid--3" style="--img-h: 200px;">
   <img class="zoomable" src="images/article/step-01.png" alt="步骤一" />
   <img class="zoomable" src="images/article/step-02.png" alt="步骤二" />
   <img class="zoomable" src="images/article/step-03.png" alt="步骤三" />
 </div>
 ```
 
-手机屏幕较窄时，网格会自动变成单列。手写 HTML 图片时要保留 `class="zoomable"`，这样当前博客的点击放大功能才会生效。
+两图模板放两张，三图模板放三张。屏幕较窄、整排放不下时，所有图片会一起缩小到相同高度，保持一排。`--img-h` 是希望显示的高度上限，不会为了达到它而撑破页面。手写 HTML 图片保留 `class="zoomable"`，就能点击放大。
+
+例如想把这一组改成 120px 高，只改一个数字：
+
+```html
+<div class="markdown-image-grid markdown-image-grid--3" style="--img-h: 120px;">
+  <img class="zoomable" src="images/article/step-01.png" alt="步骤一" />
+  <img class="zoomable" src="images/article/step-02.png" alt="步骤二" />
+  <img class="zoomable" src="images/article/step-03.png" alt="步骤三" />
+</div>
+```
 
 ### 3. 相册模板
 
 ```html
-<div class="markdown-image-grid markdown-image-grid--gallery">
+<div class="markdown-image-grid markdown-image-grid--gallery" style="--img-h: 200px;">
   <figure>
     <img class="zoomable" src="images/gallery/photo-01.jpg" alt="照片一" />
     <figcaption>照片一</figcaption>
@@ -444,7 +460,39 @@ HTML 是控制图片大小更稳定的方式：
 </div>
 ```
 
-相册图片最好使用相近的比例。图片尺寸差异很大时，可以先裁剪，或者改用单图上下排列。
+相册不固定每行张数：横图宽一些、竖图窄一些，当前行放不下下一张就换行。同一相册内的照片高度一致，最后一行保持自然宽度并居中，不拉伸填满。极窄屏幕放不下最宽的一张时，整个相册统一降低高度。
+
+效果（复用已有文章封面和本月照片，演示横图和竖图的不同宽度）：
+
+<div class="markdown-image-grid markdown-image-grid--2" style="--img-h: 180px;">
+  <img class="zoomable" src="../../monthly/picture/26_09/image18.png" alt="车内星空贴纸" />
+  <img class="zoomable" src="../../monthly/picture/26_09/image19.png" alt="车内手办" />
+</div>
+
+<div class="markdown-image-grid markdown-image-grid--3" style="--img-h: 180px;">
+  <img class="zoomable" src="../../monthly/picture/26_09/image6.png" alt="飞机窗外" />
+  <img class="zoomable" src="../../monthly/picture/26_09/image15.png" alt="飞机座位" />
+  <img class="zoomable" src="../../monthly/picture/26_09/image16.png" alt="飞机上的风景" />
+</div>
+
+<div class="markdown-image-grid markdown-image-grid--gallery" style="--img-h: 180px;">
+  <figure>
+    <img class="zoomable" src="images/markdown-image-layout/demo-cover.jpg" alt="Ubuntu 文章封面" />
+    <figcaption>Ubuntu 文章封面</figcaption>
+  </figure>
+  <figure>
+    <img class="zoomable" src="../../monthly/picture/26_09/image3.png" alt="苏州竖幅照片" />
+    <figcaption>竖幅照片保持原比例，宽度自然变窄。</figcaption>
+  </figure>
+  <figure>
+    <img class="zoomable" src="../../monthly/picture/26_09/image2.png" alt="苏州横幅照片" />
+    <figcaption>横幅照片宽一些，高度仍然相同。</figcaption>
+  </figure>
+  <figure>
+    <img class="zoomable" src="../../monthly/picture/26_09/image4.png" alt="苏州竖幅照片" />
+    <figcaption>按可用宽度自动换行。</figcaption>
+  </figure>
+</div>
 
 ## 七、图片样式：圆角、阴影和边框
 
@@ -727,7 +775,7 @@ GitHub 风格的 Emoji 名称，例如 `:rocket:`、`:warning:`，并不是所�
 | 本地正常，网站异常 | 使用了绝对路径 | 改成相对路径或公开图床 URL |
 | GitHub 或 PDF 显示失败 | 文件名包含空格、中文或括号 | 重命名为小写英文和连字符 |
 | `#pic_center` 无效 | 平台私有标记 | 改用 HTML/CSS 对齐 |
-| `=200x` 无效 | 当前渲染器不支持该扩展 | 改用 `<img width="200">` |
+| `=200x` 没生效 | 等号前漏了空格，或平台不支持 | 本站写 `![图](url =200x)`，跨平台改用 `<img width="200">` |
 | 图片变形 | 宽高比例不一致 | 只设置宽度，或使用 `height: auto` |
 | 图片超出手机屏幕 | 没有限制最大宽度 | 添加 `max-width: 100%` |
 | HTML 图片不能放大 | 缺少 `zoomable` class | 给 `<img>` 增加 `class="zoomable"` |
@@ -739,8 +787,10 @@ GitHub 风格的 Emoji 名称，例如 `:rocket:`、`:warning:`，并不是所�
 ### 单图
 
 ```markdown
-![图片说明](images/article/example.png)
+![图片说明](images/article/example.png =x300)
 ```
+
+只改 `300` 就能调整高度，宽度按比例变化，默认居中。也支持 `![图片说明](images/article/example.png =300px)`，其中 `300px` 在本站表示高度。去掉尺寸参数就恢复默认显示。
 
 ### 单图 + 宽度 + 居中
 
@@ -758,7 +808,7 @@ GitHub 风格的 Emoji 名称，例如 `:rocket:`、`:warning:`，并不是所�
 ### 两图并列
 
 ```html
-<div class="markdown-image-grid markdown-image-grid--2">
+<div class="markdown-image-grid markdown-image-grid--2" style="--img-h: 220px;">
   <img class="zoomable" src="images/article/one.png" alt="图片一" />
   <img class="zoomable" src="images/article/two.png" alt="图片二" />
 </div>
@@ -767,17 +817,44 @@ GitHub 风格的 Emoji 名称，例如 `:rocket:`、`:warning:`，并不是所�
 ### 三图并列
 
 ```html
-<div class="markdown-image-grid markdown-image-grid--3">
+<div class="markdown-image-grid markdown-image-grid--3" style="--img-h: 200px;">
   <img class="zoomable" src="images/article/one.png" alt="图片一" />
   <img class="zoomable" src="images/article/two.png" alt="图片二" />
   <img class="zoomable" src="images/article/three.png" alt="图片三" />
 </div>
 ```
 
-### 相册
+### 多张全部并列在一排
 
 ```html
-<div class="markdown-image-grid markdown-image-grid--gallery">
+<div class="markdown-image-grid markdown-image-grid--row" style="--img-h: 200px;">
+  <img class="zoomable" src="images/article/one.png" alt="图片一" />
+  <img class="zoomable" src="images/article/two.png" alt="图片二" />
+  <img class="zoomable" src="images/article/three.png" alt="图片三" />
+  <img class="zoomable" src="images/article/four.png" alt="图片四" />
+  <img class="zoomable" src="images/article/five.png" alt="图片五" />
+</div>
+```
+
+`--row` 不限图片张数，所有图片保持一排；放不下时整组统一降低高度。图片越多，每张显示得越小，手机上尤其明显。
+
+这些 class 由本站提供，编辑器自己的 Markdown 预览不一定加载它们。博客效果请通过 `npm run dev` 后的本地网页查看。`=x300`、`=300px` 也属于本站扩展，编辑器预览可能显示为普通文字。
+
+如果编辑器支持 HTML 内联样式，还可以直接写 Flex，并把高度集中在外层设置：
+
+```html
+<div class="markdown-image-grid markdown-image-grid--row" style="--img-h: 200px; display: flex; flex-wrap: nowrap; gap: 12px; overflow-x: auto;">
+  <img class="zoomable" src="images/article/one.png" alt="图片一" style="flex: 0 0 auto; width: auto; max-width: none; height: var(--image-render-height, var(--img-h)); margin: 0;" />
+  <img class="zoomable" src="images/article/two.png" alt="图片二" style="flex: 0 0 auto; width: auto; max-width: none; height: var(--image-render-height, var(--img-h)); margin: 0;" />
+</div>
+```
+
+本站会统一缩小整排以适应正文宽度；未加载本站脚本的预览会保持指定高度，放不下时横向滚动。预览器如果会过滤 `style`，这套内联写法也不会生效，此时应使用博客本地网页核对效果。
+
+### 相册：自动并列、放不下换行
+
+```html
+<div class="markdown-image-grid markdown-image-grid--gallery" style="--img-h: 200px;">
   <figure>
     <img class="zoomable" src="images/article/one.png" alt="图片一" />
     <figcaption>图片一说明</figcaption>
@@ -789,6 +866,8 @@ GitHub 风格的 Emoji 名称，例如 `:rocket:`、`:warning:`，并不是所�
 </div>
 ```
 
+以上多图模板都只改外层的 `--img-h` 数字，例如 `200px` 改成 `260px`。`--2`、`--3` 和 `--row` 保持一排，`--gallery` 自动换行；不同宽高比的图片仍然等高。无需图注时，可以去掉 `figure` 和 `figcaption`，直接放多张 `<img>`。
+
 ## 小结
 
 可以按下面的规则选择写法：
@@ -796,9 +875,9 @@ GitHub 风格的 Emoji 名称，例如 `:rocket:`、`:warning:`，并不是所�
 | 需求 | 推荐写法 |
 | --- | --- |
 | 普通图片 | Markdown 图片语法 |
-| 只想快速改宽度 | 先确认平台是否支持 `=200x` |
+| 只想快速改尺寸 | 本站用 `![图](url =200x)` 或 `=x300`，跨平台改用 HTML |
 | 控制大小和对齐 | HTML `<img>` + 外层 `<p>` 或 `<div>` |
-| 两图、三图和相册 | 本站 CSS Grid 模板 |
+| 两图、三图和相册 | 本站等高图片模板，修改 `--img-h` |
 | 需要跨平台发布 | Markdown 表格 |
 | 需要点击放大 | Markdown 图片，或 HTML 图片加 `class="zoomable"` |
 | 需要提示或补充内容 | `<details>`、引用和 `<mark>` |

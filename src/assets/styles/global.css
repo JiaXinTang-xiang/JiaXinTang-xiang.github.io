@@ -410,67 +410,45 @@ figcaption {
   font-style: italic;
 }
 
-/* 多图表格：所有图片统一高度，宽度按原比例缩放，不裁剪也不填充空白。 */
-.prose table:has(img) {
-  table-layout: fixed;
-}
-.prose table:has(img) td {
-  vertical-align: middle;
-  text-align: center;
-  overflow: hidden;
-}
-.prose table:has(img) img {
-  display: inline-block;
-  width: auto;
-  max-width: none;
-  height: 180px;
-  object-fit: contain;
-  vertical-align: middle;
-}
-
-/* ===== Markdown 图片网格 =====
- * 文章中可直接使用 .markdown-image-grid--2、--3 和 --gallery。
- * 网格在窄屏幕上自动变成单列，避免图片被挤得过小。
+/* ===== 等高图片：作者在 Markdown 外层设置 --img-h: 220px =====
+ * 保留已有 class 名，实际使用 Flex 按图片原始宽高比排列。
+ * 两图/三图整排缩小以适应窄屏；相册按自然宽度换行。
  */
-.markdown-image-grid {
-  display: grid;
-  gap: 1rem;
-  margin: 1.5rem 0;
-  align-items: start;
-}
-.markdown-image-grid--2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-.markdown-image-grid--3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-.markdown-image-grid--gallery {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-.markdown-image-grid > img,
-.markdown-image-grid > figure {
+.prose .markdown-image-grid {
+  --img-h: 220px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
   min-width: 0;
+  margin: 1.5rem 0;
+}
+.prose .markdown-image-grid--2,
+.prose .markdown-image-grid--3,
+.prose .markdown-image-grid--row {
+  flex-wrap: nowrap;
+}
+.prose .markdown-image-grid > :is(img, figure, p) {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  max-width: none;
   margin: 0;
 }
-.markdown-image-grid > img {
-  width: 100%;
-  height: clamp(140px, 18vw, 240px);
-  object-fit: contain;
-  background-color: hsl(var(--muted) / 0.25);
+.prose .markdown-image-grid > img,
+.prose .markdown-image-grid > :is(figure, p) > img {
+  display: block;
+  width: auto;
+  max-width: none;
+  height: var(--image-render-height, var(--img-h));
+  max-height: none;
+  margin: 0;
+  border-radius: 0.5rem;
 }
-.markdown-image-grid > figure img {
-  width: 100%;
-  height: clamp(140px, 18vw, 240px);
-  object-fit: contain;
-  background-color: hsl(var(--muted) / 0.25);
-}
-@media (max-width: 640px) {
-  .prose table:has(img) img {
-    height: 130px;
-  }
-  .markdown-image-grid--2,
-  .markdown-image-grid--3,
-  .markdown-image-grid--gallery {
-    grid-template-columns: 1fr;
-  }
+.prose .markdown-image-grid > figure > figcaption {
+  width: 0;
+  min-width: 100%;
+  overflow-wrap: anywhere;
 }

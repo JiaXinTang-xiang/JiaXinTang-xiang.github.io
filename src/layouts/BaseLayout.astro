@@ -4,6 +4,7 @@ import type { SiteMeta } from 'astro-pure/types'
 import BaseHead from '@/components/BaseHead.astro'
 // import AnnouncementBar from '@/components/AnnouncementBar.astro'
 import LanguageToggle from '@/components/LanguageToggle.astro'
+import ArticleImages from '@/components/ArticleImages.astro'
 import Live2DChat from '@/components/Live2DChat.astro'
 import Live2DWidget from '@/components/Live2DWidget.astro'
 import config from '@/site-config'
@@ -71,6 +72,7 @@ const {
 
     <Live2DWidget />
     <Live2DChat />
+    <ArticleImages />
 
     {/* Set highlight color */}
     <style define:vars={{ highlightColor }}>

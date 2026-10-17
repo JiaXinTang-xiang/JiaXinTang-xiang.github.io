@@ -8,6 +8,8 @@ import remarkMath from 'remark-math'
 // Local integrations
 import rehypeAutolinkHeadings from './src/plugins/rehype-auto-link-headings.ts'
 import rehypeFigure from './src/plugins/rehype-figure.ts'
+// Image size extension: ![alt](url =x300)
+import { imageWithDisplayProperties, remarkImageSize } from './src/plugins/remark-image-size.ts'
 // Post meta (reading time & excerpt)
 import { remarkExcerpt, remarkReadingTime } from './src/plugins/remark-post-meta.ts'
 // Mermaid diagrams
@@ -70,8 +72,11 @@ export default defineConfig({
 
   // [Markdown]
   markdown: {
-    // remarkMermaid 把 ```mermaid 代码块换成 .mermaid 容器（必须早于 Shiki）
-    remarkPlugins: [remarkMath, remarkReadingTime, remarkExcerpt, remarkMermaid],
+    // remarkImageSize 必须在阅读时长/摘要之前运行，先把 "=x300" 从正文里拆出来，
+    // 否则它们会连同参数一起被计入字数。remarkMermaid 把 ```mermaid 代码块换成
+    // .mermaid 容器（必须早于 Shiki）。
+    remarkPlugins: [remarkImageSize, remarkMath, remarkReadingTime, remarkExcerpt, remarkMermaid],
+    remarkRehype: { handlers: { image: imageWithDisplayProperties } },
     rehypePlugins: [
       [rehypeKatex, {}],
       rehypeHeadingIds,
@@ -83,7 +88,7 @@ export default defineConfig({
           content: { type: 'text', value: '#' }
         }
       ],
-      rehypeFigure()
+      rehypeFigure
     ],
     // https://docs.astro.build/en/guides/syntax-highlighting/
     shikiConfig: {

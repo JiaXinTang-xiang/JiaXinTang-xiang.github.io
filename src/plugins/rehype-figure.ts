@@ -1,4 +1,4 @@
-import type { Element, Root } from 'hast'
+import type { Element, ElementContent, Root } from 'hast'
 
 function walk(nodes: Root['children']): Root['children'] {
   const result: Root['children'] = []
@@ -34,7 +34,7 @@ function walk(nodes: Root['children']): Root['children'] {
     } else if (node.type === 'element' && node.children) {
       result.push({
         ...node,
-        children: walk(node.children)
+        children: walk(node.children) as ElementContent[]
       })
     } else {
       result.push(node)

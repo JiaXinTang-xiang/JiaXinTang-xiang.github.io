@@ -1,0 +1,51 @@
+<!-- 等高图片按原始比例布局，窄屏时整组缩小；图片本身不裁剪、不填充。 -->
+<script>
+  let observer: ResizeObserver | undefined
+
+  function initArticleImages() {
+    observer?.disconnect()
+
+    function layout(group: HTMLElement) {
+      const images = Array.from(
+        group.querySelectorAll<HTMLImageElement>(
+          ':scope > img, :scope > figure > img, :scope > p > img'
+        )
+      )
+      const ratios = images.map((image) => {
+        const width = image.naturalWidth || Number(image.getAttribute('width'))
+        const height = image.naturalHeight || Number(image.getAttribute('height'))
+        return width > 0 && height > 0 ? width / height : 0
+      })
+      if (!ratios.length || ratios.some((ratio) => !ratio)) return
+
+      const style = getComputedStyle(group)
+      const desired = Number.parseFloat(style.getPropertyValue('--img-h')) || 220
+      const gap = Number.parseFloat(style.columnGap) || 0
+      const isRow = group.matches(
+        '.markdown-image-grid--2, .markdown-image-grid--3, .markdown-image-grid--row'
+      )
+      const available = group.clientWidth - (isRow ? gap * (images.length - 1) : 0)
+      const ratio = isRow ? ratios.reduce((sum, value) => sum + value, 0) : Math.max(...ratios)
+      const height = Math.max(1, Math.min(desired, available / ratio))
+      const value = `${height}px`
+      if (group.style.getPropertyValue('--image-render-height') !== value) {
+        group.style.setProperty('--image-render-height', value)
+      }
+    }
+
+    observer = new ResizeObserver((entries) => {
+      for (const entry of entries) layout(entry.target as HTMLElement)
+    })
+    document.querySelectorAll<HTMLElement>('.prose .markdown-image-grid').forEach((group) => {
+      group.querySelectorAll('img').forEach((image) => {
+        if (!image.complete) image.addEventListener('load', () => layout(group), { once: true })
+      })
+      layout(group)
+      observer?.observe(group)
+    })
+  }
+
+  initArticleImages()
+  document.addEventListener('astro:page-load', initArticleImages)
+  document.addEventListener('astro:before-swap', () => observer?.disconnect())
+</script>
