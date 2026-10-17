@@ -1,5 +1,5 @@
 ---
-title: 'Markdown 写作与高级样式实用教程'
+title: 'Markdown写作与样式教程'
 description: '从基础语法，图片尺寸、对齐、多图网格、表格、提示框、折叠内容和任务列表，记录一下方便自己写作。'
 publishDate: '2026-10-17'
 tags:
