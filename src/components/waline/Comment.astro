@@ -50,7 +50,14 @@ const { class: className } = Astro.props
       walineInit({
         el: 'comment-component #waline',
         serverURL: walineConfig.server || '',
-        path: window.location.pathname === '/' ? '/' : window.location.pathname.replace(/\/$/, ''),
+        // Keep the site's canonical trailing slash. Waline uses `path` as the
+        // comment thread key, so trimming it makes old comments unreachable.
+        path:
+          window.location.pathname === '/'
+            ? '/'
+            : window.location.pathname.endsWith('/')
+              ? window.location.pathname
+              : `${window.location.pathname}/`,
         emoji,
         reaction: ['/icons/heart-item.svg'],
         ...walineConfig.additionalConfigs
