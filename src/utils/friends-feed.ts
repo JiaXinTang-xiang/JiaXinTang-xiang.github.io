@@ -23,8 +23,7 @@ export interface FriendFeedSource {
 }
 
 const timeoutMs = 8000
-const maxItemsPerSite = 8
-const maxItems = 60
+const maxItemsPerSite = 5
 
 const parser = new XMLParser({
   attributeNamePrefix: '@_',
@@ -66,7 +65,9 @@ const discoverFeedUrl = (html: string, pageUrl: string) => {
     const relation = getAttribute(tag, 'rel').toLowerCase().split(/\s+/)
     const type = getAttribute(tag, 'type').toLowerCase()
     if (!relation.includes('alternate')) continue
-    if (!['application/rss+xml', 'application/atom+xml', 'application/xml', 'text/xml'].includes(type)) {
+    if (
+      !['application/rss+xml', 'application/atom+xml', 'application/xml', 'text/xml'].includes(type)
+    ) {
       continue
     }
 
@@ -79,7 +80,9 @@ const discoverFeedUrl = (html: string, pageUrl: string) => {
 
 const fetchText = async (url: string) => {
   const response = await fetch(url, {
-    headers: { accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml, text/html' },
+    headers: {
+      accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml, text/html'
+    },
     signal: AbortSignal.timeout(timeoutMs),
     redirect: 'follow'
   })
@@ -98,7 +101,12 @@ const getItemLink = (item: Record<string, unknown>, siteUrl: string) => {
   return link ? new URL(link, siteUrl).href : ''
 }
 
-const parseFeed = (xml: string, site: FriendSite): FriendActivityItem[] => {
+const parseFeed = (
+  xml: string,
+  site: FriendSite,
+  oldestDate: string,
+  latestDate: string
+): FriendActivityItem[] => {
   const document = parser.parse(xml) as Record<string, unknown>
   const rssDocument = document.rss as Record<string, unknown> | undefined
   const channel = rssDocument?.channel
@@ -106,7 +114,9 @@ const parseFeed = (xml: string, site: FriendSite): FriendActivityItem[] => {
   const source = (channel ?? atomFeed) as Record<string, unknown> | undefined
   if (!source) return []
 
-  const rawItems = asArray((source.item ?? source.entry) as Record<string, unknown> | Record<string, unknown>[])
+  const rawItems = asArray(
+    (source.item ?? source.entry) as Record<string, unknown> | Record<string, unknown>[]
+  )
   const siteUrl = site.link
 
   return rawItems
@@ -115,23 +125,37 @@ const parseFeed = (xml: string, site: FriendSite): FriendActivityItem[] => {
       const link = getItemLink(item, siteUrl)
       const rawDate = asText(item.pubDate ?? item.published ?? item.updated)
       const timestamp = Date.parse(rawDate)
-      const description = asText(item.description ?? item.summary ?? item['content:encoded'] ?? item.content)
+      const description = asText(
+        item.description ?? item.summary ?? item['content:encoded'] ?? item.content
+      )
 
       return {
         title,
         link,
-        description: description.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().slice(0, 220),
-        publishedAt: Number.isNaN(timestamp) ? new Date(0).toISOString() : new Date(timestamp).toISOString(),
+        description: description
+          .replace(/<[^>]*>/g, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 220),
+        publishedAt: Number.isNaN(timestamp)
+          ? new Date(0).toISOString()
+          : new Date(timestamp).toISOString(),
         sourceName: site.name,
         avatar: site.avatar
       }
     })
-    .filter((item) => item.title && item.link && item.publishedAt !== new Date(0).toISOString())
+    .filter(
+      (item) =>
+        item.title && item.link && item.publishedAt >= oldestDate && item.publishedAt <= latestDate
+    )
     .sort((left, right) => right.publishedAt.localeCompare(left.publishedAt))
+    .filter(
+      (item, index, all) => all.findIndex((candidate) => candidate.link === item.link) === index
+    )
     .slice(0, maxItemsPerSite)
 }
 
-const readSiteFeed = async (site: FriendSite) => {
+const readSiteFeed = async (site: FriendSite, oldestDate: string, latestDate: string) => {
   try {
     let feedUrl = site.rss
     let feedText = ''
@@ -146,11 +170,13 @@ const readSiteFeed = async (site: FriendSite) => {
     }
 
     return {
-      items: parseFeed(feedText, site),
+      items: parseFeed(feedText, site, oldestDate, latestDate),
       source: { name: site.name, status: 'ok' as const, feedUrl }
     }
   } catch (error) {
-    console.warn(`[friends-feed] ${site.name}: ${error instanceof Error ? error.message : String(error)}`)
+    console.warn(
+      `[friends-feed] ${site.name}: ${error instanceof Error ? error.message : String(error)}`
+    )
     return {
       items: [],
       source: { name: site.name, status: 'unavailable' as const }
@@ -158,13 +184,25 @@ const readSiteFeed = async (site: FriendSite) => {
   }
 }
 
-export const collectFriendsActivity = async (sites: FriendSite[]) => {
-  const results = await Promise.all(sites.map(readSiteFeed))
+export const collectFriendsActivity = async (sites: FriendSite[], now = new Date()) => {
+  // 按自然月回溯；例如 7 月 31 日回溯到 4 月 30 日，避免 setMonth 溢出到 5 月。
+  const oldestDate = new Date(now)
+  oldestDate.setUTCDate(1)
+  oldestDate.setUTCMonth(oldestDate.getUTCMonth() - 3)
+  const daysInMonth = new Date(
+    Date.UTC(oldestDate.getUTCFullYear(), oldestDate.getUTCMonth() + 1, 0)
+  ).getUTCDate()
+  oldestDate.setUTCDate(Math.min(now.getUTCDate(), daysInMonth))
+
+  const results = await Promise.all(
+    sites.map((site) => readSiteFeed(site, oldestDate.toISOString(), now.toISOString()))
+  )
   const items = results
     .flatMap((result) => result.items)
     .sort((left, right) => right.publishedAt.localeCompare(left.publishedAt))
-    .filter((item, index, all) => all.findIndex((candidate) => candidate.link === item.link) === index)
-    .slice(0, maxItems)
+    .filter(
+      (item, index, all) => all.findIndex((candidate) => candidate.link === item.link) === index
+    )
 
   return {
     items,

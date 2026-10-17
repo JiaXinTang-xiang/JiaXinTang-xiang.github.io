@@ -18,10 +18,7 @@ const { friends } = links
 const linksConf = config.integ.links
 const linkEditPage = 'https://github.com/jiaxintang-xiang/JIABlog/blob/main/public/links.json'
 const friendSites = friends[0]?.link_list ?? []
-const { items: allFriendActivity, sources: friendFeedSources } = await collectFriendsActivity(friendSites)
-const oneMonthAgo = new Date()
-oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
-const friendActivity = allFriendActivity.filter((article) => new Date(article.publishedAt) >= oneMonthAgo)
+const { items: friendActivity, sources: friendFeedSources } = await collectFriendsActivity(friendSites)
 const activeFriendFeeds = friendFeedSources.filter((source) => source.status === 'ok').length
 const initialVisibleItems = 8
 const loadMoreItems = 6
@@ -98,7 +95,7 @@ const loadMoreItems = 6
       friendActivity.length > 0 ? (
         <>
           <div class='mb-4 text-sm text-muted-foreground'>
-            已汇总 {activeFriendFeeds} 个友链博客，点击“加载更多”查看最近一个月的文章。
+            已汇总 {activeFriendFeeds} 个友链博客，每个博客最多展示最近三个月内的最新 5 篇文章，按发布时间从新到旧排列。
           </div>
           <div class='grid gap-4 md:grid-cols-2' data-friends-activity-list>
             {friendActivity.map((article, index) => (
@@ -153,7 +150,7 @@ const loadMoreItems = 6
         </>
       ) : (
         <p class='rounded-xl border border-dashed p-5 text-sm text-muted-foreground'>
-          最近一个月暂时没有抓取到友链文章。
+          最近三个月暂时没有抓取到友链文章。
         </p>
       )
     }
