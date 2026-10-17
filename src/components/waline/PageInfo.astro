@@ -1,6 +1,7 @@
 ---
 import { cn } from 'astro-pure/utils'
 import Pageview from '@/components/waline/Pageview.astro'
+import { walinePath } from '@/utils/waline-paths'
 
 interface Props {
   view?: boolean
@@ -11,7 +12,7 @@ interface Props {
 const { view, comment, class: className, ...props } = Astro.props
 
 // Keep every Waline feature on the same canonical article path.
-const path = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/$/, '')
+const path = walinePath(Astro.url.pathname)
 ---
 
 <div class={cn('text-base text-sm text-muted-foreground', className)} {...props}>

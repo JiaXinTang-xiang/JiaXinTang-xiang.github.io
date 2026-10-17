@@ -4,6 +4,7 @@ import AstroPureIntegration from 'astro-pure'
 import { defineConfig, envField, fontProviders } from 'astro/config'
 import rehypeKatex from 'rehype-katex'
 import remarkMath from 'remark-math'
+import { fileURLToPath } from 'node:url'
 
 // Local integrations
 import rehypeAutolinkHeadings from './src/plugins/rehype-auto-link-headings.ts'
@@ -36,6 +37,16 @@ export default defineConfig({
   trailingSlash: 'always',
   // root: './my-project-directory',
   server: { host: true },
+  vite: {
+    resolve: {
+      alias: [
+        {
+          find: /^@waline\/api$/,
+          replacement: fileURLToPath(new URL('./src/utils/waline-api.ts', import.meta.url))
+        }
+      ]
+    }
+  },
 
   // [Adapter]
   // https://docs.astro.build/en/guides/deploy/

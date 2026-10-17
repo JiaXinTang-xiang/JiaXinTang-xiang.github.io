@@ -22,6 +22,7 @@ const { class: className } = Astro.props
   import { init as walineInit } from '@waline/client'
   import type { WalineEmojiPresets } from '@waline/client'
   import config from 'virtual:config'
+  import { walinePath } from '@/utils/waline-paths'
 
   const walineConfig = config.integ.waline
 
@@ -50,14 +51,7 @@ const { class: className } = Astro.props
       walineInit({
         el: 'comment-component #waline',
         serverURL: walineConfig.server || '',
-        // Keep the site's canonical trailing slash. Waline uses `path` as the
-        // comment thread key, so trimming it makes old comments unreachable.
-        path:
-          window.location.pathname === '/'
-            ? '/'
-            : window.location.pathname.endsWith('/')
-              ? window.location.pathname
-              : `${window.location.pathname}/`,
+        path: walinePath(window.location.pathname),
         emoji,
         reaction: ['/icons/heart-item.svg'],
         ...walineConfig.additionalConfigs
