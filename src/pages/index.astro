@@ -173,9 +173,12 @@ if (!images[imagePath])
                       <time datetime={postDate(fixedPost).toISOString()}>{formatPostDate(fixedPost)}</time>
                     </span>
                     <div class='z-10 flex-grow'>
-                      <div class='flex justify-between'>
+                      <div class='flex items-center justify-between gap-3'>
                         <div>{fixedPost.data.title}</div>
-                        <span class='preview-redirect my-1 text-muted-foreground transition-transform group-hover/link:translate-x-1'>→</span>
+                        <div class='flex shrink-0 items-center gap-2'>
+                          <span class='rounded border px-1.5 py-0.5 text-xs text-muted-foreground'>置底</span>
+                          <span class='preview-redirect my-1 text-muted-foreground transition-transform group-hover/link:translate-x-1'>→</span>
+                        </div>
                       </div>
                     </div>
                   </a>
@@ -286,4 +289,3 @@ if (!images[imagePath])
     </section>
   </main></PageLayout
 >
-
