@@ -1,15 +1,15 @@
 ---
 title: 'Markdown 写作与高级样式实用教程'
-description: '从基础语法到图片尺寸、对齐、多图网格、表格、提示框、折叠内容和任务列表，整理一套可以直接复制的 Markdown 写作模板。'
+description: '从基础语法，图片尺寸、对齐、多图网格、表格、提示框、折叠内容和任务列表，记录一下方便自己写作。'
 publishDate: '2026-10-17'
 tags:
   - Markdown
   - 博客
   - 写作技巧
 language: 'Chinese'
-draft: true
+draft: false
 rss: false
-slug: 'tools/markdown-image-layout'
+slug: 'tools/markdown-layout'
 heroImage: { src: './images/markdown-image-layout/demo-cover.jpg', color: '#24292e' }
 ---
 
