@@ -7,6 +7,9 @@ import PageLayout from '@/layouts/CommonPage.astro'
 import FriendList from '@/components/links/FriendList.astro'
 import { collectFriendsActivity } from '@/utils/friends-feed'
 
+// Fetch feeds when this page is requested, rather than freezing them at build time.
+export const prerender = false
+
 const headings = [
   { depth: 2, slug: 'common-links', text: 'Common Links' },
   { depth: 2, slug: 'blog-links', text: 'Blog Links' },
@@ -20,6 +23,12 @@ const linkEditPage = 'https://github.com/jiaxintang-xiang/JIABlog/blob/main/publ
 const friendSites = friends[0]?.link_list ?? []
 const { items: friendActivity, sources: friendFeedSources } = await collectFriendsActivity(friendSites)
 const activeFriendFeeds = friendFeedSources.filter((source) => source.status === 'ok').length
+const updatedAt = new Date()
+// Share the rendered page for 15 minutes; browsers still check for updates on reload.
+Astro.response.headers.set(
+  'Cache-Control',
+  `public, max-age=0, s-maxage=${activeFriendFeeds ? 900 : 60}, stale-while-revalidate=60`
+)
 const initialVisibleItems = 8
 const loadMoreItems = 6
 ---
@@ -91,12 +100,17 @@ const loadMoreItems = 6
       <p class='m-0 text-muted-foreground'>最新动态 · 看看朋友们都在写什么</p>
     </div>
 
+    <div class='mb-4 text-sm text-muted-foreground'>
+      共 {friendSites.length} 个友链博客，已读取 {activeFriendFeeds} 个博客的动态。
+      每个博客最多展示最近三个月内的最新 5 篇文章，按发布时间从新到旧排列。
+      <span class='mt-1 block text-xs'>
+        更新于 <time datetime={updatedAt.toISOString()}>{updatedAt.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false })}</time>
+      </span>
+    </div>
+
     {
       friendActivity.length > 0 ? (
         <>
-          <div class='mb-4 text-sm text-muted-foreground'>
-            已汇总 {activeFriendFeeds} 个友链博客，每个博客最多展示最近三个月内的最新 5 篇文章，按发布时间从新到旧排列。
-          </div>
           <div class='grid gap-4 md:grid-cols-2' data-friends-activity-list>
             {friendActivity.map((article, index) => (
               <article
