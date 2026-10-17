@@ -46,6 +46,12 @@
           "intro": "Blog",
           "link": "https://lumivers.pages.dev",
           "avatar": "https://lumivers.pages.dev/avatar.jpg"
+        },
+        {
+          "name": "Qiumu’s Blog",
+          "intro": "named by Aaron and Zachary",
+          "link": "https://qiumu0o0.github.io",
+          "avatar": "https://qiumu0o0.github.io/avatar.png"
         }
       ]
     },
