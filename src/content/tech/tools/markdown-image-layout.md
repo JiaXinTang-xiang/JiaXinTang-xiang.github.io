@@ -15,15 +15,8 @@ heroImage: { src: './images/markdown-image-layout/demo-cover.jpg', color: '#2429
 
 ## 前言
 
-Markdown 的基础语法很简单，但真正写博客时，常常还会遇到图片大小、图片对齐、多图并列、表格美化、提示框和折叠内容等问题。本文把常用写法集中整理在一起，代码可以直接复制到文章中，再替换文字和图片路径即可。
-
-本文会区分三种写法：
-
-- **标准 Markdown**：跨平台最稳定；
-- **Markdown 扩展**：某些编辑器支持，换平台前要测试；
-- **HTML/CSS**：控制能力最强，适合本站这种自建博客。
-
-这篇文章使用《Ubuntu 常用命令大全》的封面作为演示图片。相同图片重复出现只是为了展示排版效果，实际写作时换成自己的图片即可。
+Markdown 的基础语法很简单，但真正写博客时，常常还会遇到图片大小、图片对齐、多图并列、表格美化、提示框和折叠内容等问题。因此本文把常用写法集中整理在一起，方便在自己想用某个功能时回看，不用辛苦去找资料。
+这篇文章使用封面作为演示图片。相同图片重复出现只是为了展示排版效果，实际写作时换成自己的图片即可。
 
 ## 一、Markdown 基础语法
 
@@ -180,12 +173,12 @@ config_before.png
 ### 1. 标准 Markdown 图片
 
 ```markdown
-![Ubuntu 常用命令文章封面](images/markdown-image-layout/demo-cover.jpg)
+![文章封面](images/markdown-image-layout/demo-cover.jpg)
 ```
 
 效果：
 
-![Ubuntu 常用命令文章封面](images/markdown-image-layout/demo-cover.jpg)
+![文章封面](images/markdown-image-layout/demo-cover.jpg)
 
 这里的 `alt` 是替代文字，用于图片加载失败、无障碍阅读和搜索引擎理解图片内容。它不是鼠标悬停提示。
 
@@ -199,18 +192,18 @@ config_before.png
     class="zoomable"
     src="images/markdown-image-layout/demo-cover.jpg"
     width="720"
-    alt="Ubuntu 常用命令文章封面"
+    alt="文章封面"
   />
-  <figcaption>图 1：Ubuntu 常用命令大全的文章封面。</figcaption>
+  <figcaption>图 1：文章封面。</figcaption>
 </figure>
 ```
 
 也可以直接在 Markdown 图片下面写一行文字：
 
 ```markdown
-![Ubuntu 常用命令文章封面](images/markdown-image-layout/demo-cover.jpg)
+![文章封面](images/markdown-image-layout/demo-cover.jpg)
 
-*图 1：Ubuntu 常用命令大全的文章封面。*
+*图 1：文章封面。*
 ```
 
 当前博客会为单独成段的 Markdown 图片自动生成 `figure` 和图注，图注内容来自 `alt`。因此同一张图不需要同时写两套说明，以免重复。
@@ -223,7 +216,7 @@ config_before.png
 <img
   class="zoomable"
   src="images/markdown-image-layout/demo-cover.jpg"
-  alt="Ubuntu 常用命令文章封面"
+  alt="文章封面"
   title="点击图片可以放大"
 />
 ```
@@ -767,22 +760,8 @@ GitHub 风格的 Emoji 名称，例如 `:rocket:`、`:warning:`，并不是所�
 
 如果忘记这个 class，图片仍然可以显示，但不会进入本站的放大功能。
 
-## 十五、常见问题排查
 
-| 表现 | 常见原因 | 处理方式 |
-| --- | --- | --- |
-| 图片空白或裂开 | 路径错误、文件不存在 | 从当前 Markdown 文件位置重新检查相对路径 |
-| 本地正常，网站异常 | 使用了绝对路径 | 改成相对路径或公开图床 URL |
-| GitHub 或 PDF 显示失败 | 文件名包含空格、中文或括号 | 重命名为小写英文和连字符 |
-| `#pic_center` 无效 | 平台私有标记 | 改用 HTML/CSS 对齐 |
-| `=200x` 没生效 | 等号前漏了空格，或平台不支持 | 本站写 `![图](url =200x)`，跨平台改用 `<img width="200">` |
-| 图片变形 | 宽高比例不一致 | 只设置宽度，或使用 `height: auto` |
-| 图片超出手机屏幕 | 没有限制最大宽度 | 添加 `max-width: 100%` |
-| HTML 图片不能放大 | 缺少 `zoomable` class | 给 `<img>` 增加 `class="zoomable"` |
-| 图片模糊 | 原图分辨率太低或压缩过度 | 换更清晰的原图，控制图片体积 |
-| 后面的文字绕在图片旁边 | 使用了 `align="left"` 或浮动布局 | 改用外层 `<p>` 控制整行对齐 |
-
-## 十六、最终推荐模板
+## 十五、推荐模板
 
 ### 单图
 
@@ -870,16 +849,4 @@ GitHub 风格的 Emoji 名称，例如 `:rocket:`、`:warning:`，并不是所�
 
 ## 小结
 
-可以按下面的规则选择写法：
-
-| 需求 | 推荐写法 |
-| --- | --- |
-| 普通图片 | Markdown 图片语法 |
-| 只想快速改尺寸 | 本站用 `![图](url =200x)` 或 `=x300`，跨平台改用 HTML |
-| 控制大小和对齐 | HTML `<img>` + 外层 `<p>` 或 `<div>` |
-| 两图、三图和相册 | 本站等高图片模板，修改 `--img-h` |
-| 需要跨平台发布 | Markdown 表格 |
-| 需要点击放大 | Markdown 图片，或 HTML 图片加 `class="zoomable"` |
-| 需要提示或补充内容 | `<details>`、引用和 `<mark>` |
-
-最重要的原则是：图片使用相对路径，文件名保持简单；标准 Markdown 负责内容，HTML/CSS 负责精确排版，平台扩展语法只在确认兼容后使用。
+完成
