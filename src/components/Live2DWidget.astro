@@ -39,11 +39,14 @@ const { size } = live2dConfig
   <span aria-hidden='true'>×</span>
 </button>
 
-<script is:inline src='https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js'
-></script>
-<script is:inline src='https://cdn.jsdelivr.net/npm/pixi.js@7.x/dist/pixi.min.js'></script>
-<script is:inline src='https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js'
-></script>
+{/*
+  运行库放在 public/vendor/live2d 下自托管。以前直接引 cubism.live2d.com 和 jsdelivr，
+  国内网络经常连不上，看板娘就会随机加载失败；自托管后不再依赖第三方 CDN。
+  defer 保证按顺序执行，且不阻塞页面渲染。
+*/}
+<script is:inline defer src='/vendor/live2d/live2dcubismcore.min.js'></script>
+<script is:inline defer src='/vendor/live2d/pixi.min.js'></script>
+<script is:inline defer src='/vendor/live2d/cubism4.min.js'></script>
 
 <script is:inline define:vars={{ config: live2dConfig }}>
   ;(() => {
@@ -171,6 +174,16 @@ const { size } = live2dConfig
         openChat()
       })
       status.appendChild(fallback)
+
+      // 加载失败后给一个恢复入口，不用让访客自己去刷新整页
+      const retry = document.createElement('button')
+      retry.type = 'button'
+      retry.textContent = '重新加载'
+      retry.addEventListener('click', (event) => {
+        event.stopPropagation()
+        window.location.reload()
+      })
+      status.appendChild(retry)
     }
 
     const isMobile = () => window.innerWidth <= config.responsive.breakpoint
@@ -184,6 +197,8 @@ const { size } = live2dConfig
       const mark = mobileToggle.querySelector('span')
       if (mark) mark.textContent = collapsed ? '聊聊' : '×'
       if (collapsed && message) message.hidden = true
+      // 手机端折叠时先不加载模型；展开时通知 start() 开始加载
+      if (!collapsed) container.dispatchEvent(new CustomEvent('live2d:expand'))
       if (remember) {
         try {
           localStorage.setItem(config.responsive.storageKey, String(collapsed))
@@ -289,22 +304,51 @@ const { size } = live2dConfig
         return
       }
 
+      // 手机端默认只显示一个小入口，等访客真的展开再下载模型，
+      // 避免一进页面就在后台拉几 MB 的模型、耗流量和电量。
+      if (isMobile() && container.dataset.collapsed === 'true') {
+        await new Promise((resolve) => {
+          container.addEventListener('live2d:expand', resolve, { once: true })
+        })
+      }
+
       const width = container.clientWidth
       const height = container.clientHeight
-      const app = new PIXI.Application({
-        view: canvas,
-        width,
-        height,
-        backgroundAlpha: 0,
-        antialias: true,
-        autoDensity: true,
-        resolution: Math.min(window.devicePixelRatio || 1, 2)
-      })
+      let app
+      try {
+        app = new PIXI.Application({
+          view: canvas,
+          width,
+          height,
+          backgroundAlpha: 0,
+          antialias: true,
+          autoDensity: true,
+          resolution: Math.min(window.devicePixelRatio || 1, 2)
+        })
+      } catch (error) {
+        // 浏览器禁用 WebGL（部分手机浏览器、隐私模式）时 Application 会直接抛错，
+        // 不拦下来的话加载提示会一直停在“正在准备看板娘…”。
+        showError('当前浏览器无法启动 WebGL，看板娘显示不了。', error)
+        return
+      }
+
+      // 移动网络偶尔会断在半路，模型失败后自动再拉一次，仍然失败才报错
+      const loadModel = async () => {
+        const path = activeSeasonConfig().modelPath
+        let lastError
+        for (let attempt = 0; attempt < 2; attempt += 1) {
+          try {
+            return await Live2DModel.from(path, { autoInteract: false })
+          } catch (error) {
+            lastError = error
+            if (attempt === 0) await wait(1200)
+          }
+        }
+        throw lastError
+      }
 
       try {
-        const model = await Live2DModel.from(activeSeasonConfig().modelPath, {
-          autoInteract: false
-        })
+        const model = await loadModel()
 
         app.stage.addChild(model)
 
@@ -411,7 +455,10 @@ const { size } = live2dConfig
           positionMessage()
         })
       } catch (error) {
-        showError('模型加载失败，请打开控制台查看详细信息。', error)
+        try {
+          app.destroy(false, { children: true, texture: true, baseTexture: true })
+        } catch {}
+        showError('模型加载失败，请检查网络后重试。', error)
       }
     }
 

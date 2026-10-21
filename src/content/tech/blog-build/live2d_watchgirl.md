@@ -89,21 +89,15 @@ heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/live2d-watc
 
 ### 2.1 引入运行库
 
-Live2D 需要三个脚本：官方 Core、PixiJS，以及 PixiJS 的 Live2D 插件。放在组件中直接通过 CDN 引入是最省事的方式：
+Live2D 需要三个脚本：官方 Core、PixiJS，以及 PixiJS 的 Live2D 插件。最初我是直接通过 CDN 引入的，但这三个资源都在境外，国内网络经常连不上，看板娘就会随机加载失败。现在改成把三个文件放进 `public/vendor/live2d/` 自托管，并用 `defer` 保证执行顺序：
 
 ```html
-<script
-  is:inline
-  src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"
-></script>
-<script is:inline src="https://cdn.jsdelivr.net/npm/pixi.js@7.x/dist/pixi.min.js"></script>
-<script
-  is:inline
-  src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js"
-></script>
+<script is:inline defer src="/vendor/live2d/live2dcubismcore.min.js"></script>
+<script is:inline defer src="/vendor/live2d/pixi.min.js"></script>
+<script is:inline defer src="/vendor/live2d/cubism4.min.js"></script>
 ```
 
-> **提示**：这三个资源都在境外，国内访问可能不稳定。正式部署时可以考虑自托管、配置备用 CDN，或者在加载失败时提供降级方案。
+> **提示**：用 CDN 的话一定要做失败兜底：运行库加载失败时仍然保留对话框入口，并给出「重新加载」按钮；模型请求失败可以自动重试一次。否则网络一抖，看板娘就彻底消失了。另外手机端默认折叠时，可以把模型加载推迟到用户展开之后，避免一进页面就在后台下载几 MB 的模型。
 
 ### 2.2 注意模型画布与角色轮廓
 
