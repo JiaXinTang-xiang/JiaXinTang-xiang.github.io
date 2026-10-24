@@ -15,6 +15,7 @@ export const translations = {
     'nav.other': '其他',
     'nav.anime': '追番',
     'nav.moments': '动态',
+    'nav.subscribe': '订阅',
 
     // 首页
     'home.about': '关于',
@@ -69,6 +70,7 @@ export const translations = {
     'nav.other': 'More',
     'nav.anime': 'Anime',
     'nav.moments': 'Moments',
+    'nav.subscribe': 'Subscribe',
 
     // Home
     'home.about': 'About',

@@ -1,0 +1,87 @@
+---
+import { Icon } from 'astro-pure/user'
+
+import PageLayout from '@/layouts/CommonPage.astro'
+
+const buttondownUsername = import.meta.env.PUBLIC_BUTTONDOWN_USERNAME?.trim()
+const buttondownAction = buttondownUsername
+  ? `https://buttondown.com/api/emails/embed-subscribe/${encodeURIComponent(buttondownUsername)}`
+  : undefined
+---
+
+<PageLayout title='订阅博客更新'>
+  <p class='max-w-2xl text-muted-foreground'>
+    新文章发布后，可以通过邮件接收提醒，也可以将 RSS 地址添加到你常用的阅读器。
+  </p>
+
+  <div class='not-prose mt-8 grid gap-4 md:grid-cols-2'>
+    <section class='rounded-lg border border-border bg-background p-5 sm:p-6'>
+      <div class='mb-4 flex items-center gap-3'>
+        <span class='flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+          <Icon name='email' class='size-5' />
+        </span>
+        <div>
+          <h2 class='text-lg font-medium'>邮件订阅</h2>
+          <p class='text-sm text-muted-foreground'>新文章发布后发送邮件提醒</p>
+        </div>
+      </div>
+
+      {
+        buttondownAction ? (
+          <form action={buttondownAction} method='post' class='space-y-3'>
+            <label for='subscriber-email' class='block text-sm font-medium'>邮箱地址</label>
+            <input
+              id='subscriber-email'
+              name='email'
+              type='email'
+              inputmode='email'
+              autocomplete='email'
+              placeholder='you@example.com'
+              required
+              class='h-11 w-full rounded-lg border border-input bg-background px-3 text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20'
+            />
+            <input type='hidden' name='embed' value='1' />
+            <button
+              type='submit'
+              class='inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90'
+            >
+              <Icon name='email' class='size-4' />
+              订阅更新
+            </button>
+            <p class='text-xs leading-5 text-muted-foreground'>
+              提交后请前往邮箱确认订阅。每封提醒邮件都包含退订入口。
+            </p>
+          </form>
+        ) : (
+          <p class='rounded-lg border border-dashed border-border p-4 text-sm leading-6 text-muted-foreground'>
+            邮件订阅正在配置中，暂时可以使用 RSS 阅读器订阅。
+          </p>
+        )
+      }
+    </section>
+
+    <section class='rounded-lg border border-border bg-background p-5 sm:p-6'>
+      <div class='mb-4 flex items-center gap-3'>
+        <span class='flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+          <Icon name='rss' class='size-5' />
+        </span>
+        <div>
+          <h2 class='text-lg font-medium'>RSS 订阅</h2>
+          <p class='text-sm text-muted-foreground'>使用阅读器及时获取更新</p>
+        </div>
+      </div>
+
+      <p class='mb-4 text-sm leading-6 text-muted-foreground'>
+        RSS 地址长期有效，不需要注册账号，也不会收集邮箱信息。
+      </p>
+      <a
+        href='/rss.xml'
+        target='_blank'
+        class='inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary'
+      >
+        <Icon name='rss' class='size-4' />
+        打开 RSS Feed
+      </a>
+    </section>
+  </div>
+</PageLayout>
