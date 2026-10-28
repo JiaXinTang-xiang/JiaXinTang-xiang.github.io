@@ -21,6 +21,14 @@ heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/live2d-watc
 
 不过在现在的 AI 时代，已经有一些开源工具可以把「分层 PSD → 可动的 Live2D 模型」这一步自动化，剩下的主要是在网页中加载和调试，方便了很多。这里记录一下我的学习路线和实际过程。
 
+## 新形象见面
+
+最近为自己制作了一个虚拟形象，个人形象的版权申请已经通过了,这次算是正式和大家见面了。
+名字：嘉心糖同学
+![alt text](images/live2d_watchgirl/作品电子样本1.png)
+![alt text](images/live2d_watchgirl/作品电子样本2.png)
+![alt text](images/live2d_watchgirl/作品登记证书.jpg)
+
 ## 路线
 
 目前lived大致有两条路线：
