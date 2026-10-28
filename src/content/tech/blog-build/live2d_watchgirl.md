@@ -29,6 +29,8 @@ heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/live2d-watc
 ![alt text](images/live2d_watchgirl/作品电子样本2.png)
 ![alt text](images/live2d_watchgirl/作品登记证书.jpg)
 
+下面是我的构建过程了。
+
 ## 路线
 
 目前lived大致有两条路线：

@@ -7,19 +7,29 @@ import PageLayout from '@/layouts/CommonPage.astro'
 import ProjectSection from '@/components/projects/ProjectSection.astro'
 import Sponsors from '@/components/projects/Sponsors.astro'
 import Sponsorship from '@/components/projects/Sponsorship.astro'
+import Statistics from '@/components/projects/Statistics.astro'
 // import alipay from '@/assets/alipay-qrcode.png'
 import wechat from '@/assets/wechat-qrcode.png'
 
-const umamiShareURL = 'https://analytics.jiaxin404.top/share/hW1eUDYxEQFLqhET'
+const umamiShareURL = 'https://analytics.jiaxin404.top/share/KnPX4p5eUyN749bk'
 
 const headings = [
-  { depth: 2, slug: 'programs', text: 'Programs' },
   { depth: 2, slug: 'statistics', text: '网站访问统计' },
+  { depth: 2, slug: 'programs', text: 'Programs' },
   { depth: 2, slug: 'sponsorship', text: 'Sponsorship' }
 ]
 ---
 
 <PageLayout title='Projects' {headings} view>
+  <h2 id='statistics' data-i18n='projects.statistics'>网站访问统计</h2>
+  <p data-i18n='projects.statisticsDesc'>博客访问趋势与访客统计由自部署的 Umami 提供。</p>
+  <p>
+    <a href={umamiShareURL} target='_blank' rel='noopener noreferrer' data-i18n='projects.statisticsOpen'>
+      在新窗口查看完整统计
+    </a>
+  </p>
+  <Statistics />
+
   <p data-i18n='projects.desc'>
     如果你觉得我做的项目还不错，可以赞助我，让我有动力继续做下去。
   </p>
@@ -142,22 +152,6 @@ const headings = [
   <Button href='https://keys.openpgp.org/search?q=114514' title='Checkout my key' target='_blank'>
     <KeyIcon class='size-5' slot='before' />
   </Button> -->
-
-  <h2 id='statistics' data-i18n='projects.statistics'>网站访问统计</h2>
-  <p data-i18n='projects.statisticsDesc'>博客访问趋势与访客统计由自部署的 Umami 提供。</p>
-  <p>
-    <a href={umamiShareURL} target='_blank' rel='noopener noreferrer' data-i18n='projects.statisticsOpen'>
-      在新窗口查看完整统计
-    </a>
-  </p>
-  <div class='not-prose overflow-hidden rounded-xl border'>
-    <iframe
-      src={umamiShareURL}
-      title='Umami 网站访问统计'
-      loading='lazy'
-      class='block h-[800px] w-full border-0'
-    ></iframe>
-  </div>
 
   <h2 id='sponsorship' data-i18n='projects.sponsorship'>Sponsorship</h2>
   <p>Chinese methods: Wechat or Alipay </p>

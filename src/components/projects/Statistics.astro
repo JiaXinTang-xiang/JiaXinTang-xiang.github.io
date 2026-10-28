@@ -1,0 +1,141 @@
+---
+const metrics = [
+  ['visitors', '访客'],
+  ['visits', '访问次数'],
+  ['pageviews', '浏览量'],
+  ['bounceRate', '跳出率'],
+  ['duration', '平均访问时长']
+]
+---
+
+<blog-statistics class='not-prose statistics'>
+  <div class='metrics'>
+    {metrics.map(([key, label]) => (
+      <div class='metric'>
+        <span>{label}</span>
+        <strong data-metric={key}>—</strong>
+      </div>
+    ))}
+  </div>
+  <div class='chart-header'>
+    <span>最近 30 天 · 北京时间</span>
+    <div class='legend'>
+      <span class='visitors'>访客</span>
+      <span class='pageviews'>浏览量</span>
+    </div>
+  </div>
+  <svg viewBox='0 0 760 250' role='img' aria-label='最近 30 天的访客和浏览量趋势' class='chart'>
+    <g data-grid></g>
+    <path data-line='pageviews' fill='none' stroke='#8b5cf6' stroke-width='2.5' stroke-linejoin='round' />
+    <path data-line='visitors' fill='none' stroke='#2680eb' stroke-width='2.5' stroke-linejoin='round' />
+    <g data-dates></g>
+  </svg>
+  <p class='status' role='status'>正在加载统计…</p>
+  <noscript>启用 JavaScript 后可查看访问指标和趋势图。</noscript>
+</blog-statistics>
+
+<script>
+  type StatisticsData = {
+    visitors: number
+    visits: number
+    pageviews: number
+    bounceRate: number
+    duration: number
+    points: { date: string; visitors: number; pageviews: number }[]
+  }
+
+  class BlogStatistics extends HTMLElement {
+    private timer?: ReturnType<typeof setInterval>
+    private request?: AbortController
+
+    connectedCallback() {
+      this.update()
+      this.timer = setInterval(() => {
+        if (!document.hidden) this.update()
+      }, 60000)
+    }
+
+    disconnectedCallback() {
+      clearInterval(this.timer)
+      this.request?.abort()
+    }
+
+    private async update() {
+      if (this.request) return
+      const controller = new AbortController()
+      this.request = controller
+      const timeout = setTimeout(() => controller.abort(), 25000)
+      const status = this.querySelector<HTMLElement>('.status')!
+      try {
+        const response = await fetch('/api/statistics/', { signal: controller.signal })
+        if (!response.ok) throw new Error('Statistics unavailable')
+        const data: StatisticsData = await response.json()
+        if (!this.isConnected) return
+        for (const key of ['visitors', 'visits', 'pageviews'] as const) {
+          this.querySelector(`[data-metric='${key}']`)!.textContent = data[key].toLocaleString('zh-CN')
+        }
+        this.querySelector('[data-metric="bounceRate"]')!.textContent = `${Math.round(data.bounceRate)}%`
+        const seconds = Math.floor(data.duration)
+        this.querySelector('[data-metric="duration"]')!.textContent = `${Math.floor(seconds / 60)}m ${seconds % 60}s`
+        this.draw(data.points)
+        status.textContent = `更新于 ${new Date().toLocaleTimeString('zh-CN')} · 每分钟更新`
+      } catch {
+        if (this.isConnected) status.textContent = '统计暂时无法更新，稍后自动重试。'
+      } finally {
+        clearTimeout(timeout)
+        if (this.request === controller) this.request = undefined
+      }
+    }
+
+    private draw(points: StatisticsData['points']) {
+      const maximum = Math.max(1, ...points.flatMap(p => [p.visitors, p.pageviews]))
+      const top = Math.ceil(maximum / 4) * 4
+      const x = (index: number) => 44 + index / (points.length - 1) * 700
+      const y = (value: number) => 214 - value / top * 198
+      const element = (tag: string, attributes: Record<string, string>, text?: string) => {
+        const node = document.createElementNS('http://www.w3.org/2000/svg', tag)
+        for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value)
+        if (text) node.textContent = text
+        return node
+      }
+      const grid = this.querySelector('[data-grid]')!
+      grid.replaceChildren()
+      for (let step = 0; step <= 4; step++) {
+        const value = top * step / 4
+        grid.append(
+          element('line', { x1: '44', x2: '744', y1: String(y(value)), y2: String(y(value)), stroke: 'currentColor', opacity: '0.12' }),
+          element('text', { x: '36', y: String(y(value) + 4), 'text-anchor': 'end', fill: 'currentColor', 'font-size': '11' }, String(value))
+        )
+      }
+      for (const key of ['visitors', 'pageviews'] as const) {
+        this.querySelector(`[data-line='${key}']`)!.setAttribute('d', points.map((point, index) => `${index ? 'L' : 'M'}${x(index)},${y(point[key])}`).join(' '))
+      }
+      const dates = this.querySelector('[data-dates]')!
+      dates.replaceChildren(...[0, 7, 14, 21, 29].map(index => element('text', {
+        x: String(x(index)), y: '240', 'text-anchor': 'middle', fill: 'currentColor', 'font-size': '11'
+      }, points[index].date.slice(5).replace('-', '/'))))
+    }
+  }
+
+  if (!customElements.get('blog-statistics')) customElements.define('blog-statistics', BlogStatistics)
+</script>
+
+<style>
+  .statistics { display: block; border: 1px solid hsl(var(--border)); border-radius: 0.75rem; padding: 1.25rem; }
+  .metrics { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .metric { display: flex; flex-direction: column; gap: 0.5rem; }
+  .metric span, .chart-header, .status { font-size: 0.8rem; color: hsl(var(--muted-foreground)); }
+  .metric strong { font-size: 1.65rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .chart-header { display: flex; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+  .legend { display: flex; gap: 1rem; }
+  .legend span::before { content: ''; display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 50%; margin-right: 0.4rem; }
+  .visitors::before { background: #2680eb; }
+  .pageviews::before { background: #8b5cf6; }
+  .chart { display: block; width: 100%; height: auto; margin-top: 1rem; }
+  .status { margin: 0.75rem 0 0; }
+  @media (max-width: 640px) {
+    .statistics { padding: 1rem; }
+    .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .metric strong { font-size: 1.4rem; }
+  }
+</style>
