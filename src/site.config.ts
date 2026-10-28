@@ -105,7 +105,8 @@ export const theme: ThemeUserConfig = {
           // { title: '动态', link: '/moments/' },
           { title: '订阅', link: '/subscribe/' },
           { title: '画廊', link: 'https://r2.jiaxin404.top/gallery' },
-          { title: '背单词', link: 'https://en-app.jiaxin404.top/' }
+          { title: '背单词', link: 'https://en-app.jiaxin404.top/' },
+          { title: '统计', link: 'https://analytics.jiaxin404.top/' }
         ]
       }
     ]
