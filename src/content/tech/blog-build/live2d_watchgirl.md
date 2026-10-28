@@ -25,7 +25,8 @@ heroImage: { src: 'https://picr2.jiaxin404.top/posts/tech/blog-build/live2d-watc
 
 最近为自己制作了一个虚拟形象，个人形象的版权申请已经通过了,这次算是正式和大家见面了。
 
-名字：<span style="background:#fef08a; padding:2px 4px;">嘉心糖同学</span>
+名字：<span style="background:#bfdbfe; padding:2px 4px; font-weight:bold;">嘉心糖同学</span>
+
 
 ![alt text](images/live2d_watchgirl/作品电子样本1.png)
 ![alt text](images/live2d_watchgirl/作品电子样本2.png)
