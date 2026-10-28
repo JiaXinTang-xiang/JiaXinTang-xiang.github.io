@@ -8,8 +8,8 @@ tags:
   - Vercel
   - Supabase
 language: 'Chinese'
-draft: true
-rss: false
+draft: false
+rss: true
 heroImage: { src: './images/my-umami/cover.png', color: '#4A90E2' }
 ---
 <blockquote style="border-left: 4px solid #4d6bfe; background-color: #f0f4ff; padding: 12px 16px; margin: 16px 0;">
