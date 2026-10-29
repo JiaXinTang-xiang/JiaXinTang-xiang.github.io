@@ -240,7 +240,6 @@ container.addEventListener('keydown', (event) => {
   openChat()
 })
 ```
-
 同时，在模型加载失败时提供一个可见的备用按钮。容器也可以加上 `role="button"` 和 `tabindex="0"`，这样使用键盘的用户同样可以打开对话。
 
 ## 相关资料
