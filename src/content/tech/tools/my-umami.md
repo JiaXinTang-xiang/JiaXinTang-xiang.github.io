@@ -115,7 +115,6 @@ Supabase 和 PostgreSQL 不是两种互斥的数据库，这一点刚开始也�
 使用 Vercel 运行开源 Umami、使用自己的 Supabase 项目保存数据，同样是在管理自己的 Umami 实例，只是底层服务器仍然由云平台维护。
 
 最终结构：
-
 ```text
 GitHub：my-umami 仓库
     │
