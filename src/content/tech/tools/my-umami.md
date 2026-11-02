@@ -128,7 +128,6 @@ Vercel：JIABlog 博客项目
     └── 访客浏览器加载 Umami 脚本
             └── 向 analytics.jiaxin404.top 发送访问事件
 ```
-
 ## 三、在 Supabase 创建数据库
 
 ### 1. 创建组织和项目
