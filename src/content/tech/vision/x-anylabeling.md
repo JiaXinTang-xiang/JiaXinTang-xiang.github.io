@@ -355,6 +355,6 @@ X-AnyLabeling 支持以下标注格式：
 
 ## 最后
 
-X-AnyLabeling 相比于 labelImg 确实简化了数据标注流程，尤其适合快速构建高质量数据集，很方便。
+X-AnyLabeling 相比于 labelImg 确实简化了数据标注流程，尤其适合快速构建高质量数据集，确实很方便。
 
 完成。
