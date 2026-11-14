@@ -21,6 +21,8 @@ heroImage: { src: './images/x-anylabeling/cover.jpg', color: '#6b7177' }
 
 最近有时间，品尝一下 X-AnyLabeling，使用下来感觉蛮好用的。记录一下安装 **X-AnyLabeling 3.3.9 GPU 版**的过程，可以接入自己训练的 ONNX 模型进行辅助标注。
 
+自动标注的工具有很多，不只这种，读者可以自行选择，比如CVAT ,LabelStudio 等等。
+
 本文命令默认在 **Miniconda Prompt，也就是 CMD 风格的终端**中执行。
 
 ## 什么是 X-AnyLabeling？
